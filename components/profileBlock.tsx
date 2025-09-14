@@ -14,7 +14,7 @@ const ProfileBlock = () => {
         <AvatarFallback>loading...</AvatarFallback>
       </Avatar>
       <div className="text-2xl font-bold mt-4">KJ</div>
-      <div className="text-md mt-2">
+      <div className="text-xl mt-2 text-gray-500">
         新創產品經理・登山野營・單車野營・自助旅行
       </div>
       <div className="flex items-center gap-3 mt-4">
