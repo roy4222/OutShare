@@ -1,8 +1,9 @@
 "use client";
 
-import ModalCard from "@/components/ModalCard";
+import TripCard from "@/components/TripCard";
 import ProfileBlock from "@/components/profileBlock";
 import TripsToogleGroup from "@/components/TripsToogleGroup";
+import { tripsData } from "@/data/trips";
 
 export default function HomePage() {
   return (
@@ -14,8 +15,12 @@ export default function HomePage() {
         <TripsToogleGroup
           //Trips 標籤頁內容：顯示旅行卡片
           tripsContent={
-            <div className="w-full flex items-center justify-center ">
-              <ModalCard />
+            <div className="w-full space-y-4 px-4">
+              {tripsData.map((trip) => (
+                <div key={trip.id} className="flex justify-center">
+                  <TripCard trip={trip} />
+                </div>
+              ))}
             </div>
           }
           //Gear 標籤頁內容：顯示裝備相關內容

@@ -1,0 +1,73 @@
+import Image from "next/image";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardFooter,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { LocationIcon } from "@/components/icons/LocationIcon";
+import { CalendarIcon } from "@/components/icons/CalendarIcon";
+import { TripCardProps } from "@/types/trip";
+import { cn } from "@/lib/utils";
+
+/**
+ * 旅程卡片組件
+ * 
+ * 用於顯示單個旅程的詳細資訊，包含：
+ * - 旅程封面圖片
+ * - 旅程標題
+ * - 地點資訊（配合位置圖標）
+ * - 旅程時長（配合日曆圖標）
+ * - 相關標籤
+ * 
+ * @param trip - 旅程資料物件，包含 id、title、image、location、duration、tags 等屬性
+ * @param className - 可選的額外 CSS 類名，用於自定義樣式
+ * @returns JSX.Element - 渲染的旅程卡片組件
+ */
+const TripCard = ({ trip, className }: TripCardProps) => {
+  return (
+    <Card className={cn("w-100", className)}>
+      <div className="relative w-full h-64">
+        <Image 
+          src={trip.image}     // 旅程封面圖片路徑
+          alt={trip.alt}       // 圖片替代文字，提升無障礙性
+          fill                 // 填滿父容器
+          className="object-cover"  // 保持圖片比例並裁切以填滿容器
+        />
+      </div>
+      
+      {/* 卡片標題區域 */}
+      <CardHeader>
+        {/* 旅程標題 */}
+        <CardTitle>{trip.title}</CardTitle>
+        
+        {/* 地點資訊 - 使用 flex 佈局將圖標和文字水平排列 */}
+        <CardDescription className="flex items-center gap-2">
+          <LocationIcon />
+          {trip.location}
+        </CardDescription>
+        
+        {/* 旅程時長 - 使用 flex 佈局將圖標和文字水平排列 */}
+        <CardDescription className="flex items-center gap-2">
+          <CalendarIcon />
+          {trip.duration}
+        </CardDescription>
+      </CardHeader>
+      
+      {/* 卡片底部區域 - 顯示標籤 */}
+      <CardFooter>
+        {/* 標籤容器 - 使用 flex-wrap 讓標籤可以換行顯示 */}
+        <div className="flex items-center gap-1 pb-4 flex-wrap">
+          {/* 遍歷旅程標籤陣列，為每個標籤建立一個 Badge 組件 */}
+          {trip.tags.map((tag, index) => (
+            <Badge key={index}>{tag}</Badge>
+          ))}
+        </div>
+      </CardFooter>
+    </Card>
+  );
+};
+
+export default TripCard;
