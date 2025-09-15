@@ -4,9 +4,9 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-  CardContent,
   CardFooter,
 } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 const ModalCard = () => {
   return (
@@ -23,11 +23,14 @@ const ModalCard = () => {
         <CardDescription>中邊路</CardDescription>
         <CardDescription>4天</CardDescription>
       </CardHeader>
-      <CardContent>
-        <p>Card Content</p>
-      </CardContent>
       <CardFooter>
-        <p>Card Footer</p>
+        <div className="flex items-center pb-4">
+          <Badge>#熊野古道 </Badge>
+          <Badge>#朝聖之路</Badge>
+          <Badge>#鄉間 </Badge>
+          <Badge>#輕量化 </Badge>
+          <Badge>#單人旅程 </Badge>
+        </div>
       </CardFooter>
     </Card>
   );
