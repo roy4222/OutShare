@@ -17,7 +17,7 @@ const ProfileBlock = () => {
       <div className="text-xl mt-2 text-gray-500">
         新創產品經理・登山野營・單車野營・自助旅行
       </div>
-      <div className="flex items-center gap-3 mt-4">
+      <div className="flex items-center gap-2 mt-4">
         {[
           {
             href: "https://www.instagram.com/kj.h.730/",
@@ -44,7 +44,7 @@ const ProfileBlock = () => {
           >
             <FontAwesomeIcon
               icon={link.icon}
-              className="size-6 text-green-700 hover:text-green-600"
+              className="text-green-700 hover:text-green-600 text-2xl"
             />
           </a>
         ))}
