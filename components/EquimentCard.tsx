@@ -63,7 +63,7 @@ const EquimentCard = ({ tripTitle }: EquimentCardProps) => {
               <AccordionItem 
                 key={equipment.name} 
                 value={`${category}-${index}`} 
-                className="border rounded-lg bg-white mb-2"
+                className="rounded-lg bg-white mb-2"
               >
                 {/* 手風琴觸發器 - 點擊此區域可展開/收合內容 */}
                 <AccordionTrigger className="px-4 py-3 hover:no-underline">
