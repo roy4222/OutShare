@@ -8,6 +8,10 @@ import {
     AccordionTrigger,
   } from "@/components/ui/accordion"
 
+interface EquimentCardProps {
+  tripTitle?: string; // 可選的旅程標題，用於過濾裝備
+}
+
 /**
  * 裝備卡片組件
  * 
@@ -20,12 +24,21 @@ import {
  * - 使用 Accordion 組件提供互動式展開/收合功能
  * - 每個裝備項目都有獨立的觸發區域
  * - 支援標籤顯示，方便分類和篩選
+ * - 可根據旅程標題過濾相關裝備
  * 
+ * @param tripTitle - 可選的旅程標題，如果提供則只顯示與該旅程相關的裝備
  * @returns JSX.Element - 渲染按類別分組的裝備清單手風琴組件
  */
-const EquimentCard = () => {
-  // 將裝備資料按照 category 分組
-  const groupedEquipment = equipmentData.reduce((groups, equipment) => {
+const EquimentCard = ({ tripTitle }: EquimentCardProps) => {
+  // 根據旅程標題過濾裝備資料（如果有提供 tripTitle）
+  const filteredEquipment = tripTitle 
+    ? equipmentData.filter(equipment => 
+        equipment.trips && equipment.trips.includes(tripTitle)
+      )
+    : equipmentData;
+
+  // 將過濾後的裝備資料按照 category 分組
+  const groupedEquipment = filteredEquipment.reduce((groups, equipment) => {
     const category = equipment.category;
     if (!groups[category]) {
       groups[category] = [];
@@ -40,7 +53,7 @@ const EquimentCard = () => {
       {Object.entries(groupedEquipment).map(([category, equipmentList]) => (
         <div key={category} className="space-y-3">
           {/* 分類標題 */}
-          <h3 className="text-xl font-bold text-gray-800 border-b-2 border-green-700 pb-2">
+          <h3 className="text-xl font-bold text-gray-800 border-b-2 border-green-700 pb-2 text-left">
             {category}
           </h3>
           
@@ -50,7 +63,7 @@ const EquimentCard = () => {
               <AccordionItem 
                 key={equipment.name} 
                 value={`${category}-${index}`} 
-                className="border rounded-lg bg-gray-50 mb-2"
+                className="border rounded-lg bg-white mb-2"
               >
                 {/* 手風琴觸發器 - 點擊此區域可展開/收合內容 */}
                 <AccordionTrigger className="px-4 py-3 hover:no-underline">
@@ -72,7 +85,7 @@ const EquimentCard = () => {
                         {equipment.name}
                       </h4>
                       {/* 品牌名稱 - 使用紫色突出顯示 */}
-                      <p className="text-purple-600 font-medium text-sm">
+                      <p className="text-gray-600 font-medium text-sm">
                         {equipment.brand}
                       </p>
                     </div>
