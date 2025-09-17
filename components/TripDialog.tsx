@@ -11,6 +11,7 @@ import { LocationIcon } from "@/components/icons/LocationIcon";
 import { CalendarIcon } from "@/components/icons/CalendarIcon";
 import { Trip } from "@/types/trip";
 import { cn } from "@/lib/utils";
+import EquimentCard from "./EquimentCard";
 
 interface TripDialogProps {
   trip: Trip;
@@ -90,10 +91,13 @@ const TripDialog = ({ trip, trigger, className }: TripDialogProps) => {
               <div className="text-gray-600 leading-relaxed whitespace-pre-line">
                 {trip.description}
               </div>
-              <h3 className="text-xl font-semibold">使用裝備</h3>
-              
             </div>
           )}
+          {/* 使用裝備區域 */}
+          <div className="space-y-3">
+           <h3 className="text-2xl font-semibold">使用裝備:</h3>
+          <EquimentCard />
+          </div>
 
         </div>
       </DialogContent>
