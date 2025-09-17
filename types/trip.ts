@@ -6,6 +6,10 @@ export interface Trip {
   location: string;
   duration: string;
   tags: string[];
+  // 可選的詳細資訊欄位
+  description?: string;
+  equipment?: string[];
+  
 }
 
 export interface TripCardProps {

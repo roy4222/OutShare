@@ -1,9 +1,11 @@
 "use client";
 
 import TripCard from "@/components/TripCard";
+import TripDialog from "@/components/TripDialog";
 import ProfileBlock from "@/components/profileBlock";
 import TripsToogleGroup from "@/components/TripsToogleGroup";
 import { tripsData } from "@/data/trips";
+import EquimentCard from "@/components/EquimentCard";
 
 export default function HomePage() {
   return (
@@ -18,7 +20,14 @@ export default function HomePage() {
             <div className="w-full space-y-4 px-4">
               {tripsData.map((trip) => (
                 <div key={trip.id} className="flex justify-center">
-                  <TripCard trip={trip} />
+                  <TripDialog 
+                    trip={trip} 
+                    trigger={
+                      <button>
+                        <TripCard trip={trip} />
+                      </button>
+                    }
+                  />
                 </div>
               ))}
             </div>
@@ -27,8 +36,7 @@ export default function HomePage() {
           gearContent={
             <div className="w-full flex items-center justify-center">
               <div className="p-4 text-center">
-                <h2 className="text-xl font-semibold">Gear Section</h2>
-                <p>這裡可以顯示裝備相關內容</p>
+                <EquimentCard />
               </div>
             </div>
           }

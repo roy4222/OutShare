@@ -15,12 +15,14 @@ import { cn } from "@/lib/utils";
 /**
  * 旅程卡片組件
  * 
- * 用於顯示單個旅程的詳細資訊，包含：
+ * 用於顯示單個旅程的基本資訊，包含：
  * - 旅程封面圖片
  * - 旅程標題
  * - 地點資訊（配合位置圖標）
  * - 旅程時長（配合日曆圖標）
  * - 相關標籤
+ * 
+ * 這個組件專注於展示功能，可以作為觸發器被包裝在其他交互組件中
  * 
  * @param trip - 旅程資料物件，包含 id、title、image、location、duration、tags 等屬性
  * @param className - 可選的額外 CSS 類名，用於自定義樣式
@@ -28,7 +30,7 @@ import { cn } from "@/lib/utils";
  */
 const TripCard = ({ trip, className }: TripCardProps) => {
   return (
-    <Card className={cn("w-100", className)}>
+    <Card className={cn("w-100 cursor-pointer hover:shadow-lg transition-shadow duration-200", className)}>
       <div className="relative w-full h-64">
         <Image 
           src={trip.image}     // 旅程封面圖片路徑

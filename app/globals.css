@@ -96,3 +96,17 @@
     --radius-xl: calc(var(--radius) + 4px);
   }
 }
+
+/* 隱藏滾動條的工具類 */
+@layer utilities {
+  .scrollbar-hide {
+    /* Firefox */
+    scrollbar-width: none;
+    /* Safari and Chrome */
+    -ms-overflow-style: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
