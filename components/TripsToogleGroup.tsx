@@ -46,8 +46,8 @@ const TripsToogleGroup = ({ tripsContent, gearContent }: TripsToogleGroupProps) 
           value={selectedTab} // 綁定當前選中的標籤
           onValueChange={handleTabChange} // 標籤切換時的回調函數
         >
-          <ToggleGroupItem value="trips">Trips</ToggleGroupItem>
-          <ToggleGroupItem value="gear">Gear</ToggleGroupItem>
+          <ToggleGroupItem value="trips">我的旅程</ToggleGroupItem>
+          <ToggleGroupItem value="gear">我的裝備</ToggleGroupItem>
         </ToggleGroup>
       </div>
       
