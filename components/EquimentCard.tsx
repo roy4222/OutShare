@@ -7,6 +7,7 @@ import {
     AccordionItem,
     AccordionTrigger,
   } from "@/components/ui/accordion"
+import { ExternalLinkIcon } from "@/components/icons/ExternalLinkIcon";
 
 interface EquimentCardProps {
   tripTitle?: string; // 可選的旅程標題，用於過濾裝備
@@ -63,8 +64,22 @@ const EquimentCard = ({ tripTitle }: EquimentCardProps) => {
               <AccordionItem 
                 key={equipment.name} 
                 value={`${category}-${index}`} 
-                className="rounded-lg bg-white mb-2"
+                className="rounded-lg bg-white mb-2 relative"
               >
+                {/* 購買連結圖標 - 只有當裝備有購買連結時才顯示在右上角 */}
+                {equipment.buy_link && (
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      window.open(equipment.buy_link, '_blank');
+                    }}
+                    className="absolute top-2 right-2 z-10 p-1 rounded-full bg-white hover:text-green-500"
+                    title="購買商品"
+                  >
+                    <ExternalLinkIcon />
+                  </button>
+                )}
                 {/* 手風琴觸發器 - 點擊此區域可展開/收合內容 */}
                 <AccordionTrigger className="px-4 py-3 hover:no-underline">
                   <div className="flex items-center w-full gap-4">
