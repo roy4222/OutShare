@@ -8,6 +8,8 @@ import {
     AccordionTrigger,
   } from "@/components/ui/accordion"
 import { ExternalLinkIcon } from "@/components/icons/ExternalLinkIcon";
+import { WeightIcon } from "@/components/icons/WeightIcon";
+import { PriceIcon } from "@/components/icons/PriceIcon";
 
 interface EquimentCardProps {
   tripTitle?: string; // 可選的旅程標題，用於過濾裝備
@@ -111,9 +113,18 @@ const EquimentCard = ({ tripTitle }: EquimentCardProps) => {
                 <AccordionContent className="px-4 pb-4">
                   <div className="pt-2 space-y-3">
                     {/* 詳細規格資訊 - 重量和價格 */}
-                    <div className="flex items-center gap-4 text-sm text-gray-600">
-                      <span className="font-medium">重量: {equipment.weight}g</span>
-                      <span className="font-medium">價格: {equipment.price} NTD</span>
+                    <div className="space-y-2">
+                      {/* 重量資訊 */}
+                      <div className="flex items-center gap-3 text-base">
+                        <WeightIcon />
+                        <span className="font-medium"> 重量：{equipment.weight}g</span>
+                      </div>
+                      
+                      {/* 價格資訊 */}
+                      <div className="flex items-center gap-3 text-base">
+                        <PriceIcon />
+                        <span className="font-medium"> 價格：{equipment.price.toLocaleString()} NTD</span>
+                      </div>
                     </div>
                     {/* 標籤區域 - 只有當裝備有標籤時才顯示 */}
                     {equipment.tags && equipment.tags.length > 0 && (
