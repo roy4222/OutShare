@@ -41,7 +41,7 @@ const TripCard = ({ trip, className }: TripCardProps) => {
     >
       <div className="relative w-full h-64">
         <Image
-          src={trip.image} // 旅程封面圖片路徑
+          src={trip.image[0]} // 旅程封面圖片路徑
           alt={trip.alt} // 圖片替代文字，提升無障礙性
           fill // 填滿父容器
           className="object-cover" // 保持圖片比例並裁切以填滿容器

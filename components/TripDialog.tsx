@@ -60,7 +60,7 @@ const TripDialog = ({ trip, trigger, className }: TripDialogProps) => {
           {/* 大尺寸圖片 */}
           <div className="relative w-full h-80 rounded-lg overflow-hidden">
             <Image
-              src={trip.image}
+              src={trip.image[0]}
               alt={trip.alt}
               fill
               className="object-cover"
