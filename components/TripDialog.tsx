@@ -9,8 +9,10 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { LocationIcon } from "@/components/icons/LocationIcon";
 import { CalendarIcon } from "@/components/icons/CalendarIcon";
+import { WeightIcon } from "@/components/icons/WeightIcon";
+import { PriceIcon } from "@/components/icons/PriceIcon";
 import { Trip } from "@/types/trip";
-import { cn } from "@/lib/utils";
+import { cn, calculateTripEquipmentTotals } from "@/lib/utils";
 import EquimentCard from "./EquimentCard";
 
 interface TripDialogProps {
@@ -35,6 +37,9 @@ interface TripDialogProps {
  * @returns JSX.Element - 渲染的旅程詳細資訊彈窗
  */
 const TripDialog = ({ trip, trigger, className }: TripDialogProps) => {
+  // 計算該旅程相關裝備的總重量和總價格
+  const { totalWeight, totalPrice } = calculateTripEquipmentTotals(trip.title);
+
   return (
     <Dialog>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
@@ -88,6 +93,18 @@ const TripDialog = ({ trip, trigger, className }: TripDialogProps) => {
             <div className="flex items-center gap-3 text-base">
               <CalendarIcon />
               <span className="font-medium"> 日期：{trip.duration}</span>
+            </div>
+
+            {/* 總重量資訊 */}
+            <div className="flex items-center gap-3 text-base">
+              <WeightIcon />
+              <span className="font-medium"> 總重量：{totalWeight.toFixed(2)} kg</span>
+            </div>
+
+            {/* 總價格資訊 */}
+            <div className="flex items-center gap-3 text-base">
+              <PriceIcon />
+              <span className="font-medium"> 總價格：{totalPrice.toLocaleString()} NTD</span>
             </div>
           </div>
 

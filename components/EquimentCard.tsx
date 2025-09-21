@@ -100,7 +100,7 @@ const EquimentCard = ({ tripTitle }: EquimentCardProps) => {
                   <div className="pt-2 space-y-3">
                     {/* 詳細規格資訊 - 重量和價格 */}
                     <div className="flex items-center gap-4 text-sm text-gray-600">
-                      <span className="font-medium">重量: {equipment.weight}</span>
+                      <span className="font-medium">重量: {equipment.weight}g</span>
                       <span className="font-medium">價格: {equipment.price} NTD</span>
                     </div>
                     {/* 標籤區域 - 只有當裝備有標籤時才顯示 */}

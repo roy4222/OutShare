@@ -1,8 +1,8 @@
 export interface Equipment {
   name: string;
   brand: string;
-  weight: string;
-  price: string;
+  weight: number;
+  price: number;
   tags?: string[];
   buy_link?: string;
   image?: string;
