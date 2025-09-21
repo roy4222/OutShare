@@ -35,7 +35,7 @@ export default function HomePage() {
           //Gear 標籤頁內容：顯示裝備相關內容
           gearContent={
             <div className="w-full space-y-4 px-4">
-              <div className="py-4 flex justify-center">
+              <div className="flex justify-center">
                 <div className="w-100">
                   <EquimentCard />
                 </div>

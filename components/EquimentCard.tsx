@@ -68,17 +68,14 @@ const EquimentCard = ({ tripTitle }: EquimentCardProps) => {
               >
                 {/* 購買連結圖標 - 只有當裝備有購買連結時才顯示在右上角 */}
                 {equipment.buy_link && (
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      window.open(equipment.buy_link, '_blank');
-                    }}
-                    className="absolute top-2 right-2 z-10 p-1 rounded-full bg-white hover:text-green-500"
+                  <a
+                    href={equipment.buy_link} 
+                    target='_blank'
+                    className="absolute top-2 right-2 z-10 p-1 rounded-full bg-white hover:text-green-200"
                     title="購買商品"
                   >
                     <ExternalLinkIcon />
-                  </button>
+                  </a>
                 )}
                 {/* 手風琴觸發器 - 點擊此區域可展開/收合內容 */}
                 <AccordionTrigger className="px-4 py-3 hover:no-underline">
