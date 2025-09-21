@@ -14,6 +14,11 @@ import { PriceIcon } from "@/components/icons/PriceIcon";
 import { Trip } from "@/types/trip";
 import { cn, calculateTripEquipmentTotals } from "@/lib/utils";
 import EquimentCard from "./EquimentCard";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination, Navigation, Scrollbar, A11y } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
 
 interface TripDialogProps {
   trip: Trip;
@@ -55,31 +60,41 @@ const TripDialog = ({ trip, trigger, className }: TripDialogProps) => {
         </DialogHeader>
 
         
-
-        <div className="space-y-6">
-          {/* 大尺寸圖片 */}
-          <div className="relative w-full h-80 rounded-lg overflow-hidden">
-            <Image
-              src={trip.image[0]}
-              alt={trip.alt}
-              fill
-              className="object-cover"
-              priority
-            />
+          <div className="space-y-6">
+            <div className="relative w-100 h-80 rounded-lg overflow-hidden">
+            <Swiper
+              // install Swiper modules
+              modules={[Navigation, Pagination, Scrollbar, A11y]}
+              spaceBetween={10}
+              pagination={{ clickable: true }}
+              scrollbar={{ draggable: true }}
+              className="h-full"
+            >
+              {trip.image.map((imageUrl, index) => (
+                <SwiperSlide key={index} className="relative">
+                  <Image
+                    src={imageUrl}
+                    alt={`${trip.alt} - 圖片 ${index + 1}`}
+                    fill
+                    className="object-cover"
+                  />
+                </SwiperSlide>
+              ))}
+            </Swiper>
           </div>
 
-           {/* 標籤區域 */}
-           <div className="flex items-center gap-2 flex-wrap">
-              {trip.tags.map((tag, index) => (
-                <Badge
-                  key={index}
-                  variant="default"
-                  className="text-sm px-3 py-1"
-                >
-                  {tag}
-                </Badge>
-              ))}
-            </div>
+          {/* 標籤區域 */}
+          <div className="flex items-center gap-2 flex-wrap">
+            {trip.tags.map((tag, index) => (
+              <Badge
+                key={index}
+                variant="default"
+                className="text-sm px-3 py-1"
+              >
+                {tag}
+              </Badge>
+            ))}
+          </div>
 
           {/* 基本資訊 */}
           <div className="space-y-4">
@@ -98,17 +113,21 @@ const TripDialog = ({ trip, trigger, className }: TripDialogProps) => {
             {/* 總重量資訊 */}
             <div className="flex items-center gap-3 text-base">
               <WeightIcon />
-              <span className="font-medium"> 總重量：{totalWeight.toFixed(2)} kg</span>
+              <span className="font-medium">
+                {" "}
+                總重量：{totalWeight.toFixed(2)} kg
+              </span>
             </div>
 
             {/* 總價格資訊 */}
             <div className="flex items-center gap-3 text-base">
               <PriceIcon />
-              <span className="font-medium"> 總價格：{totalPrice.toLocaleString()} NTD</span>
+              <span className="font-medium">
+                {" "}
+                總價格：{totalPrice.toLocaleString()} NTD
+              </span>
             </div>
           </div>
-
-         
 
           {/* 詳細描述區域 */}
           {trip.description && (
