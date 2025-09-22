@@ -110,3 +110,19 @@
     display: none;
   }
 }
+
+/* Swiper pagination 自定義樣式 */
+@layer components {
+  .trip-dialog-swiper .swiper-pagination-bullet-active {
+    background-color: rgb(21, 128, 61) !important; /* green-700 */
+  }
+  
+  .trip-dialog-swiper .swiper-pagination-bullet {
+    opacity: 0.7;
+    transition: all 0.3s ease;
+  }
+  
+  .trip-dialog-swiper .swiper-pagination-bullet:hover {
+    opacity: 1;
+  }
+}

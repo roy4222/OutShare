@@ -61,14 +61,14 @@ const TripDialog = ({ trip, trigger, className }: TripDialogProps) => {
 
         
           <div className="space-y-6">
-            <div className="relative w-100 h-80 rounded-lg overflow-hidden">
+            <div className="relative w-130 h-80 rounded-lg overflow-hidden">
             <Swiper
               // install Swiper modules
               modules={[Navigation, Pagination, Scrollbar, A11y]}
               spaceBetween={10}
               pagination={{ clickable: true }}
               scrollbar={{ draggable: true }}
-              className="h-full"
+              className="h-full trip-dialog-swiper"
             >
               {trip.image.map((imageUrl, index) => (
                 <SwiperSlide key={index} className="relative">
