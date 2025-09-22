@@ -56,12 +56,12 @@ const TripDialog = ({ trip, trigger, className }: TripDialogProps) => {
         )}
       >
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold">{trip.title}</DialogTitle>
+          <DialogTitle className="text-2xl font-bold text-left">{trip.title}</DialogTitle>
         </DialogHeader>
 
         
           <div className="space-y-6">
-            <div className="relative w-130 h-80 rounded-lg overflow-hidden">
+            <div className="relative w-80 md:w-130 h-64 md:h-80 rounded-lg overflow-hidden">
             <Swiper
               // install Swiper modules
               modules={[Navigation, Pagination, Scrollbar, A11y]}

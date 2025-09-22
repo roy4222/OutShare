@@ -23,7 +23,7 @@ export default function HomePage() {
                   <TripDialog 
                     trip={trip} 
                     trigger={
-                      <button>
+                      <button className="px-4">
                         <TripCard trip={trip} />
                       </button>
                     }
