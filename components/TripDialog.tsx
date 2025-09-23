@@ -56,7 +56,7 @@ const TripDialog = ({ trip, trigger, className }: TripDialogProps) => {
         )}
       >
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-left">{trip.title}</DialogTitle>
+          <DialogTitle className="text-xl md:text-2xl font-bold text-left">{trip.title}</DialogTitle>
         </DialogHeader>
 
         
@@ -83,18 +83,6 @@ const TripDialog = ({ trip, trigger, className }: TripDialogProps) => {
             </Swiper>
           </div>
 
-          {/* 標籤區域 */}
-          <div className="flex items-center gap-2 flex-wrap">
-            {trip.tags.map((tag, index) => (
-              <Badge
-                key={index}
-                variant="default"
-                className="text-sm px-3 py-1"
-              >
-                {tag}
-              </Badge>
-            ))}
-          </div>
 
           {/* 基本資訊 */}
           <div className="space-y-4">
@@ -127,6 +115,19 @@ const TripDialog = ({ trip, trigger, className }: TripDialogProps) => {
                 總價格：{totalPrice.toLocaleString()} NTD
               </span>
             </div>
+          </div>
+
+          {/* 標籤區域 */}
+          <div className="flex items-center gap-2 flex-wrap">
+            {trip.tags.map((tag, index) => (
+              <Badge
+                key={index}
+                variant="default"
+                className="text-sm px-3 py-1"
+              >
+                {tag}
+              </Badge>
+            ))}
           </div>
 
           {/* 詳細描述區域 */}

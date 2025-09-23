@@ -95,7 +95,7 @@ const EquimentCard = ({ tripTitle }: EquimentCardProps) => {
                     {/* 裝備基本資訊區域 */}
                     <div className="flex-1 text-left">
                       {/* 裝備名稱 */}
-                      <h4 className="font-semibold text-gray-900 text-lg">
+                      <h4 className="font-semibold text-gray-900 text-md">
                         {equipment.name}
                       </h4>
                       {/* 品牌名稱 - 使用紫色突出顯示 */}
@@ -111,13 +111,13 @@ const EquimentCard = ({ tripTitle }: EquimentCardProps) => {
                     {/* 詳細規格資訊 - 重量和價格 */}
                     <div className="space-y-2">
                       {/* 重量資訊 */}
-                      <div className="flex items-center gap-3 text-base">
+                      <div className="flex items-center gap-3">
                         <WeightIcon />
                         <span className="font-medium"> 重量：{equipment.weight}g</span>
                       </div>
                       
                       {/* 價格資訊 */}
-                      <div className="flex items-center gap-3 text-base">
+                      <div className="flex items-center gap-3">
                         <PriceIcon />
                         <span className="font-medium"> 價格：{equipment.price.toLocaleString()} NTD</span>
                       </div>
