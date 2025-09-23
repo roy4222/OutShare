@@ -46,7 +46,7 @@ export const tripsData: Trip[] = [
   {
     id: "Bikepacking_Huayan_Mountain_Foot",
     title: "Bikpacking - 火炎山山腳 2 天 1 夜",
-    image: ["/Bikepacking_Huayan_Mountain_Foot.jpg"],
+    image: ["/S__40583178_0.webp","/S__40583180_0.webp","/S__40583181_0.webp"],
     alt: "Bikpacking - 火炎山山腳 2 天 1 夜",
     location: "火炎山山腳",
     duration: "2天",
