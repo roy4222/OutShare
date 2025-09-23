@@ -103,10 +103,6 @@ const EquimentCard = ({ tripTitle }: EquimentCardProps) => {
                         {equipment.brand}
                       </p>
                     </div>
-                    {/* 價格顯示區域 - 靠右對齊 */}
-                    <div className="text-right">
-                      <span className="text-sm font-medium text-gray-600">{equipment.price} NTD</span>
-                    </div>
                   </div>
                 </AccordionTrigger>
                 {/* 手風琴內容區域 - 展開時顯示的詳細資訊 */}
