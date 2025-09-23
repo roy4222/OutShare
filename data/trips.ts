@@ -4,7 +4,7 @@ export const tripsData: Trip[] = [
   {
     id: "Kumano_Kodo",
     title: "日本熊野古道 4 天 3 夜",
-    image: ["/S__40583178_0.webp","/S__40583180_0.webp","/S__40583181_0.webp"],
+    image: ["/_R812133.webp","/_R812134.JPG.webp","/_R812136.JPG.webp","/_R812137.JPG.webp","/_R812139.JPG.webp"],
     alt: "日本熊野古道 4 天 3 夜",
     location: "中邊路",
     duration: "4天",
