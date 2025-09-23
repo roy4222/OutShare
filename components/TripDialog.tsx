@@ -56,7 +56,7 @@ const TripDialog = ({ trip, trigger, className }: TripDialogProps) => {
         )}
       >
         <DialogHeader>
-          <DialogTitle className="text-xl md:text-2xl font-bold text-left">{trip.title}</DialogTitle>
+          <DialogTitle className="text-xl md:text-xl font-bold text-left">{trip.title}</DialogTitle>
         </DialogHeader>
 
         
