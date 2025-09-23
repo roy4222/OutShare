@@ -28,7 +28,7 @@ export const tripsData: Trip[] = [
   {
     id: "Jiali_Mountain_Fengmei_Stream",
     title: "加里山風美溪 3 天 2 夜",
-    image: ["/Jiali_Mountain_Fengmei_Stream.jpg"],
+    image: ["/_R812550.JPG.webp","/_R812560.JPG 的副本.webp","/_R812576.JPG 的副本.webp","/_R812587.JPG 的副本.webp"],
     alt: "加里山風美溪 3 天 2 夜",
     location: "加里山風美溪",
     duration: "3天",
