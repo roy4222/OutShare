@@ -37,7 +37,7 @@ export const tripsData: Trip[] = [
   {
     id: "Bikepacking_Tonghou_Forest_Road",
     title: "Bikpacking - 桶后林道 2 天 1 夜",
-    image: ["/Bikepacking_Tonghou_Forest_Road.jpg"],
+    image: ["/_R812632.JPG 的副本.webp","/_R812646.JPG 的副本.webp","/_R812650.JPG 的副本.webp","/_R812677.JPG 的副本.webp","/_R812678.JPG 的副本.webp"],
     alt: "Bikpacking - 桶后林道 2 天 1 夜",
     location: "桶后林道",
     duration: "2天",
