@@ -4,7 +4,6 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-  CardFooter,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { LocationIcon } from "@/components/icons/LocationIcon";
@@ -77,10 +76,7 @@ const TripCard = ({ trip, className }: TripCardProps) => {
           <PriceIcon />
           總價格：{totalPrice.toLocaleString()} NTD
         </CardDescription>
-      </CardHeader>
-
-      {/* 卡片底部區域 - 顯示標籤 */}
-      <CardFooter>
+        <CardDescription className="flex items-center gap-2">
         {/* 標籤容器 - 使用 flex-wrap 讓標籤可以換行顯示 */}
         <div className="flex items-center gap-1 pb-4 flex-wrap">
           {/* 遍歷旅程標籤陣列，為每個標籤建立一個 Badge 組件 */}
@@ -88,7 +84,9 @@ const TripCard = ({ trip, className }: TripCardProps) => {
             <Badge key={index}>{tag}</Badge>
           ))}
         </div>
-      </CardFooter>
+        </CardDescription>
+      </CardHeader>
+
     </Card>
   );
 };
