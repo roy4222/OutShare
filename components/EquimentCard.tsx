@@ -68,17 +68,7 @@ const EquimentCard = ({ tripTitle }: EquimentCardProps) => {
                 value={`${category}-${index}`} 
                 className="rounded-lg bg-white mb-2 relative"
               >
-                {/* 購買連結圖標 - 只有當裝備有購買連結時才顯示在右上角 */}
-                {equipment.buy_link && (
-                  <a
-                    href={equipment.buy_link} 
-                    target='_blank'
-                    className="absolute top-2 right-2 z-10 p-1 rounded-full bg-white hover:text-green-200"
-                    title="購買商品"
-                  >
-                    <ExternalLinkIcon />
-                  </a>
-                )}
+                
                 {/* 手風琴觸發器 - 點擊此區域可展開/收合內容 */}
                 <AccordionTrigger className="px-4 py-3 hover:no-underline">
                   <div className="flex items-center w-full gap-4">
@@ -94,14 +84,29 @@ const EquimentCard = ({ tripTitle }: EquimentCardProps) => {
                     </div>
                     {/* 裝備基本資訊區域 */}
                     <div className="flex-1 text-left">
-                      {/* 裝備名稱 */}
-                      <h4 className="font-semibold text-gray-900 text-md">
-                        {equipment.name}
-                      </h4>
+                      {/* 裝備名稱和購買連結區域 */}
+                      <div className="flex items-center">
+                        {/* 裝備名稱 */}
+                        <h4 className="font-semibold text-gray-900 text-md">
+                          {equipment.name}
+                        </h4>
+                        {/* 購買連結圖標 - 只有當裝備有購買連結時才顯示 */}
+                        {equipment.buy_link && (
+                          <a
+                            href={equipment.buy_link} 
+                            target='_blank'
+                            className="px-2 rounded-full bg-white hover:text-green-200"
+                            title="購買商品"
+                          >
+                            <ExternalLinkIcon />
+                          </a>
+                        )}
+                      </div>
                       {/* 品牌名稱 - 使用紫色突出顯示 */}
                       <p className="text-gray-600 font-medium text-sm">
                         {equipment.brand}
                       </p>
+                      
                     </div>
                   </div>
                 </AccordionTrigger>
