@@ -60,7 +60,7 @@ function ToggleGroupItem({
           variant: context.variant || variant,
           size: context.size || size,
         }),
-        "min-w-50 min-h-12 shrink-0 shadow-none focus:z-10 focus-visible:z-10 rounded-lg",
+        "min-w-40 md:min-w-50 min-h-12 shrink-0 shadow-none focus:z-10 focus-visible:z-10 rounded-lg",
         className
       )}
       {...props}
