@@ -34,7 +34,7 @@ const TripCard = ({ trip, className }: TripCardProps) => {
   return (
     <Card
       className={cn(
-        "w-90 md:w-100 cursor-pointer hover:shadow-lg transition-shadow duration-200 ",
+        "w-80 md:w-100 cursor-pointer hover:shadow-lg transition-shadow duration-200 ",
         className
       )}
     >

@@ -36,7 +36,7 @@ export default function HomePage() {
           gearContent={
             <div className="w-full space-y-4 px-4">
               <div className="flex justify-center">
-                <div className="w-100">
+                <div className="w-80 md:w-100">
                   <EquimentCard />
                 </div>
               </div>
