@@ -87,7 +87,7 @@ const EquimentCard = ({ tripTitle }: EquimentCardProps) => {
                       {/* 裝備名稱和購買連結區域 */}
                       <div className="flex items-center">
                         {/* 裝備名稱 */}
-                        <h4 className="font-semibold text-gray-900 text-md">
+                        <h4 className="font-semibold text-gray-900 text-xs md:text-md">
                           {equipment.name}
                         </h4>
                         {/* 購買連結圖標 - 只有當裝備有購買連結時才顯示 */}
@@ -95,7 +95,7 @@ const EquimentCard = ({ tripTitle }: EquimentCardProps) => {
                           <a
                             href={equipment.buy_link} 
                             target='_blank'
-                            className="px-2 rounded-full bg-white hover:text-green-200"
+                            className="px-1 md:px-2 rounded-full bg-white hover:text-green-200"
                             title="購買商品"
                           >
                             <ExternalLinkIcon />
@@ -103,7 +103,7 @@ const EquimentCard = ({ tripTitle }: EquimentCardProps) => {
                         )}
                       </div>
                       {/* 品牌名稱 - 使用紫色突出顯示 */}
-                      <p className="text-gray-600 font-medium text-sm">
+                      <p className="text-gray-600 font-medium text-xs md:text-md">
                         {equipment.brand}
                       </p>
                       
