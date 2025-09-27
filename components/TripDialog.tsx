@@ -13,7 +13,10 @@ import { PriceIcon } from "@/components/icons/PriceIcon";
 import { Trip } from "@/types/trip";
 import { cn, calculateTripEquipmentTotals } from "@/lib/utils";
 import EquimentCard from "./EquimentCard";
-import SwiperCarousel from "./SwiperCarousel";
+import SwiperCarousel, { type SwiperCarouselRef } from "./SwiperCarousel";
+import SwiperPagination, { type SwiperPaginationRef } from "./ui/swiper-pagination";
+import { useRef } from "react";
+import type { Swiper as SwiperType } from "swiper";
 
 interface TripDialogProps {
   trip: Trip;
@@ -39,6 +42,25 @@ interface TripDialogProps {
 const TripDialog = ({ trip, trigger, className }: TripDialogProps) => {
   // 計算該旅程相關裝備的總重量和總價格
   const { totalWeight, totalPrice } = calculateTripEquipmentTotals(trip.title);
+  
+  // Swiper 和 Pagination 的 refs
+  const swiperRef = useRef<SwiperCarouselRef>(null);
+  const paginationRef = useRef<SwiperPaginationRef>(null);
+
+  const handleSlideChange = (swiper: SwiperType) => {
+    if (paginationRef.current) {
+      paginationRef.current.update(swiper.activeIndex);
+    }
+  };
+
+  const handlePaginationClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    const target = event.target as HTMLElement;
+    const index = target.getAttribute('data-index');
+    
+    if (index && swiperRef.current) {
+      swiperRef.current.slideTo(parseInt(index));
+    }
+  };
 
   return (
     <Dialog>
@@ -55,14 +77,28 @@ const TripDialog = ({ trip, trigger, className }: TripDialogProps) => {
         </DialogHeader>
 
         
-          <div className="space-y-6">
-            <div className="relative w-80 md:w-130 h-64 md:h-80">
-              <SwiperCarousel 
-                images={trip.image} 
-                alt={trip.alt} 
-                className="trip-dialog-swiper"
-              />
-            </div>
+          <div className="space-y-2">
+            
+              <div className="relative w-80 md:w-130 h-64 md:h-80">
+                <SwiperCarousel 
+                  ref={swiperRef}
+                  images={trip.image} 
+                  alt={trip.alt} 
+                  className="trip-dialog-swiper"
+                  onSlideChange={handleSlideChange}
+                />
+              </div>
+              
+              {/* 獨立的 Pagination */}
+              <div onClick={handlePaginationClick} className="flex justify-center">
+                <SwiperPagination
+                  ref={paginationRef}
+                  totalSlides={trip.image.length}
+                  clickable={true}
+                  className=""
+                />
+              </div>
+           
 
 
           {/* 基本資訊 */}

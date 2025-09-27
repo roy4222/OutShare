@@ -1,9 +1,8 @@
 import Image from "next/image";
-import { useRef } from "react";
+import { useRef, forwardRef, useImperativeHandle } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Scrollbar, A11y } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
-import SwiperPagination, { type SwiperPaginationRef } from "./ui/swiper-pagination";
 import "swiper/css";
 import "swiper/css/navigation";
 
@@ -11,44 +10,50 @@ interface SwiperCarouselProps {
   images: string[];
   alt: string;
   className?: string;
+  onSlideChange?: (swiper: SwiperType) => void;
+}
+
+export interface SwiperCarouselRef {
+  swiper: SwiperType | null;
+  slideTo: (index: number) => void;
 }
 
 /**
  * Swiper 輪播圖元件
  * 
  * 用於顯示多張圖片的輪播效果，支援：
- * - 獨立的分頁指示器元件
  * - 滾動條
  * - 響應式設計
- * - 使用 useRef 控制分頁狀態
+ * - 通過 ref 暴露 swiper 實例控制
+ * - 外部 pagination 控制
  * 
  * @param images - 圖片 URL 陣列
  * @param alt - 圖片替代文字的前綴
  * @param className - 可選的額外 CSS 類名
+ * @param onSlideChange - 投影片變更時的回調函數
  * @returns JSX.Element - 渲染的 Swiper 輪播元件
  */
-const SwiperCarousel = ({ images, alt, className }: SwiperCarouselProps) => {
-  const swiperRef = useRef<SwiperType | null>(null);
-  const paginationRef = useRef<SwiperPaginationRef>(null);
+const SwiperCarousel = forwardRef<SwiperCarouselRef, SwiperCarouselProps>(
+  ({ images, alt, className, onSlideChange }, ref) => {
+    const swiperRef = useRef<SwiperType | null>(null);
 
-  const handleSlideChange = (swiper: SwiperType) => {
-    if (paginationRef.current) {
-      paginationRef.current.update(swiper.activeIndex);
-    }
-  };
+    useImperativeHandle(ref, () => ({
+      swiper: swiperRef.current,
+      slideTo: (index: number) => {
+        if (swiperRef.current) {
+          swiperRef.current.slideTo(index);
+        }
+      }
+    }), []);
 
-  const handlePaginationClick = (event: React.MouseEvent<HTMLDivElement>) => {
-    const target = event.target as HTMLElement;
-    const index = target.getAttribute('data-index');
-    
-    if (index && swiperRef.current) {
-      swiperRef.current.slideTo(parseInt(index));
-    }
-  };
+    const handleSlideChange = (swiper: SwiperType) => {
+      if (onSlideChange) {
+        onSlideChange(swiper);
+      }
+    };
 
-  return (
-    <div className="w-full h-full flex flex-col rounded-lg overflow-hidden">
-      <div className="flex-1 relative">
+    return (
+      <div className="w-full h-full rounded-lg overflow-hidden">
         <Swiper
           // install Swiper modules
           modules={[Navigation, Scrollbar, A11y]}
@@ -73,16 +78,10 @@ const SwiperCarousel = ({ images, alt, className }: SwiperCarouselProps) => {
           ))}
         </Swiper>
       </div>
-      
-      <div onClick={handlePaginationClick}>
-        <SwiperPagination
-          ref={paginationRef}
-          totalSlides={images.length}
-          clickable={true}
-        />
-      </div>
-    </div>
-  );
-};
+    );
+  }
+);
+
+SwiperCarousel.displayName = "SwiperCarousel";
 
 export default SwiperCarousel;
