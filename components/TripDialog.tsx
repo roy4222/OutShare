@@ -68,12 +68,12 @@ const TripDialog = ({ trip, trigger, className }: TripDialogProps) => {
 
       <DialogContent
         className={cn(
-          "sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl max-h-[90vh] overflow-y-auto scrollbar-hide",
+          "sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl max-h-[100vh] md:max-h-[90vh] overflow-y-auto scrollbar-hide",
           className
         )}
       >
         <DialogHeader>
-          <DialogTitle className="text-xl md:text-xl font-bold text-left">{trip.title}</DialogTitle>
+          <DialogTitle className="text-xl font-bold text-left">{trip.title}</DialogTitle>
         </DialogHeader>
 
         
