@@ -1,4 +1,3 @@
-import Image from "next/image";
 import {
   Dialog,
   DialogContent,
@@ -14,11 +13,7 @@ import { PriceIcon } from "@/components/icons/PriceIcon";
 import { Trip } from "@/types/trip";
 import { cn, calculateTripEquipmentTotals } from "@/lib/utils";
 import EquimentCard from "./EquimentCard";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Navigation, Scrollbar, A11y } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/pagination";
-import "swiper/css/navigation";
+import SwiperCarousel from "./SwiperCarousel";
 
 interface TripDialogProps {
   trip: Trip;
@@ -62,26 +57,12 @@ const TripDialog = ({ trip, trigger, className }: TripDialogProps) => {
         
           <div className="space-y-6">
             <div className="relative w-80 md:w-130 h-64 md:h-80 rounded-lg overflow-hidden">
-            <Swiper
-              // install Swiper modules
-              modules={[Navigation, Pagination, Scrollbar, A11y]}
-              spaceBetween={10}
-              pagination={{ clickable: true }}
-              scrollbar={{ draggable: true }}
-              className="h-full trip-dialog-swiper"
-            >
-              {trip.image.map((imageUrl, index) => (
-                <SwiperSlide key={index} className="relative">
-                  <Image
-                    src={imageUrl}
-                    alt={`${trip.alt} - 圖片 ${index + 1}`}
-                    fill
-                    className="object-cover"
-                  />
-                </SwiperSlide>
-              ))}
-            </Swiper>
-          </div>
+              <SwiperCarousel 
+                images={trip.image} 
+                alt={trip.alt} 
+                className="trip-dialog-swiper"
+              />
+            </div>
 
 
           {/* 基本資訊 */}
