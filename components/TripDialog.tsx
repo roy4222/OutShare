@@ -56,7 +56,7 @@ const TripDialog = ({ trip, trigger, className }: TripDialogProps) => {
 
         
           <div className="space-y-6">
-            <div className="relative w-80 md:w-130 h-64 md:h-80 rounded-lg overflow-hidden">
+            <div className="relative w-80 md:w-130 h-64 md:h-80">
               <SwiperCarousel 
                 images={trip.image} 
                 alt={trip.alt} 

@@ -125,4 +125,17 @@
   .trip-dialog-swiper .swiper-pagination-bullet:hover {
     opacity: 1;
   }
+
+  /* 通用 Swiper pagination 樣式 */
+  .swiper-pagination-bullet {
+    @apply w-2 h-2 bg-gray-400 rounded-full opacity-60 transition-all duration-300 ease-in-out;
+  }
+
+  .swiper-pagination-bullet-active {
+    @apply bg-green-700 opacity-100;
+  }
+
+  .swiper-pagination-bullet:hover {
+    @apply opacity-80 scale-105;
+  }
 }
