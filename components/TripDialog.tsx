@@ -73,7 +73,7 @@ const TripDialog = ({ trip, trigger, className }: TripDialogProps) => {
         )}
       >
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold text-left">{trip.title}</DialogTitle>
+          <DialogTitle className="text-xl font-bold text-left max-w-[80vw] overflow-hidden text-ellipsis whitespace-nowrap">{trip.title}</DialogTitle>
         </DialogHeader>
 
         
