@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { useRef, forwardRef, useImperativeHandle } from "react";
+import { useRef, forwardRef, useImperativeHandle, useState, useEffect, useCallback } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Scrollbar, A11y } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
@@ -36,6 +36,7 @@ export interface SwiperCarouselRef {
 const SwiperCarousel = forwardRef<SwiperCarouselRef, SwiperCarouselProps>(
   ({ images, alt, className, onSlideChange }, ref) => {
     const swiperRef = useRef<SwiperType | null>(null);
+    const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set([0])); // 預設載入第一張
 
     useImperativeHandle(ref, () => ({
       swiper: swiperRef.current,
@@ -46,7 +47,43 @@ const SwiperCarousel = forwardRef<SwiperCarouselRef, SwiperCarouselProps>(
       }
     }), []);
 
+    // 預載相鄰的圖片
+    const preloadAdjacentImages = useCallback((activeIndex: number) => {
+      setLoadedImages(prevLoadedImages => {
+        const imagesToLoad = new Set(prevLoadedImages);
+        
+        // 載入當前圖片
+        imagesToLoad.add(activeIndex);
+        
+        // 載入前一張圖片
+        if (activeIndex > 0) {
+          imagesToLoad.add(activeIndex - 1);
+        }
+        
+        // 載入下一張圖片
+        if (activeIndex < images.length - 1) {
+          imagesToLoad.add(activeIndex + 1);
+        }
+        
+        // 如果是第一張，預載下兩張圖片
+        if (activeIndex === 0 && images.length > 2) {
+          imagesToLoad.add(1);
+          imagesToLoad.add(2);
+        }
+        
+        return imagesToLoad;
+      });
+    }, [images.length]);
+
+    // 初始化時預載第一張和下一張圖片
+    useEffect(() => {
+      preloadAdjacentImages(0);
+    }, [images, preloadAdjacentImages]);
+
     const handleSlideChange = (swiper: SwiperType) => {
+      const activeIndex = swiper.activeIndex;
+      preloadAdjacentImages(activeIndex);
+      
       if (onSlideChange) {
         onSlideChange(swiper);
       }
@@ -67,13 +104,21 @@ const SwiperCarousel = forwardRef<SwiperCarouselRef, SwiperCarouselProps>(
         >
           {images.map((imageUrl, index) => (
             <SwiperSlide key={index} className="relative w-full h-full">
-              <Image
-                src={imageUrl}
-                alt={`${alt} - 圖片 ${index + 1}`}
-                fill
-                className="object-cover"
-                priority={index === 0}
-              />
+              {loadedImages.has(index) ? (
+                <Image
+                  src={imageUrl}
+                  alt={`${alt} - 圖片 ${index + 1}`}
+                  fill
+                  className="object-cover"
+                  priority={index === 0}
+                  loading={index === 0 ? "eager" : "lazy"}
+                />
+              ) : (
+                // 顯示佔位符或載入中狀態
+                <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                  <div className="text-gray-400 text-sm">載入中...</div>
+                </div>
+              )}
             </SwiperSlide>
           ))}
         </Swiper>
