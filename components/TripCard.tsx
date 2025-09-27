@@ -50,7 +50,7 @@ const TripCard = ({ trip, className }: TripCardProps) => {
       {/* 卡片標題區域 */}
       <CardHeader>
         {/* 旅程標題 */}
-        <CardTitle className="text-md">{trip.title}</CardTitle>
+        <CardTitle className="text-base">{trip.title}</CardTitle>
 
         {/* 地點資訊 - 使用 flex 佈局將圖標和文字水平排列 */}
         <CardDescription className="flex items-center gap-2">
