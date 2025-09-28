@@ -118,13 +118,13 @@ const EquimentCard = ({ tripTitle }: EquimentCardProps) => {
                       {/* 重量資訊 */}
                       <div className="flex items-center gap-3">
                         <WeightIcon />
-                        <span className="font-medium"> 重量：{equipment.weight}g</span>
+                        <span> 重量：{equipment.weight}g</span>
                       </div>
                       
                       {/* 價格資訊 */}
                       <div className="flex items-center gap-3">
                         <PriceIcon />
-                        <span className="font-medium"> 價格：{equipment.price.toLocaleString()} NTD</span>
+                        <span> 價格：{equipment.price.toLocaleString()} NTD</span>
                       </div>
                     </div>
                     {/* 標籤區域 - 只有當裝備有標籤時才顯示 */}
