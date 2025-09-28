@@ -5,7 +5,6 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { LocationIcon } from "@/components/icons/LocationIcon";
 import { CalendarIcon } from "@/components/icons/CalendarIcon";
 import { TripCardProps } from "@/types/trip";
@@ -81,7 +80,7 @@ const TripCard = ({ trip, className }: TripCardProps) => {
         <div className="flex items-center gap-1 pb-4 flex-wrap">
           {/* 遍歷旅程標籤陣列，為每個標籤建立一個 Badge 組件 */}
           {trip.tags.map((tag, index) => (
-            <Badge key={index}>{tag}</Badge>
+            <span key={index} className="text-sm text-green-800 rounded-md">{tag}</span>
           ))}
         </div>
         </CardDescription>

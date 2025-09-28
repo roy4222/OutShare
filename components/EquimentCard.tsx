@@ -1,6 +1,5 @@
 import { equipmentData } from "@/data/equiment";
 import Image from "next/image";
-import { Badge } from "@/components/ui/badge";
 import {
     Accordion,
     AccordionContent,
@@ -132,9 +131,9 @@ const EquimentCard = ({ tripTitle }: EquimentCardProps) => {
                       <div className="flex gap-1 flex-wrap">
                         {/* 遍歷裝備標籤陣列，為每個標籤建立一個 Badge 組件 */}
                         {equipment.tags.map((tag, tagIndex) => (
-                          <Badge key={tagIndex} variant="default" className="text-xs">
+                          <span key={tagIndex} className="text-sm text-green-800 rounded-md">
                             {tag}
-                          </Badge>
+                          </span>
                         ))}
                       </div>
                     )}

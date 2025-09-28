@@ -5,7 +5,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
 import { LocationIcon } from "@/components/icons/LocationIcon";
 import { CalendarIcon } from "@/components/icons/CalendarIcon";
 import { WeightIcon } from "@/components/icons/WeightIcon";
@@ -119,7 +118,7 @@ const TripDialog = ({ trip, trigger, className }: TripDialogProps) => {
               <WeightIcon />
               <span>
                 {" "}
-                總重量：{totalWeight.toFixed(2)} kg
+                {totalWeight.toFixed(2)} kg
               </span>
             </div>
 
@@ -128,21 +127,20 @@ const TripDialog = ({ trip, trigger, className }: TripDialogProps) => {
               <PriceIcon />
               <span>
                 {" "}
-                總價格：{totalPrice.toLocaleString()} NTD
+                {totalPrice.toLocaleString()} NTD
               </span>
             </div>
           </div>
 
           {/* 標籤區域 */}
-          <div className="space-y-2 flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap">
             {trip.tags.map((tag, index) => (
-              <Badge
+              <span
                 key={index}
-                variant="default"
-                className="text-sm px-3 py-1"
+                className="text-sm text-green-800 rounded-md pb-2"
               >
                 {tag}
-              </Badge>
+              </span>
             ))}
           </div>
 
