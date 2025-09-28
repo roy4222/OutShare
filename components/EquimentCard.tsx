@@ -114,17 +114,17 @@ const EquimentCard = ({ tripTitle }: EquimentCardProps) => {
                 <AccordionContent className="px-4 pb-4">
                   <div className="pt-2 space-y-3">
                     {/* 詳細規格資訊 - 重量和價格 */}
-                    <div className="space-y-2">
+                    <div className="space-y-2 gap-3">
                       {/* 重量資訊 */}
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2">
                         <WeightIcon />
-                        <span> 重量：{equipment.weight}g</span>
+                        <span> 重量：{equipment.weight} 克</span>
                       </div>
                       
                       {/* 價格資訊 */}
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2">
                         <PriceIcon />
-                        <span> 價格：{equipment.price.toLocaleString()} NTD</span>
+                        <span> 價格：{equipment.price.toLocaleString()} 元</span>
                       </div>
                     </div>
                     {/* 標籤區域 - 只有當裝備有標籤時才顯示 */}

@@ -105,13 +105,13 @@ const TripDialog = ({ trip, trigger, className }: TripDialogProps) => {
             {/* 地點資訊 */}
             <div className="flex items-center gap-3 text-base">
               <LocationIcon />
-              <span className="font-medium"> 地點：{trip.location}</span>
+              <span className="font-medium">{trip.location}</span>
             </div>
 
             {/* 時長資訊 */}
             <div className="flex items-center gap-3 text-base">
               <CalendarIcon />
-              <span className="font-medium"> 日期：{trip.duration}</span>
+              <span className="font-medium">{trip.duration}</span>
             </div>
 
             {/* 總重量資訊 */}

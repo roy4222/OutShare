@@ -7,7 +7,7 @@ export const tripsData: Trip[] = [
     image: ["/_R812133.webp","/_R812134.JPG.webp","/_R812136.JPG.webp","/_R812137.JPG.webp","/_R812139.JPG.webp"],
     alt: "日本熊野古道 4 天 3 夜",
     location: "中邊路",
-    duration: "4天",
+    duration: "4 天",
     tags: ["#熊野古道", "#朝聖之路", "#鄉間", "#輕量化", "#單人旅程"],
     description: `人生第一次去日本，選擇日本朝聖之路「熊野古道中邊路 (Kumano Kodo)」 作為日本旅行的前部曲。
 
@@ -31,7 +31,7 @@ export const tripsData: Trip[] = [
     image: ["/_R812550.JPG.webp","/_R812560.JPG 的副本.webp","/_R812576.JPG 的副本.webp","/_R812587.JPG 的副本.webp"],
     alt: "加里山風美溪 3 天 2 夜",
     location: "加里山風美溪",
-    duration: "3天",
+    duration: "3 天",
     tags: ["#野營", "#山林探險 ", "#風美溪"],
   },
   {
@@ -40,7 +40,7 @@ export const tripsData: Trip[] = [
     image: ["/_R812632.JPG 的副本.webp","/_R812646.JPG 的副本.webp","/_R812650.JPG 的副本.webp","/_R812677.JPG 的副本.webp","/_R812678.JPG 的副本.webp"],
     alt: "Bikpacking - 桶后林道 2 天 1 夜",
     location: "桶后林道",
-    duration: "2天",
+    duration: "2 天",
     tags: ["#Bikepacking", "#林道", "#輕量化", "#單人旅程"],
   },
   {
@@ -49,7 +49,7 @@ export const tripsData: Trip[] = [
     image: ["/S__40583178_0.webp","/S__40583180_0.webp","/S__40583181_0.webp"],
     alt: "Bikpacking - 火炎山山腳 2 天 1 夜",
     location: "火炎山山腳",
-    duration: "2天",
+    duration: "2 天",
     tags: ["#Bikepacking", "#輕量化"],
   },
 ];

@@ -68,13 +68,13 @@ const TripCard = ({ trip, className }: TripCardProps) => {
         <CardDescription className="flex items-center gap-2">
           {/* 總重量資訊 */}
           <WeightIcon />
-          總重量：{totalWeight.toFixed(2)} kg
+          總重量：{totalWeight.toFixed(2)} 公斤
         </CardDescription>
 
         {/* 總價格資訊 */}
         <CardDescription className="flex items-center gap-2">
           <PriceIcon />
-          總價格：{totalPrice.toLocaleString()} NTD
+          總價格：{totalPrice.toLocaleString()} 元
         </CardDescription>
         <CardDescription className="flex items-center gap-2">
         {/* 標籤容器 - 使用 flex-wrap 讓標籤可以換行顯示 */}
