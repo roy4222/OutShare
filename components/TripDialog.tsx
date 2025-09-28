@@ -78,7 +78,6 @@ const TripDialog = ({ trip, trigger, className }: TripDialogProps) => {
 
         
           <div className="space-y-2">
-            
               <div className="relative w-[88vw] lg:w-130 h-64 md:h-80">
                 <SwiperCarousel 
                   ref={swiperRef}
@@ -135,7 +134,7 @@ const TripDialog = ({ trip, trigger, className }: TripDialogProps) => {
           </div>
 
           {/* 標籤區域 */}
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap py-3">
             {trip.tags.map((tag, index) => (
               <Badge
                 key={index}
