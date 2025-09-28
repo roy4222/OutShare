@@ -111,7 +111,7 @@ const EquimentCard = ({ tripTitle }: EquimentCardProps) => {
                 </AccordionTrigger>
                 {/* 手風琴內容區域 - 展開時顯示的詳細資訊 */}
                 <AccordionContent className="px-4 pb-4">
-                  <div className="pt-2 space-y-3">
+                  <div className=" space-y-3">
                     {/* 詳細規格資訊 - 重量和價格 */}
                     <div className="space-y-2 gap-3">
                       {/* 重量資訊 */}
