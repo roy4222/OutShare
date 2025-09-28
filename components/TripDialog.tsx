@@ -134,7 +134,7 @@ const TripDialog = ({ trip, trigger, className }: TripDialogProps) => {
           </div>
 
           {/* 標籤區域 */}
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="space-y-2 flex items-center gap-2 flex-wrap">
             {trip.tags.map((tag, index) => (
               <Badge
                 key={index}

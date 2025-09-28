@@ -56,7 +56,7 @@ const EquimentCard = ({ tripTitle }: EquimentCardProps) => {
       {Object.entries(groupedEquipment).map(([category, equipmentList]) => (
         <div key={category} className="space-y-3">
           {/* 分類標題 */}
-          <h3 className="text-xl font-bold text-gray-800 border-b-2 border-green-700 pb-2 text-left">
+          <h3 className="text-lg font-bold text-gray-800 border-b-2 border-green-700 pb-2 text-left">
             {category}
           </h3>
           
@@ -118,13 +118,13 @@ const EquimentCard = ({ tripTitle }: EquimentCardProps) => {
                       {/* 重量資訊 */}
                       <div className="flex items-center gap-2">
                         <WeightIcon />
-                        <span> 重量：{equipment.weight} 克</span>
+                        <span> {equipment.weight.toLocaleString()} 公克</span>
                       </div>
                       
                       {/* 價格資訊 */}
                       <div className="flex items-center gap-2">
                         <PriceIcon />
-                        <span> 價格：{equipment.price.toLocaleString()} 元</span>
+                        <span> {equipment.price.toLocaleString()} 元</span>
                       </div>
                     </div>
                     {/* 標籤區域 - 只有當裝備有標籤時才顯示 */}
