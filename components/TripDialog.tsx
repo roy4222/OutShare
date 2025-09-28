@@ -118,7 +118,7 @@ const TripDialog = ({ trip, trigger, className }: TripDialogProps) => {
               <WeightIcon />
               <span>
                 {" "}
-                {totalWeight.toFixed(2)} kg
+                {totalWeight.toFixed(2)} 公斤
               </span>
             </div>
 
@@ -127,7 +127,7 @@ const TripDialog = ({ trip, trigger, className }: TripDialogProps) => {
               <PriceIcon />
               <span>
                 {" "}
-                {totalPrice.toLocaleString()} NTD
+                {totalPrice.toLocaleString()} 元
               </span>
             </div>
           </div>
