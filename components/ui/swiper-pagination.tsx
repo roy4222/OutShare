@@ -144,7 +144,7 @@ const SwiperPagination = forwardRef<SwiperPaginationRef, SwiperPaginationProps>(
         ref={paginationRef}
         className={cn(
           "swiper-pagination", // Swiper 預設類名
-          "flex justify-center items-center gap-2 mt-4", // Tailwind CSS 樣式：水平居中、垂直居中、間距、上邊距
+          "flex justify-center items-center gap-2 mt-1", // Tailwind CSS 樣式：水平居中、垂直居中、間距、上邊距
           className // 自訂額外類名
         )}
       />

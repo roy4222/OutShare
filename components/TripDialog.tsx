@@ -101,7 +101,7 @@ const TripDialog = ({ trip, trigger, className }: TripDialogProps) => {
 
 
           {/* 基本資訊 */}
-          <div className="space-y-4">
+          <div className="space-y-2">
             {/* 地點資訊 */}
             <div className="flex items-center gap-3 text-base">
               <LocationIcon />
@@ -134,7 +134,7 @@ const TripDialog = ({ trip, trigger, className }: TripDialogProps) => {
           </div>
 
           {/* 標籤區域 */}
-          <div className="flex items-center gap-2 flex-wrap py-3">
+          <div className="flex items-center gap-2 flex-wrap">
             {trip.tags.map((tag, index) => (
               <Badge
                 key={index}
