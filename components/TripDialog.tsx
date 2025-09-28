@@ -105,19 +105,19 @@ const TripDialog = ({ trip, trigger, className }: TripDialogProps) => {
             {/* 地點資訊 */}
             <div className="flex items-center gap-3 text-base">
               <LocationIcon />
-              <span className="font-medium">{trip.location}</span>
+              <span>{trip.location}</span>
             </div>
 
             {/* 時長資訊 */}
             <div className="flex items-center gap-3 text-base">
               <CalendarIcon />
-              <span className="font-medium">{trip.duration}</span>
+              <span>{trip.duration}</span>
             </div>
 
             {/* 總重量資訊 */}
             <div className="flex items-center gap-3 text-base">
               <WeightIcon />
-              <span className="font-medium">
+              <span>
                 {" "}
                 總重量：{totalWeight.toFixed(2)} kg
               </span>
@@ -126,7 +126,7 @@ const TripDialog = ({ trip, trigger, className }: TripDialogProps) => {
             {/* 總價格資訊 */}
             <div className="flex items-center gap-3 text-base">
               <PriceIcon />
-              <span className="font-medium">
+              <span>
                 {" "}
                 總價格：{totalPrice.toLocaleString()} NTD
               </span>
