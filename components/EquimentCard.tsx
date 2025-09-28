@@ -71,7 +71,6 @@ const EquimentCard = ({ tripTitle }: EquimentCardProps) => {
                 
                 {/* 手風琴觸發器 - 點擊此區域可展開/收合內容 */}
                 <AccordionTrigger className="px-4 py-3 hover:no-underline">
-                  
                   <div className="flex items-center w-full gap-4">
                     {/* 裝備圖片區域 */}
                     <div className="flex-shrink-0">
@@ -88,29 +87,28 @@ const EquimentCard = ({ tripTitle }: EquimentCardProps) => {
                       {/* 裝備名稱和購買連結區域 */}
                       <div className="flex items-center">
                         {/* 裝備名稱 */}
-                        <h4 className="font-semibold text-gray-900 text-sm md:text-base max-w-[150px]">
+                        <h4 className="font-semibold text-gray-900 text-sm md:text-base">
                           {equipment.name}
                         </h4>
-                       
-                      </div>
-                      {/* 品牌名稱 - 使用紫色突出顯示 */}
-                      <p className="text-gray-600 text-sm md:text-base">
-                        {equipment.brand}
-                      </p>
-                    </div>
-                     {/* 購買連結圖標 - 只有當裝備有購買連結時才顯示 */}
-                     {equipment.buy_link && (
+                        {/* 購買連結圖標 - 只有當裝備有購買連結時才顯示 */}
+                        {equipment.buy_link && (
                           <a
                             href={equipment.buy_link} 
                             target='_blank'
-                            className="rounded-full bg-white hover:text-green-200"
+                            className="px-1 md:px-2 rounded-full bg-white hover:text-green-200"
                             title="購買商品"
                           >
                             <ExternalLinkIcon />
                           </a>
                         )}
+                      </div>
+                      {/* 品牌名稱 - 使用紫色突出顯示 */}
+                      <p className="text-gray-600 text-sm md:text-base">
+                        {equipment.brand}
+                      </p>
+                      
+                    </div>
                   </div>
-                  
                 </AccordionTrigger>
                 {/* 手風琴內容區域 - 展開時顯示的詳細資訊 */}
                 <AccordionContent className="px-4 pb-4">
