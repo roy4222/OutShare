@@ -1,49 +1,43 @@
 "use client";
 
-import TripCard from "@/components/TripCard";
-import TripDialog from "@/components/TripDialog";
-import ProfileBlock from "@/components/profileBlock";
-import TripsToogleGroup from "@/components/TripsToogleGroup";
-import { tripsData } from "@/data/trips";
-import EquimentCard from "@/components/EquimentCard";
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { GoogleIcon } from "@/components/icons/GoogleIcon"
 
-export default function HomePage() {
+export function HomePage() {
   return (
-    <div className="flex flex-col items-center min-h-screen bg-white py-8 max-w-lg mx-auto">
-      <main className="container">
-        {/* 個人資料區塊 */}
-        <ProfileBlock />
-        {/* 旅行/裝備切換標籤頁組件 */}
-        <TripsToogleGroup
-          //Trips 標籤頁內容：顯示旅行卡片
-          tripsContent={
-            <div className="w-full space-y-4 px-4">
-              {tripsData.map((trip) => (
-                <div key={trip.id} className="flex justify-center">
-                  <TripDialog 
-                    trip={trip} 
-                    trigger={
-                      <button className="px-4">
-                        <TripCard trip={trip} />
-                      </button>
-                    }
-                  />
-                </div>
-              ))}
-            </div>
-          }
-          //Gear 標籤頁內容：顯示裝備相關內容
-          gearContent={
-            <div className="w-full space-y-4 px-4">
-              <div className="flex justify-center">
-                <div className="w-80 md:w-100">
-                  <EquimentCard />
-                </div>
-              </div>
-            </div>
-          }
-        />
-      </main>
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="space-y-4 pb-8 pt-10">
+          <div className="space-y-2">
+            <CardTitle className="text-center text-3xl font-bold bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent">
+              歡迎來到 OutShare
+            </CardTitle>
+            <CardDescription className="text-center text-base text-gray-600">
+              開始你的戶外探險之旅
+            </CardDescription>
+          </div>
+        </CardHeader>
+        
+        <CardContent className="pb-10">
+          <Button 
+            className="w-full h-12 text-base font-medium bg-white hover:bg-gray-50 text-gray-800 border-2 border-gray-200 hover:border-gray-300  transition-all duration-200"
+            variant="outline"
+          >
+            <GoogleIcon />
+            使用 Google 帳號登入
+          </Button>
+          
+        </CardContent>
+      </Card>
     </div>
-  );
+  )
 }
+
+export default HomePage;
