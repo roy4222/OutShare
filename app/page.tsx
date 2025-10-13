@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
 
 import { GoogleIcon } from "@/asset/icons/GoogleIcon";
 import SignUpLogo from "@/asset/logo/SignUpLogo";
@@ -15,9 +16,18 @@ export function HomePage() {
           <div className="max-w-60 mx-auto">
             <Logo />
           </div>
-          <div className="text-base text-gray-500">
+          <motion.div
+            className="text-base text-gray-500"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            whileHover={{
+              scale: 1.05,
+              transition: { duration: 0.2 }
+            }}
+          >
             開始記錄分享，你的戶外旅程與裝備吧！
-          </div>
+          </motion.div>
         </div>
 
         <div>
