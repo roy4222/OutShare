@@ -1,9 +1,16 @@
-export const GoogleIcon = () => (
+import { cn } from "@/lib/utils";
+
+interface GoogleIconProps {
+  className?: string;
+}
+
+export const GoogleIcon = ({ className }: GoogleIconProps) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="128"
     height="128"
     viewBox="0 0 48 48"
+    className={cn("size-6 text-green-700", className)}
   >
     <path
       fill="#FFC107"
