@@ -5,12 +5,12 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { LocationIcon } from "@/components/icons/LocationIcon";
-import { CalendarIcon } from "@/components/icons/CalendarIcon";
+import { LocationIcon } from "@/asset/icons/LocationIcon";
+import { CalendarIcon } from "@/asset/icons/CalendarIcon";
 import { TripCardProps } from "@/types/trip";
 import { calculateTripEquipmentTotals, cn } from "@/lib/utils";
-import { PriceIcon } from "./icons/PriceIcon";
-import { WeightIcon } from "./icons/WeightIcon";
+import { PriceIcon } from "../asset/icons/PriceIcon";
+import { WeightIcon } from "../asset/icons/WeightIcon";
 
 /**
  * 旅程卡片組件

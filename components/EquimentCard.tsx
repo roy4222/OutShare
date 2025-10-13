@@ -6,9 +6,9 @@ import {
     AccordionItem,
     AccordionTrigger,
   } from "@/components/ui/accordion"
-import { ExternalLinkIcon } from "@/components/icons/ExternalLinkIcon";
-import { WeightIcon } from "@/components/icons/WeightIcon";
-import { PriceIcon } from "@/components/icons/PriceIcon";
+import { ExternalLinkIcon } from "@/asset/icons/ExternalLinkIcon";
+import { WeightIcon } from "@/asset/icons/WeightIcon";
+import { PriceIcon } from "@/asset/icons/PriceIcon";
 
 interface EquimentCardProps {
   tripTitle?: string; // 可選的旅程標題，用於過濾裝備

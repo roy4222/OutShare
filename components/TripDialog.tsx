@@ -5,10 +5,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { LocationIcon } from "@/components/icons/LocationIcon";
-import { CalendarIcon } from "@/components/icons/CalendarIcon";
-import { WeightIcon } from "@/components/icons/WeightIcon";
-import { PriceIcon } from "@/components/icons/PriceIcon";
+import { LocationIcon } from "@/asset/icons/LocationIcon";
+import { CalendarIcon } from "@/asset/icons/CalendarIcon";
+import { WeightIcon } from "@/asset/icons/WeightIcon";
+import { PriceIcon } from "@/asset/icons/PriceIcon";
 import { Trip } from "@/types/trip";
 import { cn, calculateTripEquipmentTotals } from "@/lib/utils";
 import EquimentCard from "./EquimentCard";
