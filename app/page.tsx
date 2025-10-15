@@ -5,7 +5,8 @@ import { motion } from "framer-motion";
 
 import { GoogleIcon } from "@/asset/icons/GoogleIcon";
 import SignUpLogo from "@/asset/logo/SignUpLogo";
-import Logo from "@/asset/logo/Logo";
+import OutshareLogo from "@/asset/logo/OutshareLogo";
+import BetaLogo from "@/asset/logo/BetaLogo";
 
 export function HomePage() {
   return (
@@ -21,14 +22,17 @@ export function HomePage() {
           >
             <SignUpLogo />
           </motion.div>
-          {/* 品牌 Logo 動畫 */}
+          {/* 品牌 Logo 動畫和 Beta Logo */}
           <motion.div
             className="max-w-60 mx-auto"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
           >
-            <Logo />
+            <div className="flex items-center justify-center gap-4">
+              <OutshareLogo />
+              <BetaLogo />
+            </div>
           </motion.div>
           {/* 標語文字動畫 */}
           <motion.div
@@ -38,7 +42,7 @@ export function HomePage() {
             transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
             whileHover={{
               scale: 1.05,
-              transition: { duration: 0.2 }
+              transition: { duration: 0.2 },
             }}
           >
             開始記錄分享，你的戶外旅程與裝備吧！
