@@ -1,0 +1,8 @@
+#:schema node_modules/wrangler/config-schema.json
+name = "outdoor-trails-hub"
+compatibility_date = "2024-01-01"
+pages_build_output_dir = ".vercel/output/static"
+
+# 環境變數會在 Cloudflare Dashboard 設定
+# 本地開發請使用 .dev.vars 檔案
+

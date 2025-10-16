@@ -40,4 +40,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# cloudflare
+.dev.vars
+.wrangler/
+wrangler.toml.backup
+
 /app/generated/prisma
