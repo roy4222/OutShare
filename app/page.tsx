@@ -2,6 +2,9 @@
 
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 
 import { GoogleIcon } from "@/asset/icons/GoogleIcon";
 import SignUpLogo from "@/asset/logo/SignUpLogo";
@@ -9,6 +12,56 @@ import OutshareLogo from "@/asset/logo/OutshareLogo";
 import BetaLogo from "@/asset/logo/BetaLogo";
 
 export function HomePage() {
+  const [isLoading, setIsLoading] = useState(false);
+  const supabase = createClient();
+  const router = useRouter();
+
+  // 檢查使用者是否已登入，如果是則自動跳轉到 profile 頁面
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        router.push("/dashboard");
+      }
+    };
+    checkUser();
+  }, [router, supabase.auth]);
+
+  /**
+   * 處理 Google 登入
+   * 
+   * 使用 Supabase Auth 的 signInWithOAuth 方法啟動 Google OAuth 流程。
+   * 使用者會被重導向到 Google 登入頁面，登入後會回到 /auth/callback 路由。
+   */
+  const handleGoogleSignIn = async () => {
+    try {
+      setIsLoading(true);
+      
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          // 指定 OAuth 完成後的 callback URL
+          redirectTo: `${window.location.origin}/auth/callback`,
+          // 可選: 要求 Google 提供 refresh token (用於長期存取 Google API)
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
+        },
+      });
+
+      if (error) {
+        console.error('Google 登入錯誤:', error.message);
+        alert('登入時發生錯誤，請稍後再試');
+      }
+      // 如果成功，使用者會被自動重導向到 Google 登入頁面
+    } catch (error) {
+      console.error('未預期的錯誤:', error);
+      alert('登入時發生錯誤，請稍後再試');
+    } finally {
+      setIsLoading(false);
+    }
+  };
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="flex flex-col items-center space-y-8">
@@ -56,8 +109,10 @@ export function HomePage() {
           transition={{ duration: 0.6, delay: 0.8, ease: "easeOut" }}
         >
           <Button
-            className="w-full h-12 text-base font-medium bg-white hover:bg-gray-50 text-gray-800 border-2 rounded-3xl border-gray-200 hover:border-gray-300  transition-all duration-200 "
+            className="w-full h-12 text-base font-medium bg-white hover:bg-gray-50 text-gray-800 border-2 rounded-3xl border-gray-200 hover:border-gray-300 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             variant="outline"
+            onClick={handleGoogleSignIn}
+            disabled={isLoading}
           >
             <span className="text-base font-medium flex items-center justify-start p-4 w-full">
               {/* Google 圖標 */}
@@ -65,7 +120,9 @@ export function HomePage() {
                 <GoogleIcon />
               </div>
               {/* 登入文字 */}
-              <span className="ml-6">使用 Google 帳號登入</span>
+              <span className="ml-6">
+                {isLoading ? '登入中...' : '使用 Google 帳號登入'}
+              </span>
             </span>
           </Button>
         </motion.div>
