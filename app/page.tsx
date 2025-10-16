@@ -11,7 +11,7 @@ import SignUpLogo from "@/asset/logo/SignUpLogo";
 import OutshareLogo from "@/asset/logo/OutshareLogo";
 import BetaLogo from "@/asset/logo/BetaLogo";
 
-export function HomePage() {
+export default function HomePage() {
   const [isLoading, setIsLoading] = useState(false);
   const supabase = createClient();
   const router = useRouter();
@@ -130,5 +130,3 @@ export function HomePage() {
     </div>
   );
 }
-
-export default HomePage;
