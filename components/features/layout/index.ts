@@ -4,4 +4,5 @@
 
 export { default as TabLayout } from './TabLayout';
 export { default as TripsToggleGroup } from './TripsToggleGroup';
+export {default as Navbar} from './Navbar';
 
