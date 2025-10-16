@@ -18,7 +18,20 @@ const eslintConfig = [
       "out/**",
       "build/**",
       "next-env.d.ts",
+      "lib/database.types.ts", // Supabase 自動生成的檔案
     ],
+  },
+  {
+    rules: {
+      // 允許在預留介面中使用下劃線前綴的未使用參數
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+        },
+      ],
+    },
   },
 ];
 

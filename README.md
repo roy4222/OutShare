@@ -1,9 +1,8 @@
-# 🏕️ OutShare
+![OutShare Logo](/public/OutShare.svg)
 
 專為戶外活動愛好者設計的個人化作品集頁面。一個極簡、現代且功能強大的「戶外版 Linktree」，用於集中展示您的旅程、裝備與社群足跡。
 
-![OutShare Logo](/public/outshare.png)
-
+![signup logo](/public/illustration.svg)
 
 ---
 
@@ -113,6 +112,27 @@ pnpm dev
     ```
 4.  將您在 `.env.local` 中設定的所有環境變數，安全地添加到 Cloudflare Pages 的環境變數設定中。
 5.  完成設定後，每一次推送到 `main` 分支都將觸發自動化部署。
+
+---
+
+---
+
+## 📚 開發文件 (Documentation)
+
+### 架構與開發指南
+- **[架構指南](docs/ARCHITECTURE_GUIDE.md)** - 完整的架構設計、開發規範和最佳實踐
+- **[快速參考](docs/QUICK_REFERENCE.md)** - 常用指令、路徑和模式速查表
+- **[重構指南](docs/REFACTORING_GUIDE.md)** - 從舊架構遷移到新架構的指南
+- **[重構總結](docs/REFACTORING_SUMMARY.md)** - 重構成果和變更總結
+
+### 設定與部署
+- **[Google 登入設定](docs/SETUP_GOOGLE_AUTH.md)** - Google OAuth 完整設定指南
+- **[部署說明](docs/DEPLOYMENT_NOTE.md)** - 部署到各平台的詳細步驟
+- **[快速開始](docs/QUICK_START.md)** - 快速上手指南
+
+### 技術文件
+- **[已修復問題](docs/FIXED_ISSUES.md)** - 已解決的技術問題記錄
+- **[實作總結](docs/IMPLEMENTATION_SUMMARY.md)** - 功能實作總結
 
 ---
 

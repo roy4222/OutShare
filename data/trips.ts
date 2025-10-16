@@ -1,4 +1,4 @@
-import { Trip } from "@/types/trip";
+import { Trip } from "@/lib/types/trip";
 
 export const tripsData: Trip[] = [
   {

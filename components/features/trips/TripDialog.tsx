@@ -1,0 +1,48 @@
+/**
+ * TripDialog 組件（重構版）
+ *
+ * 旅程詳細資訊彈窗，只負責對話框邏輯
+ * 內容展示委派給 TripDetail 組件
+ */
+
+"use client";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { TripDialogProps } from "@/lib/types/trip";
+import { cn } from "@/lib/utils";
+import { useTripStats } from "@/lib/hooks/useTripStats";
+import TripDetail from "./TripDetail";
+
+const TripDialog = ({ trip, trigger, className }: TripDialogProps) => {
+  const stats = useTripStats(trip.title);
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>{trigger}</DialogTrigger>
+
+      <DialogContent
+        className={cn(
+          "sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl max-h-[100vh] md:max-h-[90vh] overflow-y-auto scrollbar-hide",
+          className
+        )}
+      >
+        <DialogHeader>
+          <DialogTitle className="text-xl font-bold text-left max-w-[80vw] overflow-hidden text-ellipsis whitespace-nowrap">
+            {trip.title}
+          </DialogTitle>
+        </DialogHeader>
+
+        <TripDetail trip={trip} stats={stats} />
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default TripDialog;
+

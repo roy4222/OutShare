@@ -38,9 +38,7 @@ export async function updateSession(request: NextRequest) {
   // IMPORTANT: 避免在這裡寫入任何邏輯會讓 `supabase.auth.getUser()` 和
   // `supabase.auth.getSession()` 之間產生競態條件 (race condition)
   // 簡單的例子是取得 user 資訊可確保 auth session 被更新
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  await supabase.auth.getUser()
 
   // 可選：根據使用者狀態進行路由保護
   // if (!user && !request.nextUrl.pathname.startsWith('/login')) {

@@ -1,43 +1,43 @@
+/**
+ * 使用者公開展示頁面
+ * 
+ * 展示使用者的個人資料、旅程和裝備
+ * 這是公開頁面，任何人都可以訪問
+ */
+
 "use client";
 
-import TripCard from "@/components/TripCard";
-import TripDialog from "@/components/TripDialog";
-import ProfileBlock from "@/components/profileBlock";
-import TripsToogleGroup from "@/components/TripsToogleGroup";
+import { ProfileHeader, SocialLinks } from "@/components/features/profile";
+import { TripList } from "@/components/features/trips";
+import { EquipmentList } from "@/components/features/equipment";
+import { TripsToggleGroup } from "@/components/features/layout";
+import { useProfile } from "@/lib/hooks/useProfile";
 import { tripsData } from "@/data/trips";
-import EquimentCard from "@/components/EquimentCard";
 
-export default function HomePage() {
+export default function ProfilePage() {
+  const profile = useProfile();
+
   return (
     <div className="flex flex-col items-center min-h-screen bg-white py-8 max-w-lg mx-auto">
       <main className="container">
         {/* 個人資料區塊 */}
-        <ProfileBlock />
-        {/* 旅行/裝備切換標籤頁組件 */}
-        <TripsToogleGroup
-          //Trips 標籤頁內容：顯示旅行卡片
+        <div className="flex flex-col items-center justify-center space-y-4">
+          <ProfileHeader profile={profile} />
+          {profile.socialLinks && <SocialLinks links={profile.socialLinks} className="mt-4" />}
+        </div>
+
+        {/* 旅行/裝備切換標籤頁 */}
+        <TripsToggleGroup
           tripsContent={
             <div className="w-full space-y-4 px-4">
-              {tripsData.map((trip) => (
-                <div key={trip.id} className="flex justify-center">
-                  <TripDialog
-                    trip={trip}
-                    trigger={
-                      <button className="px-4">
-                        <TripCard trip={trip} />
-                      </button>
-                    }
-                  />
-                </div>
-              ))}
+              <TripList trips={tripsData} />
             </div>
           }
-          //Gear 標籤頁內容：顯示裝備相關內容
           gearContent={
             <div className="w-full space-y-4 px-4">
               <div className="flex justify-center">
                 <div className="w-80 md:w-100">
-                  <EquimentCard />
+                  <EquipmentList />
                 </div>
               </div>
             </div>
