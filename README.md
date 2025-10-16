@@ -1,8 +1,12 @@
-![OutShare Logo](/public/OutShare.svg)
+<p align="center">
+  <img src="public/OutShare.svg" alt="OutShare Logo">
+</p>
 
 專為戶外活動愛好者設計的個人化作品集頁面。一個極簡、現代且功能強大的「戶外版 Linktree」，用於集中展示您的旅程、裝備與社群足跡。
 
-![signup logo](/public/illustration.svg)
+<p align="center">
+  <img src="public/illustration.svg" alt="signup logo">
+</p>
 
 ---
 
