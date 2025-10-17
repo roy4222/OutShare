@@ -45,4 +45,7 @@ next-env.d.ts
 .wrangler/
 wrangler.toml.backup
 
+# OpenNext
+.open-next/
+
 /app/generated/prisma

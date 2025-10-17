@@ -13,11 +13,16 @@ import { createClient } from '@/lib/supabase/server'
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get('code')
-  // 在 WSL 環境中，origin 可能是 0.0.0.0，需要轉換成 localhost
-  let origin = requestUrl.origin
+  
+  // 使用環境變數或請求的 origin
+  // 在正式環境使用 NEXT_PUBLIC_SITE_URL，本地開發則使用 request origin
+  let origin = process.env.NEXT_PUBLIC_SITE_URL || requestUrl.origin
+  
+  // 在 WSL 本地開發環境中，origin 可能是 0.0.0.0，需要轉換成 localhost
   if (origin.includes('0.0.0.0')) {
     origin = origin.replace('0.0.0.0', 'localhost')
   }
+  
   const next = requestUrl.searchParams.get('next') ?? '/dashboard'
 
   if (code) {

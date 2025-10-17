@@ -28,9 +28,19 @@
 
 | 文件 | 描述 | 適合對象 |
 |------|------|----------|
-| [**已修復問題**](./FIXED_ISSUES.md) | 已解決的技術問題和解決方案記錄 | 所有開發者 |
-| [**實作總結**](./IMPLEMENTATION_SUMMARY.md) | Google 登入功能實作總結 | 開發者 |
-| [**檢查清單**](./CHECKLIST.md) | 開發和部署檢查清單 | 所有開發者 |
+| [**已修復問題**](./Issues/FIXED_ISSUES.md) | 已解決的技術問題和解決方案記錄 | 所有開發者 |
+| [**實作總結**](./Issues/IMPLEMENTATION_SUMMARY.md) | Google 登入功能實作總結 | 開發者 |
+| [**檢查清單**](./Issues/CHECKLIST.md) | 開發和部署檢查清單 | 所有開發者 |
+
+### 🚀 部署相關
+
+| 文件 | 描述 | 適合對象 |
+|------|------|----------|
+| [**OpenNext 快速參考**](./Issues/OPENNEXT_QUICK_REFERENCE.md) | 常用指令和快速修復方案 ⚡ | 所有開發者 |
+| [**OpenNext Cloudflare 遷移**](./Issues/OPENNEXT_CLOUDFLARE_MIGRATION.md) | 從 next-on-pages 遷移到 OpenNext 的完整指南 | DevOps, 維護者 |
+| [**Cloudflare Workers 部署**](./Issues/CLOUDFLARE_WORKERS_DEPLOYMENT.md) | Cloudflare Workers 部署詳細步驟 | DevOps |
+| [**Cloudflare 部署修正**](./Issues/CLOUDFLARE_DEPLOY_FIX.md) | Cloudflare 部署常見問題修正 | DevOps |
+| [**Windows 環境設定**](./Issues/CLOUDFLARE_WINDOWS_SETUP.md) | Windows/WSL 環境特殊設定 | 開發者 |
 
 ---
 
@@ -42,19 +52,23 @@
 2. 按照 [快速開始](./QUICK_START.md) 設定開發環境
 3. 閱讀 [架構指南](./ARCHITECTURE_GUIDE.md) 了解專案架構
 4. 參考 [快速參考](./QUICK_REFERENCE.md) 開始開發
-5. 遇到問題時查閱 [已修復問題](./FIXED_ISSUES.md)
+5. 遇到問題時查閱 [已修復問題](./Issues/FIXED_ISSUES.md)
+6. 部署前閱讀 [OpenNext Cloudflare 遷移](./Issues/OPENNEXT_CLOUDFLARE_MIGRATION.md)
 
 ### 👨‍💻 日常開發
 
 - **開發新功能** → [架構指南](./ARCHITECTURE_GUIDE.md) + [快速參考](./QUICK_REFERENCE.md)
 - **查找常用指令** → [快速參考](./QUICK_REFERENCE.md)
-- **解決技術問題** → [已修復問題](./FIXED_ISSUES.md)
+- **解決技術問題** → [已修復問題](./Issues/FIXED_ISSUES.md)
 - **了解架構設計** → [架構指南](./ARCHITECTURE_GUIDE.md)
 
 ### 🚀 部署與維護
 
+- **快速查詢部署指令** → [OpenNext 快速參考](./Issues/OPENNEXT_QUICK_REFERENCE.md) ⚡
+- **部署到 Cloudflare** → [OpenNext Cloudflare 遷移](./Issues/OPENNEXT_CLOUDFLARE_MIGRATION.md) ⭐ 最新
 - **首次部署** → [部署說明](./DEPLOYMENT_NOTE.md)
 - **設定 OAuth** → [Google 登入設定](./SETUP_GOOGLE_AUTH.md)
+- **WSL 環境問題** → [Windows 環境設定](./Issues/CLOUDFLARE_WINDOWS_SETUP.md)
 - **了解重構變更** → [重構總結](./REFACTORING_SUMMARY.md)
 - **遷移舊程式碼** → [重構指南](./REFACTORING_GUIDE.md)
 
@@ -160,7 +174,8 @@
 | 架構與開發 | 4 | 15,000+ |
 | 設定與部署 | 4 | 8,000+ |
 | 技術文件 | 3 | 5,000+ |
-| **總計** | **11** | **28,000+** |
+| 部署相關 | 5 | 13,000+ |
+| **總計** | **16** | **41,000+** |
 
 ---
 
@@ -181,14 +196,29 @@
 
 ## 📞 取得協助
 
-- **技術問題** → 查閱 [已修復問題](./FIXED_ISSUES.md)
+- **技術問題** → 查閱 [已修復問題](./Issues/FIXED_ISSUES.md)
 - **架構疑問** → 參考 [架構指南](./ARCHITECTURE_GUIDE.md)
 - **快速查詢** → 使用 [快速參考](./QUICK_REFERENCE.md)
+- **部署問題** → 參考 [OpenNext Cloudflare 遷移](./Issues/OPENNEXT_CLOUDFLARE_MIGRATION.md)
+- **WSL 環境問題** → 查閱 [Windows 環境設定](./Issues/CLOUDFLARE_WINDOWS_SETUP.md)
 - **其他問題** → 建立 Issue 或聯繫團隊
 
 ---
 
+## 🆕 最新更新
+
+**2025-10-17 - OpenNext Cloudflare 遷移完成**
+- ✅ 從 `@cloudflare/next-on-pages` 遷移到 `@opennextjs/cloudflare`
+- ✅ 啟用 R2 快取功能
+- ✅ 修復 Supabase vendor chunks 問題
+- ✅ 解決 WSL 環境部署問題
+- ✅ 新增完整遷移文件
+
+詳見：[OpenNext Cloudflare 遷移指南](./Issues/OPENNEXT_CLOUDFLARE_MIGRATION.md)
+
+---
+
 **文件維護者：** OutShare Team  
-**最後更新：** 2025-10-16  
-**文件版本：** 2.0
+**最後更新：** 2025-10-17  
+**文件版本：** 2.1
 
