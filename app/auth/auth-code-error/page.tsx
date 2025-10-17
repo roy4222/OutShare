@@ -1,5 +1,8 @@
 // 檔案路徑: app/auth/auth-code-error/page.tsx
 
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+
 /**
  * OAuth 錯誤頁面
  * 
@@ -17,7 +20,11 @@ export default function AuthCodeErrorPage() {
             很抱歉，在處理您的登入請求時發生了錯誤。
             請稍後再試一次。
           </p>
-         
+          <Link href="/">
+            <Button className="w-full">
+              返回首頁
+            </Button>
+          </Link>
         </div>
       </div>
     </div>
