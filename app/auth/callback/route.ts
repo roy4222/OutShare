@@ -13,7 +13,11 @@ import { createClient } from '@/lib/supabase/server'
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get('code')
-  const origin = requestUrl.origin
+  // 在 WSL 環境中，origin 可能是 0.0.0.0，需要轉換成 localhost
+  let origin = requestUrl.origin
+  if (origin.includes('0.0.0.0')) {
+    origin = origin.replace('0.0.0.0', 'localhost')
+  }
   const next = requestUrl.searchParams.get('next') ?? '/dashboard'
 
   if (code) {
