@@ -3,13 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build && npx @cloudflare/next-on-pages",
-    "start": "next start",
+    "dev": "next dev -H 0.0.0.0",
+    "build": "next build",
+    "start": "opennextjs-cloudflare build && opennextjs-cloudflare start",
     "lint": "eslint",
-    "pages:build": "npx @cloudflare/next-on-pages",
-    "preview": "npm run pages:build && wrangler pages dev",
-    "deploy": "npm run pages:build && wrangler pages deploy"
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.0.1",
