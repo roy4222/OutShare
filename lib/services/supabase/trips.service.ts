@@ -8,7 +8,7 @@ import { SupabaseClient } from '@supabase/supabase-js';
 import { Database } from '@/lib/database.types';
 import { Trip } from '@/lib/types/trip';
 import { Equipment } from '@/lib/types/equipment';
-import { mapTripToTrip, attachEquipmentToTrip } from './mapper';
+import { mapTripToTrip } from './mapper';
 import { getEquipmentByTrip } from './equipment.service';
 
 /**

@@ -7,7 +7,7 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 import { Database } from '@/lib/database.types';
 import { Equipment } from '@/lib/types/equipment';
-import { mapGearToEquipment, attachTripsToEquipment } from './mapper';
+import { mapGearToEquipment } from './mapper';
 
 /**
  * 獲取裝備列表

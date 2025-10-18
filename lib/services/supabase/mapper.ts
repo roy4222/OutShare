@@ -53,13 +53,12 @@ export function mapTripToTrip(trip: Tables<'trip'>): Trip {
 /**
  * 將 gear 資料附加關聯的 trip titles
  * 
- * 公共 API - 供外部使用，即使內部未使用也保留
+ * 公共 API - 供外部使用
  * 
  * @param gear - Equipment 資料
  * @param tripTitles - 關聯的旅程標題陣列
  * @returns Equipment - 附加了 trips 欄位的裝備資料
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function attachTripsToEquipment(
   gear: Equipment,
   tripTitles: string[]
@@ -73,13 +72,12 @@ export function attachTripsToEquipment(
 /**
  * 將 trip 資料附加關聯的 equipment IDs
  * 
- * 公共 API - 供外部使用，即使內部未使用也保留
+ * 公共 API - 供外部使用
  * 
  * @param trip - Trip 資料
  * @param equipmentIds - 關聯的裝備 ID 陣列
  * @returns Trip - 附加了 equipment 欄位的旅程資料
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function attachEquipmentToTrip(
   trip: Trip,
   equipmentIds: string[]
