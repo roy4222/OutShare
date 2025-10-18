@@ -7,9 +7,7 @@
 "use client";
 
 import { Trip } from "@/lib/types/trip";
-import { useTripStats } from "@/lib/hooks/useTripStats";
-import TripCard from "./TripCard";
-import TripDialog from "./TripDialog";
+import TripItemWithStats from "./TripItemWithStats";
 
 interface TripListProps {
   trips: Trip[];
@@ -19,23 +17,11 @@ interface TripListProps {
 const TripList = ({ trips, className }: TripListProps) => {
   return (
     <div className={className}>
-      {trips.map((trip) => {
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        const stats = useTripStats(trip.title);
-        
-        return (
-          <div key={trip.id} className="flex justify-center">
-            <TripDialog
-              trip={trip}
-              trigger={
-                <button className="px-4">
-                  <TripCard trip={trip} stats={stats} />
-                </button>
-              }
-            />
-          </div>
-        );
-      })}
+      {trips.map((trip) => (
+        <div key={trip.id} className="flex justify-center">
+          <TripItemWithStats trip={trip} />
+        </div>
+      ))}
     </div>
   );
 };

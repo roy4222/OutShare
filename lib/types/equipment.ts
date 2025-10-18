@@ -45,7 +45,8 @@ export interface EquipmentCardProps {
  * 裝備列表組件 Props
  */
 export interface EquipmentListProps {
-  tripTitle?: string; // 可選的旅程標題，用於過濾裝備
+  tripTitle?: string; // 可選的旅程標題，用於過濾裝備（向後相容，建議使用 tripId）
+  tripId?: string; // 可選的旅程 ID 或 slug，用於過濾裝備（推薦）
   className?: string;
 }
 

@@ -1,3 +1,13 @@
+/**
+ * ⚠️ 已廢棄：此檔案已遷移至 Supabase
+ * 
+ * 此檔案保留作為資料備份和參考
+ * 實際資料現在從 Supabase 資料庫讀取
+ * 
+ * 遷移日期：2025-10-18
+ * 對應 Migration: supabase/migrations/003_seed_initial_data.sql
+ */
+
 import { Equipment } from "@/lib/types/equipment";
 
 export const equipmentData: Equipment[] = [

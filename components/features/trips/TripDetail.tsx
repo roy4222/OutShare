@@ -95,7 +95,7 @@ const TripDetail = ({ trip, stats, className }: TripDetailProps) => {
 
       {/* 使用裝備 */}
       <div className="space-y-3">
-        <EquipmentList tripTitle={trip.title} />
+        <EquipmentList tripId={trip.id} />
       </div>
     </div>
   );

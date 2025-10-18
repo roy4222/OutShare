@@ -20,7 +20,7 @@ import { useTripStats } from "@/lib/hooks/useTripStats";
 import TripDetail from "./TripDetail";
 
 const TripDialog = ({ trip, trigger, className }: TripDialogProps) => {
-  const stats = useTripStats(trip.title);
+  const { stats, isLoading } = useTripStats(trip.id);
 
   return (
     <Dialog>
@@ -38,7 +38,11 @@ const TripDialog = ({ trip, trigger, className }: TripDialogProps) => {
           </DialogTitle>
         </DialogHeader>
 
-        <TripDetail trip={trip} stats={stats} />
+        {isLoading ? (
+          <div className="text-center py-4">載入統計資料中...</div>
+        ) : (
+          <TripDetail trip={trip} stats={stats} />
+        )}
       </DialogContent>
     </Dialog>
   );

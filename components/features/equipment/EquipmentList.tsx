@@ -11,11 +11,28 @@ import { EquipmentListProps } from "@/lib/types/equipment";
 import { useEquipment } from "@/lib/hooks/useEquipment";
 import EquipmentGroup from "./EquipmentGroup";
 
-const EquipmentList = ({ tripTitle, className }: EquipmentListProps) => {
-  const { groupedEquipment, isEmpty } = useEquipment({
+const EquipmentList = ({ tripTitle, tripId, className }: EquipmentListProps) => {
+  const { groupedEquipment, isEmpty, isLoading, error } = useEquipment({
     tripTitle,
+    tripId,
     groupByCategory: true,
   });
+
+  if (isLoading) {
+    return (
+      <div className="text-center text-gray-500 py-8">
+        載入裝備資料中...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center text-red-500 py-8">
+        載入失敗: {error.message}
+      </div>
+    );
+  }
 
   if (isEmpty) {
     return (
