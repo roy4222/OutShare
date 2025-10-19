@@ -28,5 +28,15 @@
       "binding": "NEXT_INC_CACHE_R2_BUCKET",
       "bucket_name": "outdoor-trails-hub-cache"
     }
-  ]
+  ],
+  "vars": {
+    // 1. Supabase URL (Next.js 公開變數)
+    "NEXT_PUBLIC_SUPABASE_URL": "https://flyqtqgnvhagazwcuznw.supabase.co", 
+    
+    // 2. Supabase ANON Key (Next.js 公開變數)
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZseXF0cWdudmhhZ2F6d2N1em53Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA0NDAwMTcsImV4cCI6MjA3NjAxNjAxN30.SeBis-ryT_n-4aFu4DVJL0N8eh_JwE2zXKGcdrysoZo", // ⚠️ 替換成您的實際公鑰
+
+    // 3. 網站 URL (用於登入回調的基礎 URL)
+    "NEXT_PUBLIC_SITE_URL": "https://outshare.roy422.ggff.net"
+  }
 }

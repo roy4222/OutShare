@@ -14,9 +14,17 @@ export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get('code')
   
-  // 使用環境變數或請求的 origin
-  // 在正式環境使用 NEXT_PUBLIC_SITE_URL，本地開發則使用 request origin
-  let origin = process.env.NEXT_PUBLIC_SITE_URL || requestUrl.origin
+  // 判斷是否為生產環境（檢查 request headers 中的 host）
+  const host = request.headers.get('host') || ''
+  const isProduction = host.includes('outshare.roy422.ggff.net') || host.includes('roy422roy.workers.dev')
+  
+  // 如果是生產環境但 URL 是 localhost，強制使用生產環境 URL
+  let origin: string
+  if (isProduction || process.env.NEXT_PUBLIC_SITE_URL) {
+    origin = process.env.NEXT_PUBLIC_SITE_URL || `https://${host}`
+  } else {
+    origin = requestUrl.origin
+  }
   
   // 在 WSL 本地開發環境中，origin 可能是 0.0.0.0，需要轉換成 localhost
   if (origin.includes('0.0.0.0')) {

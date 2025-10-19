@@ -37,11 +37,14 @@ export default function HomePage() {
     try {
       setIsLoading(true);
       
+      // 使用當前瀏覽器的 origin（使用者已經在正確的網域上）
+      const currentOrigin = window.location.origin;
+      
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           // 指定 OAuth 完成後的 callback URL
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: `${currentOrigin}/auth/callback`,
           // 可選: 要求 Google 提供 refresh token (用於長期存取 Google API)
           queryParams: {
             access_type: 'offline',
