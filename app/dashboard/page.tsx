@@ -43,58 +43,9 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4">
+    <div className="min-h-screen bg-gray-50">
        <Navbar />
 
-        {/* 使用者資訊卡片 */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">使用者資訊</h2>
-          <div className="space-y-3">
-            <div className="flex items-center gap-4">
-              <div>
-                <p className="text-sm text-gray-500">姓名</p>
-                <p className="font-medium">
-                  {user.user_metadata?.full_name || "未設定"}
-                </p>
-              </div>
-            </div>
-
-            <div>
-              <p className="text-sm text-gray-500">Email</p>
-              <p className="font-medium">{user.email}</p>
-            </div>
-
-            <div>
-              <p className="text-sm text-gray-500">使用者 ID</p>
-              <p className="font-mono text-sm text-gray-700">{user.id}</p>
-            </div>
-
-            <div>
-              <p className="text-sm text-gray-500">登入提供者</p>
-              <p className="font-medium">
-                {user.app_metadata?.provider || "unknown"}
-              </p>
-            </div>
-
-            <div>
-              <p className="text-sm text-gray-500">上次登入時間</p>
-              <p className="font-medium">
-                {user.last_sign_in_at
-                  ? new Date(user.last_sign_in_at).toLocaleString("zh-TW")
-                  : "未知"}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* 使用者詳細資料（metadata） */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">詳細資料（Metadata）</h2>
-          <pre className="bg-gray-100 p-4 rounded overflow-auto text-sm">
-            {JSON.stringify(user.user_metadata, null, 2)}
-          </pre>
-        </div>
 
         {/* 操作按鈕 */}
         <div className="flex gap-4">
@@ -115,6 +66,5 @@ export default function DashboardPage() {
           </Button>
         </div>
       </div>
-    </div>
   );
 }
