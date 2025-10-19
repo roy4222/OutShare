@@ -9,22 +9,7 @@
 
 import { useState } from "react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-
-/**
- * Tab 項目定義
- */
-export interface TabItem {
-  value: string;
-  label: string;
-  content: React.ReactNode;
-}
-
-interface TabLayoutProps {
-  tabs: TabItem[];
-  defaultTab?: string;
-  className?: string;
-  toggleClassName?: string;
-}
+import {TabLayoutProps } from "@/lib/types";
 
 /**
  * TabLayout - 通用標籤頁佈局

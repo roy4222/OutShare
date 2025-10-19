@@ -7,12 +7,8 @@
 
 "use client";
 
-import TabLayout, { TabItem } from "./TabLayout";
-
-interface TripsToggleGroupProps {
-  tripsContent: React.ReactNode;
-  gearContent: React.ReactNode;
-}
+import TabLayout from "./TabLayout";
+import { TabItem, TripsToggleGroupProps } from "@/lib/types";
 
 /**
  * TripsToggleGroup - 旅行和裝備切換組件

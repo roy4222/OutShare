@@ -25,3 +25,9 @@ export type {
   SocialLinksProps,
 } from './profile';
 
+export type {
+  NavItem,
+  TabItem,
+  TabLayoutProps,
+  TripsToggleGroupProps,
+} from './layout';

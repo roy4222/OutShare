@@ -4,21 +4,7 @@ import { LockIcon, LuggageIcon, UserIcon, SettingsIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
-
-/**
- * 導航選項類型定義
- */
-interface NavItem {
-  id: string;
-  label: string;
-  icon: React.ElementType;
-  href: string;
-  badge?: {
-    text: string;
-    variant?: "default" | "secondary" | "destructive" | "outline";
-    className?: string;
-  };
-}
+import { NavItem } from "@/lib/types";
 
 /**
  * SideBar 側邊導航欄元件
