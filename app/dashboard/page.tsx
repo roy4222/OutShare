@@ -1,84 +1,31 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
-import { User } from "@supabase/supabase-js";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { useRequireAuth } from "@/lib/hooks/useAuth";
+import Navbar from "@/components/features/layout/Navbar";
 
 /**
  * 受保護的 Dashboard 頁面
  *
  * 這個頁面示範如何:
- * 1. 檢查使用者的登入狀態
+ * 1. 使用 useRequireAuth hook 來保護頁面
  * 2. 顯示使用者資訊
  * 3. 實作登出功能
- * 4. 當使用者未登入時，重導向到登入頁
+ * 4. 當使用者未登入時，自動重導向到登入頁
  */
 export default function DashboardPage() {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const router = useRouter();
-  const supabase = createClient();
-
-  useEffect(() => {
-    /**
-     * 檢查使用者的登入狀態
-     */
-    const checkUser = async () => {
-      try {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-
-        if (!user) {
-          // 如果沒有登入，重導向到首頁
-          router.push("/");
-          return;
-        }
-
-        setUser(user);
-      } catch (error) {
-        console.error("取得使用者資料時發生錯誤:", error);
-        router.push("/");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkUser();
-
-    // 監聽認證狀態變化
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) {
-        router.push("/");
-      } else {
-        setUser(session.user);
-      }
-    });
-
-    // 清理監聽器
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [router, supabase.auth]);
+  // 使用 useRequireAuth hook，自動處理認證邏輯
+  const { user, loading, signOut } = useRequireAuth();
 
   /**
    * 處理登出
    */
   const handleSignOut = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        console.error("登出錯誤:", error.message);
-        alert("登出時發生錯誤");
-        return;
-      }
-      // 登出成功後會自動觸發 onAuthStateChange，重導向到首頁
+      await signOut();
+      // 登出成功後會自動觸發重導向
     } catch (error) {
-      console.error("未預期的錯誤:", error);
+      console.error("登出時發生錯誤:", error);
       alert("登出時發生錯誤");
     }
   };
@@ -98,13 +45,7 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4">
-        {/* 頁面標題 */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">歡迎回來！</h1>
-          <p className="text-gray-600">
-            這是受保護的頁面，只有登入的使用者才能看到。
-          </p>
-        </div>
+       <Navbar />
 
         {/* 使用者資訊卡片 */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
