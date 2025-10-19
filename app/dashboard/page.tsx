@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { useRequireAuth } from "@/lib/hooks/useAuth";
 import Navbar from "@/components/features/layout/Navbar";
 
@@ -15,20 +14,7 @@ import Navbar from "@/components/features/layout/Navbar";
  */
 export default function DashboardPage() {
   // 使用 useRequireAuth hook，自動處理認證邏輯
-  const { user, loading, signOut } = useRequireAuth();
-
-  /**
-   * 處理登出
-   */
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-      // 登出成功後會自動觸發重導向
-    } catch (error) {
-      console.error("登出時發生錯誤:", error);
-      alert("登出時發生錯誤");
-    }
-  };
+  const { user, loading } = useRequireAuth();
 
   if (loading) {
     return (
@@ -44,27 +30,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-       <Navbar />
-
-
-        {/* 操作按鈕 */}
-        <div className="flex gap-4">
-          <Button
-            onClick={handleSignOut}
-            variant="destructive"
-            className="px-6 text-gray-500"
-          >
-            登出
-          </Button>
-
-          <Button
-            onClick={() => window.open("/profile", "_blank")}
-            variant="outline"
-            className="px-6"
-          >
-            前往個人資料頁
-          </Button>
-        </div>
-      </div>
+      <Navbar />
+    </div>
   );
 }

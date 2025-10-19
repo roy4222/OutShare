@@ -2,6 +2,33 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* 1. 設計系統顏色定義 */
+@theme {
+  /* 綠色系列 */
+  --color-green-200: #F2FBF9;
+  --color-green-600: #B3E6DD;
+  --color-green-700: #00AC8E;
+  --color-green-800: #008A72;
+
+  /* 灰色系列 */
+  --color-grey-100: #FAFAFA;
+  --color-grey-200: #F2F2F2;
+  --color-grey-300: #EAEBEB;
+  --color-grey-400: #DDDEDE;
+  --color-grey-500: #A1A1A1;
+  --color-grey-600: #76797B;
+  --color-grey-800: #54585A;
+  --color-grey-900: #222222;
+
+  /* 白色與紅色 */
+  --color-white: #ffffff;
+  --color-red-100: #F44444;
+
+  /* 漸層色起點與終點 */
+  --color-gradient-from: #00AC8E;
+  --color-gradient-to: #0097E0;
+}
+
 /* 2. 將所有的 base layer 樣式合併在一起 */
 @layer base {
   /* 3. 選擇一組 CSS 變數定義 (此處以 OKLCH 為例) */

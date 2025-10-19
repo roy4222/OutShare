@@ -13,9 +13,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import OutshareLogo from "@/asset/logo/OutshareLogo";
-import { LogOutIcon, MenuIcon} from "lucide-react";
+import { LogOutIcon, MenuIcon } from "lucide-react";
 import { useState } from "react";
 import BetaLogo from "@/asset/logo/BetaLogo";
+import { ExternalLinkIcon } from "lucide-react";
 
 /**
  * Navbar 導航列元件
@@ -82,6 +83,16 @@ const Navbar = () => {
 
           {/* 桌面版 - 使用者選單（右側） */}
           <div className="hidden md:flex items-center">
+            <Button
+              variant="ghost"
+              className="group bg-white border-2 border-green-700 hover:bg-green-700 relative mx-6 px-2 py-2 rounded-md  focus-visible:ring-2 focus-visible:ring-offset-2 cursor-pointer"
+              onClick={() => window.open("/profile", "_blank")}
+            >
+              <span className="text-green-700 group-hover:text-white font-bold text-base">
+                前往前台
+              </span>
+              <ExternalLinkIcon className="text-green-700 group-hover:text-white" />
+            </Button>
             {loading ? (
               // 載入狀態
               <div className="w-10 h-10 bg-gray-200 rounded-full animate-pulse" />
@@ -156,9 +167,9 @@ const Navbar = () => {
                     <span className="sr-only">開啟選單</span>
                   </Button>
                 </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56 bg-white" align="end">
-                    {/* 使用者資訊 */}
-                    <DropdownMenuLabel className="font-normal">
+                <DropdownMenuContent className="w-56 bg-white" align="end">
+                  {/* 使用者資訊 */}
+                  <DropdownMenuLabel className="font-normal">
                     <div className="flex items-center space-x-3">
                       <Avatar className="h-10 w-10">
                         <AvatarImage
