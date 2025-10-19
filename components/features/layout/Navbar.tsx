@@ -111,7 +111,7 @@ const Navbar = () => {
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end">
+                <DropdownMenuContent className="w-56 bg-white" align="end">
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium leading-none">
@@ -150,15 +150,15 @@ const Navbar = () => {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="focus-visible:ring-2 focus-visible:ring-offset-2"
+                    className="focus-visible:ring-2 focus-visible:ring-offset-2 "
                   >
-                    <MenuIcon className="h-6 w-6" />
+                    <MenuIcon className="h-8 w-8" />
                     <span className="sr-only">開啟選單</span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end">
-                  {/* 使用者資訊 */}
-                  <DropdownMenuLabel className="font-normal">
+                  <DropdownMenuContent className="w-56 bg-white" align="end">
+                    {/* 使用者資訊 */}
+                    <DropdownMenuLabel className="font-normal">
                     <div className="flex items-center space-x-3">
                       <Avatar className="h-10 w-10">
                         <AvatarImage
