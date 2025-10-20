@@ -36,7 +36,7 @@ const SideBar = () => {
       id: "equipment",
       label: "裝備管理",
       icon: TentIcon,
-      href: "/dashboard/equipment",
+      href: "/dashboard",
     },
     {
       id: "trips",
