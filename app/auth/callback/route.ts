@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
     origin = origin.replace('0.0.0.0', 'localhost')
   }
   
-  const next = requestUrl.searchParams.get('next') ?? '/dashboard'
+  const next = requestUrl.searchParams.get('next') ?? '/GearDashboard'
 
   if (code) {
     const supabase = await createClient()

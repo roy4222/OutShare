@@ -36,13 +36,13 @@ const SideBar = () => {
       id: "equipment",
       label: "裝備管理",
       icon: TentIcon,
-      href: "/dashboard",
+      href: "/GearDashboard",
     },
     {
       id: "trips",
       label: "旅程管理",
       icon: TentTreeIcon,
-      href: "/dashboard/trips",
+      href: "/TripDashboard",
       badge: {
         text: "即將上線",
         variant: "secondary",
@@ -54,7 +54,7 @@ const SideBar = () => {
       id: "profile",
       label: "個人檔案",
       icon: CircleUserIcon,
-      href: "/profile",
+      href: "/ProfileEdit",
     },
     {
       id: "feedback",

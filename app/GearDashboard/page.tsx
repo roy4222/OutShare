@@ -14,7 +14,7 @@ import {
 import { FolderCodeIcon,SquarePenIcon} from "lucide-react";
 import { Button } from "@/components/ui/button";
 /**
- * 受保護的 Dashboard 頁面
+ * 受保護的 GearDashboard 頁面
  *
  * 這個頁面示範如何:
  * 1. 使用 useRequireAuth hook 來保護頁面
@@ -23,7 +23,7 @@ import { Button } from "@/components/ui/button";
  * 4. 當使用者未登入時，自動重導向到登入頁
  * 5. 整合 Sidebar 側邊導航欄
  */
-export default function DashboardPage() {
+export default function GearDashboardPage() {
   // 使用 useRequireAuth hook，自動處理認證邏輯
   const { user, loading } = useRequireAuth();
 

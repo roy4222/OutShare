@@ -74,7 +74,7 @@ const Navbar = () => {
           {/* Logo - 左側 */}
           <div className="flex-shrink-0">
             <Link
-              href="/dashboard"
+              href="/GearDashboard"
               className="flex items-center gap-2 hover:opacity-80 transition-opacity"
             >
               <OutshareLogo />
@@ -139,7 +139,7 @@ const Navbar = () => {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     className="cursor-pointer text-destructive focus:text-destructive"
-                    onClick={() => router.push("/profile")}
+                    onClick={() => router.push("/ProfileEdit")}
                   >
                     <CircleUserIcon className="mr-2 h-4 w-4" />
                     個人檔案

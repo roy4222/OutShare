@@ -21,7 +21,7 @@ export default function HomePage() {
     const checkUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        router.push("/dashboard");
+        router.push("/GearDashboard");
       }
     };
     checkUser();
