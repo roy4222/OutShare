@@ -13,10 +13,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import OutshareLogo from "@/asset/logo/OutshareLogo";
-import { LogOutIcon, MenuIcon } from "lucide-react";
+import { CircleUserIcon, LogOutIcon, MenuIcon, MessageCircleMoreIcon } from "lucide-react";
 import { useState } from "react";
 import BetaLogo from "@/asset/logo/BetaLogo";
 import { ExternalLinkIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 /**
  * Navbar 導航列元件
@@ -63,6 +64,8 @@ const Navbar = () => {
     }
     return name.slice(0, 2).toUpperCase();
   };
+
+  const router = useRouter();
 
   return (
     <nav className="w-full bg-white border-b border-gray-200">
@@ -135,12 +138,27 @@ const Navbar = () => {
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
+                    className="cursor-pointer text-destructive focus:text-destructive"
+                    onClick={() => router.push("/profile")}
+                  >
+                    <CircleUserIcon className="mr-2 h-4 w-4" />
+                    個人檔案
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="cursor-pointer text-destructive focus:text-destructive"
+                    onClick={() => router.push("/feedback")}
+                  >
+                    <MessageCircleMoreIcon className="mr-2 h-4 w-4" />
+                    功能回饋
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
                     onClick={handleSignOut}
                     className="cursor-pointer text-destructive focus:text-destructive"
                   >
                     <LogOutIcon className="mr-2 h-4 w-4" />
                     登出
                   </DropdownMenuItem>
+                  
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : null}
