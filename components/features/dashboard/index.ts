@@ -1,0 +1,2 @@
+export { CategoryModal } from './CategoryModal';
+

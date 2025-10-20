@@ -5,4 +5,5 @@
 export * from './mapper';
 export * from './equipment.service';
 export * from './trips.service';
+export * from './gear.service';
 

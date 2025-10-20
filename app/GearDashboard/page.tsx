@@ -1,8 +1,12 @@
 "use client";
 
 import { useRequireAuth } from "@/lib/hooks/useAuth";
+import { useState, useEffect } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { getDashboardTitle, updateDashboardTitle } from "@/lib/services/supabase";
 import Navbar from "@/components/features/layout/Navbar";
 import SideBar from "@/components/features/layout/SideBar";
+import { CategoryModal } from "@/components/features/dashboard";
 import {
   Empty,
   EmptyHeader,
@@ -11,7 +15,7 @@ import {
   EmptyContent,
   EmptyMedia,
 } from "@/components/ui/empty";
-import { FolderCodeIcon,SquarePenIcon} from "lucide-react";
+import { FolderCodeIcon, SquarePenIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 /**
  * 受保護的 GearDashboard 頁面
@@ -26,8 +30,47 @@ import { Button } from "@/components/ui/button";
 export default function GearDashboardPage() {
   // 使用 useRequireAuth hook，自動處理認證邏輯
   const { user, loading } = useRequireAuth();
+  
+  // 彈窗狀態
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // 標題狀態
+  const [dashboardTitle, setDashboardTitle] = useState<string>("裝備管理");
+  const [isTitleLoading, setIsTitleLoading] = useState(true);
 
-  if (loading) {
+  // 載入使用者的自訂標題
+  useEffect(() => {
+    if (!user) return;
+
+    const loadDashboardTitle = async () => {
+      const supabase = createClient();
+      const { data, error } = await getDashboardTitle(supabase, user.id);
+
+      if (!error && data) {
+        setDashboardTitle(data);
+      }
+      setIsTitleLoading(false);
+    };
+
+    loadDashboardTitle();
+  }, [user]);
+
+  // 處理標題儲存
+  const handleSaveTitle = async (newTitle: string) => {
+    if (!user) return;
+
+    const supabase = createClient();
+    const { error } = await updateDashboardTitle(supabase, user.id, newTitle);
+
+    if (error) {
+      throw error;
+    }
+
+    // 更新本地狀態
+    setDashboardTitle(newTitle);
+  };
+
+  if (loading || isTitleLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-lg">載入中...</div>
@@ -54,7 +97,14 @@ export default function GearDashboardPage() {
           <div className="max-w-7xl mx-auto">
             <div className="flex justify-between items-center mb-4">
               <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                裝備管理 <SquarePenIcon className="size-5 text-green-700" />
+                {dashboardTitle}
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  className="p-1 hover:bg-gray-100 rounded transition-colors"
+                  aria-label="編輯標題"
+                >
+                  <SquarePenIcon className="size-5 text-green-700" />
+                </button>
               </h1>
               <div className="flex bg-green-700 text-white rounded-md">
                 <Button>+ 新增類別</Button>
@@ -82,6 +132,14 @@ export default function GearDashboardPage() {
           </div>
         </main>
       </div>
+
+      {/* 標題編輯彈窗 */}
+      <CategoryModal
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        currentTitle={dashboardTitle}
+        onSave={handleSaveTitle}
+      />
     </div>
   );
 }
