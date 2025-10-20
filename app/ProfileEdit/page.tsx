@@ -12,7 +12,7 @@ export default function ProfileEditPage() {
       <div className="flex-1 ml-64 p-6">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-            Profile Edit <PencilIcon className="size-5 text-green-700" />
+            個人檔案 <PencilIcon className="size-5 text-green-700" />
           </h1>
           <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
             <Empty>
