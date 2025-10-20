@@ -1,6 +1,6 @@
 "use client";
 
-import { LockIcon, LuggageIcon, UserIcon, SettingsIcon } from "lucide-react";
+import { CircleUserIcon, MessageCircleMoreIcon,TentIcon,TentTreeIcon} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
@@ -35,13 +35,13 @@ const SideBar = () => {
     {
       id: "equipment",
       label: "裝備管理",
-      icon: LockIcon,
+      icon: TentIcon,
       href: "/dashboard/equipment",
     },
     {
       id: "trips",
       label: "旅程管理",
-      icon: LuggageIcon,
+      icon: TentTreeIcon,
       href: "/dashboard/trips",
       badge: {
         text: "即將上線",
@@ -53,13 +53,13 @@ const SideBar = () => {
     {
       id: "profile",
       label: "個人檔案",
-      icon: UserIcon,
+      icon: CircleUserIcon,
       href: "/profile",
     },
     {
       id: "feedback",
       label: "功能回饋",
-      icon: SettingsIcon,
+      icon: MessageCircleMoreIcon,
       href: "/feedback",
     },
   ];

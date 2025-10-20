@@ -11,7 +11,7 @@ import {
   EmptyContent,
   EmptyMedia,
 } from "@/components/ui/empty";
-import { FolderCodeIcon,PencilIcon } from "lucide-react";
+import { FolderCodeIcon,SquarePenIcon} from "lucide-react";
 import { Button } from "@/components/ui/button";
 /**
  * 受保護的 Dashboard 頁面
@@ -54,7 +54,7 @@ export default function DashboardPage() {
           <div className="max-w-7xl mx-auto">
             <div className="flex justify-between items-center mb-4">
               <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                裝備管理 <PencilIcon className="size-5 text-green-700" />
+                裝備管理 <SquarePenIcon className="size-5 text-green-700" />
               </h1>
               <div className="flex bg-green-700 text-white rounded-md">
                 <Button>+ 新增類別</Button>
