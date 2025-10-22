@@ -5,3 +5,11 @@ compatibility_date = "2024-01-01"
 # 注意：Cloudflare Pages 會忽略這個檔案的大部分設定
 # 實際設定請在 Cloudflare Pages Dashboard 進行
 
+# ============================================
+# Cloudflare R2 Bucket 綁定
+# ============================================
+[[r2_buckets]]
+binding = "IMAGES_BUCKET"
+bucket_name = "outdoor-trails-images"
+preview_bucket_name = "outdoor-trails-images-preview"
+

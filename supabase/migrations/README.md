@@ -1,167 +1,136 @@
-# Supabase Migrations - 資料遷移指南
+# Supabase Migrations
 
-## 📋 Migration 檔案說明
+## 📁 目錄結構
 
-### 001_create_trip_gear_table.sql
-建立 `trip_gear` 中間表，用於處理旅程與裝備的多對多關聯。
-
-### 002_add_trip_slug.sql
-為 `trip` 表添加 `slug` 欄位，用於保留原有的字串 ID（如 `Kumano_Kodo`），方便 URL 使用。
-
-### 003_seed_initial_data.sql
-將靜態資料（`data/trips.ts` 和 `data/equiment.ts`）匯入到 Supabase。
-- 插入測試使用者（UUID: `00000000-0000-0000-0000-000000000001`）
-- 插入 4 個旅程
-- 插入 12 個裝備
-- 建立 trip_gear 關聯
-
-### 004_setup_rls_policies.sql
-設定 Row Level Security (RLS) 政策：
-- 所有人可讀取公開資料
-- 只有擁有者可以修改自己的資料
-
-## 🚀 如何執行 Migrations
-
-### 方法 1：透過 Supabase Dashboard（推薦）
-
-1. 登入 [Supabase Dashboard](https://app.supabase.com/)
-2. 選擇你的專案
-3. 進入 **SQL Editor**
-4. 依序複製並執行以下檔案的內容：
-   - `001_create_trip_gear_table.sql`
-   - `002_add_trip_slug.sql`
-   - `003_seed_initial_data.sql`
-   - `004_setup_rls_policies.sql`
-
-### 方法 2：使用 Supabase CLI
-
-如果你有安裝 Supabase CLI：
-
-```bash
-# 初始化 Supabase（如果還沒做過）
-supabase init
-
-# 連結到你的專案
-supabase link --project-ref <your-project-ref>
-
-# 執行所有 migrations
-supabase db push
-
-# 或者單獨執行特定檔案
-psql -h <your-db-host> -U postgres -d postgres -f supabase/migrations/001_create_trip_gear_table.sql
+```
+supabase/migrations/
+├── 001_init_complete_schema.sql  # ⭐ 唯一的 migration 檔案（已整理）
+└── migrations_backup/            # 舊的混亂 migrations（已備份）
 ```
 
-### 方法 3：使用 psql 直接連線
+## ✨ 最新狀態（2025-10-21）
 
+**所有 migrations 已合併為單一檔案：`001_init_complete_schema.sql`**
+
+這個檔案包含：
+1. ✅ 所有表結構（profiles, trip, gear, trip_gear）
+2. ✅ 所有索引
+3. ✅ Row Level Security (RLS) 政策
+4. ✅ Auto Profile Trigger（新使用者註冊時自動建立 profile）
+5. ✅ 完整的測試資料
+
+---
+
+## 🔄 Migration 內容
+
+### 第一部分：表結構
+- `profiles` - 使用者個人資料
+- `trip` - 旅程記錄
+- `gear` - 裝備
+- `trip_gear` - 旅程與裝備的多對多關聯
+
+### 第二部分：索引
+所有常用查詢欄位都已建立索引（user_id, username, slug, category 等）
+
+### 第三部分：RLS 政策
+- **公開讀取**：所有表都允許公開讀取
+- **擁有者權限**：只有擁有者可以新增/修改/刪除自己的資料
+
+### 第四部分：Triggers
+- `handle_new_user()` - 當新使用者註冊時，自動在 profiles 表建立對應記錄
+
+### 第五部分：測試資料
+- 1 個示範使用者（`demo_user`）
+- 2 個旅程（熊野古道、玉山主峰）
+- 5 個裝備（帳篷、睡袋、背包、頭燈、登山杖）
+- 5 個旅程-裝備關聯
+
+---
+
+## 🚀 如何使用
+
+### 重置資料庫（重新執行 migration）
 ```bash
-# 取得連線字串：Supabase Dashboard -> Settings -> Database -> Connection string
-psql "postgresql://postgres:[YOUR-PASSWORD]@db.xxxxxxxx.supabase.co:5432/postgres"
-
-# 在 psql 中執行
-\i supabase/migrations/001_create_trip_gear_table.sql
-\i supabase/migrations/002_add_trip_slug.sql
-\i supabase/migrations/003_seed_initial_data.sql
-\i supabase/migrations/004_setup_rls_policies.sql
+npx supabase db reset
 ```
 
-## ⚠️ 重要注意事項
+### 啟動本地 Supabase
+```bash
+npx supabase start
+```
 
-### 1. 測試使用者 ID
-- 在 `003_seed_initial_data.sql` 中，我們使用了固定的測試使用者 UUID：
-  ```
-  00000000-0000-0000-0000-000000000001
-  ```
-- **正式環境部署前**，請：
-  1. 透過 Supabase Auth 建立真實使用者
-  2. 取得該使用者的 UUID
-  3. 修改 `003_seed_initial_data.sql` 中的 `user_id` 值
+### 停止本地 Supabase
+```bash
+npx supabase stop
+```
 
-### 2. 執行順序
-- 必須按照檔案編號順序執行（001 → 002 → 003 → 004）
-- 因為後面的檔案可能依賴前面建立的結構
+### 檢查狀態
+```bash
+npx supabase status
+```
 
-### 3. 冪等性（Idempotent）
-- 所有 migration 檔案都設計為冪等的（可重複執行）
-- 使用 `IF NOT EXISTS`、`ON CONFLICT DO NOTHING` 等語法
-- 重複執行不會造成錯誤或重複資料
+---
 
-### 4. RLS 政策
-- 執行完 `004_setup_rls_policies.sql` 後，所有資料將受到 RLS 保護
-- 未登入的使用者只能讀取資料，無法修改
-- 登入使用者只能修改自己的資料
+## 📊 驗證資料
 
-## 🔍 驗證 Migration 是否成功
+啟動後可執行以下指令檢查資料：
 
-執行以下 SQL 來驗證：
-
-```sql
--- 檢查表是否存在
-SELECT table_name 
-FROM information_schema.tables 
-WHERE table_schema = 'public' 
-AND table_name IN ('trip', 'gear', 'trip_gear');
-
--- 檢查資料數量
-SELECT 'trips' as table_name, COUNT(*) FROM trip
-UNION ALL
-SELECT 'gear', COUNT(*) FROM gear
-UNION ALL
-SELECT 'trip_gear', COUNT(*) FROM trip_gear;
-
--- 檢查 RLS 是否啟用
-SELECT tablename, rowsecurity 
-FROM pg_tables 
-WHERE schemaname = 'public' 
-AND tablename IN ('trip', 'gear', 'trip_gear');
+```bash
+docker exec supabase_db_outdoor-trails-hub psql -U postgres -d postgres -c "
+SELECT COUNT(*) as profiles FROM public.profiles;
+SELECT COUNT(*) as trips FROM public.trip;
+SELECT COUNT(*) as gear FROM public.gear;
+SELECT COUNT(*) as relations FROM public.trip_gear;
+"
 ```
 
 預期結果：
-- 3 個表都存在
-- trips: 4 筆
-- gear: 12 筆
-- trip_gear: 約 40+ 筆（根據關聯）
-- 所有表的 rowsecurity 都是 `true`
+- profiles: 1
+- trips: 2
+- gear: 5
+- relations: 5
 
-## 🔄 Rollback（回滾）
+---
 
-如果需要回滾 migrations：
+## 📦 備份說明
 
-```sql
--- 刪除 RLS 政策
-DROP POLICY IF EXISTS "Allow public read access to trips" ON trip;
-DROP POLICY IF EXISTS "Users can insert their own trips" ON trip;
--- ... 其他政策
-
--- 刪除資料
-DELETE FROM trip_gear;
-DELETE FROM gear;
-DELETE FROM trip;
-DELETE FROM profiles WHERE id = '00000000-0000-0000-0000-000000000001';
-
--- 刪除欄位
-ALTER TABLE trip DROP COLUMN IF EXISTS slug;
-
--- 刪除表
-DROP TABLE IF EXISTS trip_gear;
+舊的 migrations（來回修正的混亂版本）已備份至：
+```
+supabase/migrations_backup/
+├── 000_create_base_tables.sql
+├── 001_create_trip_gear_table.sql
+├── 002_add_trip_slug.sql
+├── 003_seed_initial_data.sql
+├── 004_setup_rls_policies.sql
+├── 005_add_gear_dashboard_title.sql
+├── 006_auto_create_profile.sql
+├── 007_fix_profiles_table.sql
+├── 008_setup_profiles_rls.sql
+├── 009_move_dashboard_title_to_profiles.sql
+└── 010_auto_create_profile_trigger.sql
 ```
 
-## 📚 相關文件
+**⚠️ 這些檔案僅供參考，不會被執行。**
 
-- [Supabase RLS 文檔](https://supabase.com/docs/guides/auth/row-level-security)
-- [PostgreSQL CREATE TABLE](https://www.postgresql.org/docs/current/sql-createtable.html)
-- [專案資料庫架構](../../docs/database-schema.md)
+---
 
-## 🆘 常見問題
+## 🔄 下一步
 
-### Q: Migration 執行失敗怎麼辦？
-A: 檢查錯誤訊息，通常是因為：
-- 表已經存在（可以忽略，因為使用了 `IF NOT EXISTS`）
-- 外鍵約束失敗（檢查 profiles 表是否存在）
-- 權限不足（確認使用 postgres 角色）
+現在您可以：
+1. ✅ 使用 `npx prisma db pull` 從資料庫生成 Prisma schema
+2. ✅ 開始開發 Prisma services（Phase 2）
+3. ✅ 更新 React Hooks（Phase 3）
 
-### Q: 如何更新資料？
-A: 修改 `003_seed_initial_data.sql`，然後重新執行。由於使用了 `ON CONFLICT DO NOTHING`，不會覆蓋現有資料。如果要更新，請改用 `ON CONFLICT DO UPDATE`。
+---
 
-### Q: 如何新增更多資料？
-A: 建立新的 migration 檔案（如 `005_add_more_data.sql`），遵循相同的格式。
+## 💡 提示
+
+如果您需要修改 schema：
+1. 直接編輯 `001_init_complete_schema.sql`
+2. 執行 `npx supabase db reset` 重新套用
+3. 或者建立新的 migration 檔案（如 `002_add_new_feature.sql`）
+
+---
+
+**整理完成！現在資料庫結構清晰乾淨了！** 🎉
 

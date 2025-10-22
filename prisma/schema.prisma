@@ -1,0 +1,115 @@
+// Prisma Schema for Outdoor Trails Hub
+// 此檔案映射 Supabase PostgreSQL 資料庫結構
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// Auth (Supabase 管理，僅用於關聯)
+// ============================================
+
+/// Supabase Auth Users table (僅用於外鍵關聯，不直接操作)
+model User {
+  id         String   @id @db.Uuid
+  email      String?  @unique
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  
+  // 關聯
+  trips      Trip[]
+  gear       Gear[]
+  profile    Profile?
+  
+  @@map("users")
+  @@schema("auth")
+}
+
+// ============================================
+// Public Schema - 核心資料表
+// ============================================
+
+/// 使用者個人資料
+model Profile {
+  id                   String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id              String    @unique @db.Uuid
+  username             String?   @unique
+  display_name         String?
+  bio                  String?
+  avatar_url           String?
+  gear_dashboard_title String?   @map("gear_dashboard_title")
+  created_at           DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at           DateTime  @updatedAt @db.Timestamptz(6)
+  
+  // 關聯
+  user                 User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  
+  @@map("profiles")
+  @@schema("public")
+}
+
+/// 旅程
+model Trip {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id     String    @db.Uuid
+  title       String
+  description String?
+  location    String?
+  date        DateTime? @db.Date
+  images      String[]
+  slug        String?   @unique
+  created_at  DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime  @updatedAt @db.Timestamptz(6)
+  
+  // 關聯
+  user        User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  trip_gear   TripGear[]
+  
+  @@map("trip")
+  @@schema("public")
+}
+
+/// 裝備
+model Gear {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id     String    @db.Uuid
+  name        String
+  category    String?
+  description String?
+  image_url   String?
+  specs       Json?
+  tags        String[]
+  created_at  DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime  @updatedAt @db.Timestamptz(6)
+  
+  // 關聯
+  user        User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  trip_gear   TripGear[]
+  
+  @@map("gear")
+  @@schema("public")
+}
+
+/// 旅程與裝備的多對多關聯表
+model TripGear {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  trip_id    String   @db.Uuid
+  gear_id    String   @db.Uuid
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  
+  // 關聯
+  trip       Trip     @relation(fields: [trip_id], references: [id], onDelete: Cascade)
+  gear       Gear     @relation(fields: [gear_id], references: [id], onDelete: Cascade)
+  
+  @@unique([trip_id, gear_id])
+  @@map("trip_gear")
+  @@schema("public")
+}
+
+
+
+
