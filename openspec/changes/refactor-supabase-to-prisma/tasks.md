@@ -33,38 +33,38 @@
 
 ## 2. 資料服務層重構
 
-- [ ] 2.1 建立 Prisma Client 單例
+- [x] 2.1 建立 Prisma Client 單例
   - 建立 `lib/prisma.ts`
   - 處理 development vs production 環境
   - 加入 connection pooling 配置
-- [ ] 2.2 建立 `lib/services/prisma/` 目錄結構
+- [x] 2.2 建立 `lib/services/prisma/` 目錄結構
   - `lib/services/prisma/trips.service.ts`
   - `lib/services/prisma/equipment.service.ts`
   - `lib/services/prisma/profiles.service.ts`
   - `lib/services/prisma/index.ts`
-- [ ] 2.3 實作 Trips Service
+- [x] 2.3 實作 Trips Service
   - `getTripList(userId?: string)`
   - `getTripById(id: string, userId?: string)`
   - `createTrip(data: CreateTripInput, userId: string)`
   - `updateTrip(id: string, data: UpdateTripInput, userId: string)`
   - `deleteTrip(id: string, userId: string)`
   - `getTripBySlug(slug: string)`
-- [ ] 2.4 實作 Equipment Service
+- [x] 2.4 實作 Equipment Service
   - `getEquipmentList(userId?: string, options?: { tripId?: string })`
   - `getEquipmentById(id: string, userId?: string)`
   - `createEquipment(data: CreateEquipmentInput, userId: string)`
   - `updateEquipment(id: string, data: UpdateEquipmentInput, userId: string)`
   - `deleteEquipment(id: string, userId: string)`
   - `getEquipmentByTrip(tripId: string)`
-- [ ] 2.5 實作 Profiles Service
+- [x] 2.5 實作 Profiles Service
   - `getProfileByUserId(userId: string)`
   - `getProfileByUsername(username: string)`
   - `updateProfile(userId: string, data: UpdateProfileInput)`
   - `createProfile(userId: string, data: CreateProfileInput)`
-- [ ] 2.6 加入權限檢查邏輯
+- [x] 2.6 加入權限檢查邏輯
   - 每個寫入操作驗證 `userId` 匹配
-  - 建立 helper function `ensureOwnership()`
-  - 加入錯誤處理（`UnauthorizedError`, `NotFoundError`）
+  - 在每個 create/update/delete 函數中加入權限檢查
+  - 加入錯誤處理（Unauthorized, NotFound errors）
 
 ## 3. React Hooks 更新
 

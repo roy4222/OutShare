@@ -8,6 +8,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  schemas  = ["auth", "public"]
 }
 
 // ============================================
@@ -41,6 +42,7 @@ model Profile {
   display_name         String?
   bio                  String?
   avatar_url           String?
+  social_links         Json?     @default("{}") @db.JsonB
   gear_dashboard_title String?   @map("gear_dashboard_title")
   created_at           DateTime  @default(now()) @db.Timestamptz(6)
   updated_at           DateTime  @updatedAt @db.Timestamptz(6)
@@ -59,8 +61,10 @@ model Trip {
   title       String
   description String?
   location    String?
+  duration    String?
   date        DateTime? @db.Date
-  images      String[]
+  images      String[]  @default([])
+  tags        String[]  @default([])
   slug        String?   @unique
   created_at  DateTime  @default(now()) @db.Timestamptz(6)
   updated_at  DateTime  @updatedAt @db.Timestamptz(6)
@@ -81,8 +85,8 @@ model Gear {
   category    String?
   description String?
   image_url   String?
-  specs       Json?
-  tags        String[]
+  specs       Json?     @db.JsonB
+  tags        String[]  @default([])
   created_at  DateTime  @default(now()) @db.Timestamptz(6)
   updated_at  DateTime  @updatedAt @db.Timestamptz(6)
   
