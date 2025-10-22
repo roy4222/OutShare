@@ -47,8 +47,8 @@ model Profile {
   created_at           DateTime  @default(now()) @db.Timestamptz(6)
   updated_at           DateTime  @updatedAt @db.Timestamptz(6)
   
-  // 關聯
-  user                 User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  // 關聯（可選，因為 Prisma Studio 可能查詢不到 auth schema）
+  user                 User?     @relation(fields: [user_id], references: [id], onDelete: Cascade)
   
   @@map("profiles")
   @@schema("public")
@@ -69,8 +69,8 @@ model Trip {
   created_at  DateTime  @default(now()) @db.Timestamptz(6)
   updated_at  DateTime  @updatedAt @db.Timestamptz(6)
   
-  // 關聯
-  user        User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  // 關聯（可選，因為 Prisma Studio 可能查詢不到 auth schema）
+  user        User?     @relation(fields: [user_id], references: [id], onDelete: Cascade)
   trip_gear   TripGear[]
   
   @@map("trip")
@@ -90,8 +90,8 @@ model Gear {
   created_at  DateTime  @default(now()) @db.Timestamptz(6)
   updated_at  DateTime  @updatedAt @db.Timestamptz(6)
   
-  // 關聯
-  user        User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  // 關聯（可選，因為 Prisma Studio 可能查詢不到 auth schema）
+  user        User?     @relation(fields: [user_id], references: [id], onDelete: Cascade)
   trip_gear   TripGear[]
   
   @@map("gear")
