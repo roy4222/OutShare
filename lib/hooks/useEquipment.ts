@@ -1,7 +1,7 @@
 /**
  * useEquipment Hook
  * 
- * 封裝裝備資料和過濾邏輯（從 Supabase 獲取）
+ * 封裝裝備資料和過濾邏輯（從 API 獲取，使用 Prisma Services）
  */
 
 'use client';
@@ -12,8 +12,6 @@ import {
   filterEquipmentByTrip,
   groupEquipmentByCategory,
 } from '@/lib/services/equipment.service';
-import { supabaseClient } from '@/lib/supabase/client';
-import { getEquipmentList, getTripUuidBySlug } from '@/lib/services/supabase';
 
 /**
  * useEquipment 的選項
@@ -59,7 +57,7 @@ export function useEquipment(
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
-  // 從 Supabase 獲取裝備資料
+  // 從 API 獲取裝備資料
   useEffect(() => {
     let isMounted = true;
 
@@ -68,32 +66,29 @@ export function useEquipment(
         setIsLoading(true);
         setError(null);
 
-        // 如果有 tripId，需要先獲取對應的 UUID
-        let actualTripId = tripId;
+        // 構建 API URL
+        const params = new URLSearchParams();
+        if (userId) {
+          params.append('userId', userId);
+        }
         if (tripId) {
-          const { data: uuid } = await getTripUuidBySlug(supabaseClient, tripId);
-          if (uuid) {
-            actualTripId = uuid;
-          }
+          params.append('tripId', tripId);
         }
 
-        // 從 Supabase 獲取裝備
-        const { data, error: fetchError } = await getEquipmentList(
-          supabaseClient,
-          {
-            userId,
-            tripId: actualTripId,
-            includeTrips: false,
-          }
-        );
+        const url = `/api/equipment${params.toString() ? `?${params.toString()}` : ''}`;
+
+        // 呼叫 API Route
+        const response = await fetch(url);
 
         if (!isMounted) return;
 
-        if (fetchError) {
-          throw fetchError;
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to fetch equipment');
         }
 
-        setEquipment(data);
+        const { data } = await response.json();
+        setEquipment(data || []);
       } catch (err) {
         if (!isMounted) return;
         console.error('Error fetching equipment:', err);

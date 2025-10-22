@@ -1,15 +1,13 @@
 /**
  * useTripStats Hook
  * 
- * 封裝旅程統計計算邏輯（從 Supabase 獲取裝備後計算）
+ * 封裝旅程統計計算邏輯（從 API 獲取裝備後計算，使用 Prisma Services）
  */
 
 'use client';
 
 import { useState, useEffect } from 'react';
 import { TripStats } from '@/lib/types/trip';
-import { supabaseClient } from '@/lib/supabase/client';
-import { getTripUuidBySlug, getEquipmentByTrip } from '@/lib/services/supabase';
 
 /**
  * 計算並返回旅程統計資料
@@ -42,43 +40,38 @@ export function useTripStats(tripIdOrSlug: string): {
         setIsLoading(true);
         setError(null);
 
-        // 先獲取旅程的 UUID（如果傳入的是 slug）
-        const { data: uuid } = await getTripUuidBySlug(
-          supabaseClient,
-          tripIdOrSlug
-        );
+        // 直接用 tripIdOrSlug 查詢裝備（API 會處理 UUID/slug 轉換）
+        const url = `/api/equipment?tripId=${encodeURIComponent(tripIdOrSlug)}`;
 
-        const actualTripId = uuid || tripIdOrSlug;
-
-        // 獲取旅程的裝備
-        const { data: equipment, error: fetchError } = await getEquipmentByTrip(
-          supabaseClient,
-          actualTripId
-        );
+        const response = await fetch(url);
 
         if (!isMounted) return;
 
-        if (fetchError) {
-          throw fetchError;
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to fetch equipment');
         }
 
+        const { data: equipment } = await response.json();
+
         // 計算統計資料
-        const totalWeight = equipment.reduce(
-          (sum, item) => sum + (item.weight || 0),
+        const totalWeight = (equipment || []).reduce(
+          (sum: number, item: { weight?: number }) => sum + (item.weight || 0),
           0
         );
-        const totalPrice = equipment.reduce(
-          (sum, item) => sum + (item.price || 0),
+        const totalPrice = (equipment || []).reduce(
+          (sum: number, item: { price?: number }) => sum + (item.price || 0),
           0
         );
 
         setStats({
           totalWeight: totalWeight / 1000, // 轉換為公斤
           totalPrice,
-          equipmentCount: equipment.length,
+          equipmentCount: (equipment || []).length,
         });
       } catch (err) {
         if (!isMounted) return;
+        console.error('Error fetching trip stats:', err);
         setError(err instanceof Error ? err : new Error('Unknown error'));
         setStats({
           totalWeight: 0,

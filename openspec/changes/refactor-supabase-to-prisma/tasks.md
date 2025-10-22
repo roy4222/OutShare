@@ -68,19 +68,20 @@
 
 ## 3. React Hooks 更新
 
-- [ ] 3.1 更新 `lib/hooks/useTrips.ts`
-  - 改用 `prismaTripsService.getTripList()`
+- [x] 3.1 更新 `lib/hooks/useTrips.ts`
+  - 改用 API Route (`/api/trips`)
   - 移除 Supabase client 相關程式碼
-  - 測試資料獲取功能
-- [ ] 3.2 更新 `lib/hooks/useEquipment.ts`
-  - 改用 `prismaEquipmentService.getEquipmentList()`
+  - 使用 fetch 呼叫 API
+- [x] 3.2 更新 `lib/hooks/useEquipment.ts`
+  - 改用 API Route (`/api/equipment`)
   - 移除 Supabase client 相關程式碼
-  - 測試資料獲取功能
-- [ ] 3.3 更新 `lib/hooks/useTripStats.ts`
-  - 改用 Prisma service 計算統計資料
-  - 測試統計功能正確性
-- [ ] 3.4 建立 `lib/hooks/useProfile.ts`（如果尚未存在）
-  - 使用 `prismaProfilesService.getProfileByUserId()`
+  - 使用 fetch 呼叫 API
+- [x] 3.3 更新 `lib/hooks/useTripStats.ts`
+  - 改用 API Route (`/api/equipment?tripId=...`)
+  - 在 client side 計算統計資料
+- [x] 3.4 更新 `lib/hooks/useProfile.ts`
+  - 使用 API Route (`/api/profiles`)
+  - 新增 `useProfileByUsername` (使用 `/api/profiles/[username]`)
   - 處理 loading 和 error 狀態
 
 ## 4. 前端組件更新
@@ -101,17 +102,20 @@
 
 ## 5. API Routes 更新與檔案上傳
 
-- [ ] 5.1 檢查 `app/api/` 目錄下的所有 API routes
-  - 列出所有使用 Supabase 資料查詢的 routes
-- [ ] 5.2 更新 trips 相關 API routes
-  - 改用 Prisma services
-  - 保持 API 介面不變
-- [ ] 5.3 更新 gear/equipment 相關 API routes
-  - 改用 Prisma services
-  - 保持 API 介面不變
-- [ ] 5.4 更新 profile 相關 API routes
-  - 改用 Prisma services
-  - 保持 API 介面不變
+- [x] 5.1 檢查 `app/api/` 目錄下的所有 API routes
+  - 列出所有使用 Supabase 資料查詢的 routes（目前只有 auth/callback）
+- [x] 5.2 建立 trips 相關 API routes
+  - `app/api/trips/route.ts` - GET (列表), POST (建立)
+  - `app/api/trips/[id]/route.ts` - GET, PUT, DELETE
+  - 使用 Prisma services
+- [x] 5.3 建立 gear/equipment 相關 API routes
+  - `app/api/equipment/route.ts` - GET (列表), POST (建立)
+  - `app/api/equipment/[id]/route.ts` - GET, PUT, DELETE
+  - 使用 Prisma services
+- [x] 5.4 建立 profile 相關 API routes
+  - `app/api/profiles/route.ts` - GET (當前使用者), PUT (更新)
+  - `app/api/profiles/[username]/route.ts` - GET (公開查詢)
+  - 使用 Prisma services
 - [ ] 5.5 建立檔案上傳 API (`app/api/upload/route.ts`) ⭐
   - 實作圖片上傳到 Cloudflare R2
   - 支援圖片壓縮/調整大小（使用 sharp 或 browser 原生）

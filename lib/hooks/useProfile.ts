@@ -1,10 +1,12 @@
 /**
  * useProfile Hook
  * 
- * 封裝個人資料邏輯
+ * 封裝個人資料邏輯（從 API 獲取，使用 Prisma Services）
  */
 
-import { useMemo } from 'react';
+'use client';
+
+import { useState, useEffect, useMemo } from 'react';
 import { UserProfile } from '@/lib/types/profile';
 import {
   faInstagram,
@@ -13,16 +15,88 @@ import {
 } from '@fortawesome/free-brands-svg-icons';
 
 /**
- * 獲取預設個人資料（目前使用硬編碼資料，未來可從資料庫獲取）
+ * 獲取當前使用者的個人資料
  * 
  * @returns 使用者個人資料
  * 
  * @example
  * const profile = useProfile();
- * console.log(profile.displayName); // 'KJ'
+ * console.log(profile.displayName);
  */
 export function useProfile(): UserProfile {
+  const [profileData, setProfileData] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function fetchProfile() {
+      try {
+        const response = await fetch('/api/profiles');
+
+        if (!isMounted) return;
+
+        if (response.ok) {
+          const { data } = await response.json();
+          setProfileData(data);
+        } else {
+          // 如果沒有登入或沒有 profile，使用預設值
+          console.log('No profile found, using default');
+        }
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    fetchProfile();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const profile = useMemo<UserProfile>(() => {
+    // 如果有從 API 獲取的資料，使用它
+    if (profileData) {
+      const socialLinks = [];
+      const links = profileData.social_links || {};
+      
+      if (links.instagram) {
+        socialLinks.push({
+          href: links.instagram,
+          icon: faInstagram,
+          label: 'Instagram',
+        });
+      }
+      if (links.facebook) {
+        socialLinks.push({
+          href: links.facebook,
+          icon: faSquareFacebook,
+          label: 'Facebook',
+        });
+      }
+      if (links.threads) {
+        socialLinks.push({
+          href: links.threads,
+          icon: faThreads,
+          label: 'Threads',
+        });
+      }
+
+      return {
+        username: profileData.username || 'user',
+        displayName: profileData.display_name || profileData.username || 'User',
+        avatar: profileData.avatar_url || '/S__40583184_0.jpg',
+        bio: profileData.bio || '',
+        socialLinks,
+      };
+    }
+
+    // 預設資料（向後相容）
     return {
       username: 'kj',
       displayName: 'KJ',
@@ -46,20 +120,100 @@ export function useProfile(): UserProfile {
         },
       ],
     };
-  }, []);
+  }, [profileData]);
 
   return profile;
 }
 
 /**
- * 根據使用者名稱獲取個人資料（預留介面，未來整合資料庫時使用）
+ * 根據使用者名稱獲取個人資料
  * 
- * @param _username - 使用者名稱（目前未使用）
- * @returns 使用者個人資料或 null
+ * @param username - 使用者名稱
+ * @returns 使用者個人資料
  */
-export function useProfileByUsername(_username: string): UserProfile | null {
-  // TODO: 未來從資料庫獲取
-  // 目前返回預設資料
-  return useProfile();
+export function useProfileByUsername(username: string): {
+  profile: UserProfile | null;
+  isLoading: boolean;
+  error: Error | null;
+} {
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function fetchProfile() {
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        const response = await fetch(`/api/profiles/${encodeURIComponent(username)}`);
+
+        if (!isMounted) return;
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to fetch profile');
+        }
+
+        const { data } = await response.json();
+        const profileData = data.profile;
+
+        if (profileData) {
+          const socialLinks = [];
+          const links = profileData.social_links || {};
+          
+          if (links.instagram) {
+            socialLinks.push({
+              href: links.instagram,
+              icon: faInstagram,
+              label: 'Instagram',
+            });
+          }
+          if (links.facebook) {
+            socialLinks.push({
+              href: links.facebook,
+              icon: faSquareFacebook,
+              label: 'Facebook',
+            });
+          }
+          if (links.threads) {
+            socialLinks.push({
+              href: links.threads,
+              icon: faThreads,
+              label: 'Threads',
+            });
+          }
+
+          setProfile({
+            username: profileData.username || 'user',
+            displayName: profileData.display_name || profileData.username || 'User',
+            avatar: profileData.avatar_url || '/S__40583184_0.jpg',
+            bio: profileData.bio || '',
+            socialLinks,
+          });
+        }
+      } catch (err) {
+        if (!isMounted) return;
+        console.error('Error fetching profile:', err);
+        setError(err instanceof Error ? err : new Error('Unknown error'));
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    if (username) {
+      fetchProfile();
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [username]);
+
+  return { profile, isLoading, error };
 }
 

@@ -1,15 +1,13 @@
 /**
  * useTrips Hook
  * 
- * 從 Supabase 獲取旅程資料
+ * 從 API 獲取旅程資料（使用 Prisma Services）
  */
 
 'use client';
 
 import { useState, useEffect } from 'react';
 import { Trip } from '@/lib/types/trip';
-import { supabaseClient } from '@/lib/supabase/client';
-import { getTripList } from '@/lib/services/supabase';
 
 /**
  * useTrips 的選項
@@ -55,20 +53,29 @@ export function useTrips(options: UseTripsOptions = {}): UseTripsResult {
         setIsLoading(true);
         setError(null);
 
-        const { data, error: fetchError } = await getTripList(
-          supabaseClient,
-          { userId }
-        );
-
-        if (!isMounted) return;
-
-        if (fetchError) {
-          throw fetchError;
+        // 構建 API URL
+        const params = new URLSearchParams();
+        if (userId) {
+          params.append('userId', userId);
         }
 
-        setTrips(data);
+        const url = `/api/trips${params.toString() ? `?${params.toString()}` : ''}`;
+
+        // 呼叫 API Route
+        const response = await fetch(url);
+
+        if (!isMounted) return;
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to fetch trips');
+        }
+
+        const { data } = await response.json();
+        setTrips(data || []);
       } catch (err) {
         if (!isMounted) return;
+        console.error('Error fetching trips:', err);
         setError(err instanceof Error ? err : new Error('Unknown error'));
         setTrips([]);
       } finally {
