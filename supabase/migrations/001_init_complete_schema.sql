@@ -267,20 +267,27 @@ WHERE id NOT IN (SELECT user_id FROM public.profiles WHERE user_id IS NOT NULL)
 ON CONFLICT (user_id) DO NOTHING;
 
 -- ============================================
--- 第九部分：測試資料
+-- 第九部分：測試資料（已註解，避免 FK 錯誤）
 -- ============================================
+-- 
+-- 注意：測試資料需要先在 auth.users 中建立對應的使用者
+-- 建議：在應用程式中透過 Google OAuth 登入後，自動建立 profile
+-- 
+-- 如需啟用測試資料，請先執行：
+-- INSERT INTO auth.users (id, email) VALUES 
+--   ('00000000-0000-0000-0000-000000000001'::uuid, 'test@example.com');
 
+/*
 -- 測試使用者 Profile
-INSERT INTO public.profiles (id, user_id, username, display_name, bio, created_at)
+INSERT INTO public.profiles (user_id, username, display_name, bio, created_at)
 VALUES (
-  '00000000-0000-0000-0000-000000000001'::uuid,
   '00000000-0000-0000-0000-000000000001'::uuid,
   'demo_user',
   '示範使用者',
   '戶外探險愛好者',
   now()
 )
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (user_id) DO NOTHING;
 
 -- 測試旅程
 INSERT INTO public.trip (id, user_id, slug, title, description, location, images, tags, created_at)
@@ -368,16 +375,11 @@ VALUES
     now()
   )
 ON CONFLICT (id) DO NOTHING;
+*/
 
--- 旅程-裝備關聯
-INSERT INTO public.trip_gear (trip_id, gear_id)
-VALUES
-  ('a1111111-0000-0000-0000-000000000001'::uuid, 'b1111111-0000-0000-0000-000000000001'::uuid),
-  ('a1111111-0000-0000-0000-000000000001'::uuid, 'b2222222-0000-0000-0000-000000000002'::uuid),
-  ('a1111111-0000-0000-0000-000000000001'::uuid, 'b3333333-0000-0000-0000-000000000003'::uuid),
-  ('a2222222-0000-0000-0000-000000000002'::uuid, 'b3333333-0000-0000-0000-000000000003'::uuid),
-  ('a2222222-0000-0000-0000-000000000002'::uuid, 'b4444444-0000-0000-0000-000000000004'::uuid)
-ON CONFLICT DO NOTHING;
+-- 注意：以上測試資料都已註解，migration 完成後資料庫為空
+-- 請透過應用程式登入後，系統會自動建立 profile
+-- 然後您可以在應用程式中建立 trips 和 gear
 
 -- ============================================
 -- 第十部分：表格註解

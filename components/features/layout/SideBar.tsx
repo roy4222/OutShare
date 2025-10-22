@@ -34,13 +34,13 @@ const SideBar = () => {
   const navItems: NavItem[] = [
     {
       id: "equipment",
-      label: "裝備管理",
+      label: "我的裝備",
       icon: TentIcon,
       href: "/GearDashboard",
     },
     {
       id: "trips",
-      label: "旅程管理",
+      label: "我的旅程",
       icon: TentTreeIcon,
       href: "/TripDashboard",
       badge: {

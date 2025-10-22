@@ -33,7 +33,7 @@ export default function GearDashboardPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   
   // 標題狀態
-  const [dashboardTitle, setDashboardTitle] = useState<string>("裝備管理");
+  const [dashboardTitle, setDashboardTitle] = useState<string>("我的裝備");
   const [isTitleLoading, setIsTitleLoading] = useState(true);
 
   // 載入使用者的自訂標題

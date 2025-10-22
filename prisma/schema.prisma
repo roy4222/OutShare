@@ -35,9 +35,9 @@ model User {
 // ============================================
 
 /// 使用者個人資料
+/// user_id 作為主鍵（一對一關係與 auth.users）
 model Profile {
-  id                   String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user_id              String    @unique @db.Uuid
+  user_id              String    @id @db.Uuid
   username             String?   @unique
   display_name         String?
   bio                  String?

@@ -133,7 +133,7 @@ export function CategoryModal({
             </Button>
             <Button
               type="submit"
-              className="bg-green-700 hover:bg-green-800"
+              className="bg-green-700 hover:bg-green-800 text-white"
               disabled={isLoading}
             >
               {isLoading ? "儲存中..." : "儲存"}
