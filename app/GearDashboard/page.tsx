@@ -2,8 +2,6 @@
 
 import { useRequireAuth } from "@/lib/hooks/useAuth";
 import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
-import { getDashboardTitle, updateDashboardTitle } from "@/lib/services/supabase";
 import Navbar from "@/components/features/layout/Navbar";
 import SideBar from "@/components/features/layout/SideBar";
 import { CategoryModal } from "@/components/features/dashboard";
@@ -43,13 +41,18 @@ export default function GearDashboardPage() {
     if (!user) return;
 
     const loadDashboardTitle = async () => {
-      const supabase = createClient();
-      const { data, error } = await getDashboardTitle(supabase, user.id);
+      try {
+        const response = await fetch('/api/profiles');
+        const result = await response.json();
 
-      if (!error && data) {
-        setDashboardTitle(data);
+        if (result.data?.dashboard_title) {
+          setDashboardTitle(result.data.dashboard_title);
+        }
+      } catch (error) {
+        console.error('Error loading dashboard title:', error);
+      } finally {
+        setIsTitleLoading(false);
       }
-      setIsTitleLoading(false);
     };
 
     loadDashboardTitle();
@@ -59,11 +62,29 @@ export default function GearDashboardPage() {
   const handleSaveTitle = async (newTitle: string) => {
     if (!user) return;
 
-    const supabase = createClient();
-    const { error } = await updateDashboardTitle(supabase, user.id, newTitle);
+    // 驗證標題
+    if (!newTitle || newTitle.trim().length === 0) {
+      throw new Error('標題不可為空');
+    }
 
-    if (error) {
-      throw error;
+    if (newTitle.length > 50) {
+      throw new Error('標題長度不可超過 50 字元');
+    }
+
+    const response = await fetch('/api/profiles', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        dashboard_title: newTitle.trim(),
+      }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || result.error) {
+      throw new Error(result.error || '儲存失敗');
     }
 
     // 更新本地狀態

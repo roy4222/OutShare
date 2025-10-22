@@ -1,16 +1,31 @@
 // 檔案路徑: lib/supabase/client.ts
 
 import { createBrowserClient } from '@supabase/ssr'
-import { Database } from '@/lib/database.types' // 💡 注意：建議自動生成您的資料庫類型
+import { Database } from '@/lib/database.types'
 
 /**
+ * ⚠️ 重要：此檔案僅用於 Supabase Auth 操作
+ * 
  * 創建並導出一個 Supabase 客戶端 (Client-side) 實例。
  *
- * 這個實例用於在客戶端環境 (例如 React 的 Client Components)
- * 進行資料操作 (如讀取公開資料) 和身份驗證 (如登入/註冊/登出)。
+ * 🔐 **僅用於身份驗證操作**：
+ * - `supabase.auth.signInWithOAuth()` - OAuth 登入
+ * - `supabase.auth.signOut()` - 登出
+ * - `supabase.auth.getUser()` - 獲取當前使用者
+ * - `supabase.auth.getSession()` - 獲取 Session
  *
- * 由於它運行在瀏覽器中，它只使用 NEXT_PUBLIC_SUPABASE_ANON_KEY (匿名公鑰)，
- * 並且所有的資料存取都受到 RLS (Row Level Security) 的保護。
+ * ❌ **不要用於資料庫查詢**：
+ * - 資料庫查詢請使用 API Routes (`/api/trips`, `/api/equipment`, etc.)
+ * - API Routes 內部使用 Prisma Client 連接資料庫
+ * 
+ * 📚 架構說明：
+ * ```
+ * 前端 Component → Hook (useTrips, useEquipment) 
+ *                → API Route (/api/trips) 
+ *                → Prisma Service (getTripList) 
+ *                → Prisma Client 
+ *                → PostgreSQL
+ * ```
  */
 export function createClient() {
   // 檢查環境變數是否已設定
