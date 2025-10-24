@@ -11,26 +11,12 @@
 import { prisma } from '@/lib/prisma';
 import { Equipment } from '@/lib/types/equipment';
 import { Prisma } from '@prisma/client';
-
-/**
- * 將 Prisma Gear 資料轉換為 Domain Model
- */
-function mapPrismaToEquipment(prismaGear: any): Equipment {
-  // 解析 specs (JSON)
-  const specs = prismaGear.specs as any || {};
-
-  return {
-    name: prismaGear.name,
-    brand: specs.brand || '',
-    weight: specs.weight_g || 0,
-    price: specs.price_twd || 0,
-    tags: prismaGear.tags || [],
-    buy_link: specs.buy_link || undefined,
-    image: prismaGear.image_url || undefined,
-    category: prismaGear.category || '',
-    trips: undefined, // 需要透過關聯查詢才能取得
-  };
-}
+import {
+  mapGear,
+  mapGearList,
+  type GearWithRelations,
+  type GearSpecs,
+} from '@/lib/mappers/equipment';
 
 /**
  * 獲取裝備列表
@@ -80,18 +66,11 @@ export async function getEquipmentList(
           },
         },
       } : undefined,
-    });
+    }) as GearWithRelations[];
 
     // 轉換為 Domain Model
-    const equipmentList = gearList.map((gear) => {
-      const equipment = mapPrismaToEquipment(gear);
-      
-      // 如果需要附加關聯的旅程資訊
-      if (options?.includeTrips && 'trip_gear' in gear) {
-        equipment.trips = (gear as any).trip_gear.map((tg: any) => tg.trip.title);
-      }
-
-      return equipment;
+    const equipmentList = mapGearList(gearList, {
+      includeTrips: options?.includeTrips,
     });
 
     return { data: equipmentList, error: null };
@@ -135,19 +114,43 @@ export async function getEquipmentById(
       return { data: null, error: null };
     }
 
-    const equipment = mapPrismaToEquipment(gear);
-    
-    // 附加關聯的旅程
-    if ('trip_gear' in gear) {
-      equipment.trips = (gear as any).trip_gear.map((tg: any) => tg.trip.title);
-    }
-
-    return { data: equipment, error: null };
+    return {
+      data: mapGear(gear as GearWithRelations, { includeTrips: true }),
+      error: null,
+    };
   } catch (error) {
     console.error('Error fetching equipment by ID:', error);
     return { 
       data: null, 
       error: error instanceof Error ? error : new Error('Unknown error') 
+    };
+  }
+}
+
+/**
+ * 根據 ID 與使用者驗證擁有權後返回裝備
+ */
+export async function getOwnedEquipment(
+  id: string,
+  userId: string
+): Promise<{ data: Equipment | null; error: Error | null }> {
+  try {
+    const gear = await prisma.gear.findFirst({
+      where: {
+        id,
+        user_id: userId,
+      },
+    });
+
+    return {
+      data: gear ? mapGear(gear as GearWithRelations) : null,
+      error: null,
+    };
+  } catch (error) {
+    console.error('Error fetching owned equipment:', error);
+    return {
+      data: null,
+      error: error instanceof Error ? error : new Error('Unknown error'),
     };
   }
 }
@@ -179,13 +182,7 @@ export async function createEquipment(
     category?: string;
     description?: string;
     image_url?: string;
-    specs?: {
-      brand?: string;
-      weight_g?: number;
-      price_twd?: number;
-      buy_link?: string;
-      [key: string]: any;
-    };
+    specs?: GearSpecs;
     tags?: string[];
   },
   userId: string
@@ -207,7 +204,7 @@ export async function createEquipment(
       },
     });
 
-    return { data: mapPrismaToEquipment(gear), error: null };
+    return { data: mapGear(gear as GearWithRelations), error: null };
   } catch (error) {
     console.error('Error creating equipment:', error);
     return { 
@@ -234,13 +231,7 @@ export async function updateEquipment(
     category?: string;
     description?: string;
     image_url?: string;
-    specs?: {
-      brand?: string;
-      weight_g?: number;
-      price_twd?: number;
-      buy_link?: string;
-      [key: string]: any;
-    };
+    specs?: GearSpecs;
     tags?: string[];
   },
   userId: string
@@ -278,7 +269,7 @@ export async function updateEquipment(
       },
     });
 
-    return { data: mapPrismaToEquipment(gear), error: null };
+    return { data: mapGear(gear as GearWithRelations), error: null };
   } catch (error) {
     console.error('Error updating equipment:', error);
     return { 
@@ -439,4 +430,3 @@ export async function removeEquipmentFromTrip(
     };
   }
 }
-

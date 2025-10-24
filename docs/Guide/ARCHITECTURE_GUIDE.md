@@ -103,6 +103,10 @@ outdoor-trails-hub/
 │   │   ├── equipment.service.ts
 │   │   ├── trips.service.ts
 │   │   └── index.ts
+│   ├── mappers/                 # Prisma 資料列到 Domain Model 的映射
+│   │   ├── equipment.ts
+│   │   ├── trip.ts
+│   │   └── profile.ts
 │   ├── hooks/                    # Custom React Hooks
 │   │   ├── useEquipment.ts
 │   │   ├── useTripStats.ts

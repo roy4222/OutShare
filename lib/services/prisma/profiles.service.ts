@@ -11,22 +11,16 @@
 
 import { prisma } from '@/lib/prisma';
 import { Prisma } from '@prisma/client';
+import {
+  mapProfile,
+  type ProfilePayload,
+  type ProfileRecord,
+} from '@/lib/mappers/profile';
 
 /**
  * Profile 資料型別（Domain Model）
  */
-export interface ProfileData {
-  id: string;
-  user_id: string;
-  username: string | null;
-  display_name: string | null;
-  bio: string | null;
-  avatar_url: string | null;
-  social_links: Record<string, any> | null;
-  gear_dashboard_title: string | null;
-  created_at: Date;
-  updated_at: Date;
-}
+export type ProfileData = ProfilePayload;
 
 /**
  * 根據 user_id 獲取 Profile
@@ -42,7 +36,10 @@ export async function getProfileByUserId(
       where: { user_id: userId },
     });
 
-    return { data: profile as ProfileData | null, error: null };
+    return {
+      data: profile ? mapProfile(profile as ProfileRecord) : null,
+      error: null,
+    };
   } catch (error) {
     console.error('Error fetching profile by user ID:', error);
     return { 
@@ -66,7 +63,10 @@ export async function getProfileByUsername(
       where: { username },
     });
 
-    return { data: profile as ProfileData | null, error: null };
+    return {
+      data: profile ? mapProfile(profile as ProfileRecord) : null,
+      error: null,
+    };
   } catch (error) {
     console.error('Error fetching profile by username:', error);
     return { 
@@ -91,7 +91,7 @@ export async function createProfile(
     display_name?: string;
     bio?: string;
     avatar_url?: string;
-    social_links?: Record<string, any>;
+    social_links?: ProfileData['social_links'];
     gear_dashboard_title?: string;
   }
 ): Promise<{ data: ProfileData | null; error: Error | null }> {
@@ -103,12 +103,15 @@ export async function createProfile(
         display_name: data.display_name || null,
         bio: data.bio || null,
         avatar_url: data.avatar_url || null,
-        social_links: data.social_links || {},
+        social_links: data.social_links ?? {},
         gear_dashboard_title: data.gear_dashboard_title || null,
       },
     });
 
-    return { data: profile as ProfileData, error: null };
+    return {
+      data: mapProfile(profile as ProfileRecord),
+      error: null,
+    };
   } catch (error) {
     console.error('Error creating profile:', error);
     return { 
@@ -134,7 +137,7 @@ export async function updateProfile(
     display_name?: string;
     bio?: string;
     avatar_url?: string;
-    social_links?: Record<string, any>;
+    social_links?: ProfileData['social_links'];
     gear_dashboard_title?: string;
   }
 ): Promise<{ data: ProfileData | null; error: Error | null }> {
@@ -151,13 +154,16 @@ export async function updateProfile(
         ...(data.display_name !== undefined && { display_name: data.display_name }),
         ...(data.bio !== undefined && { bio: data.bio }),
         ...(data.avatar_url !== undefined && { avatar_url: data.avatar_url }),
-        ...(data.social_links !== undefined && { social_links: data.social_links }),
+        ...(data.social_links !== undefined && { social_links: data.social_links ?? {} }),
         ...(data.gear_dashboard_title !== undefined && { gear_dashboard_title: data.gear_dashboard_title }),
         updated_at: new Date(),
       },
     });
 
-    return { data: profile as ProfileData, error: null };
+    return {
+      data: mapProfile(profile as ProfileRecord),
+      error: null,
+    };
   } catch (error) {
     console.error('Error updating profile:', error);
     return { 
@@ -229,9 +235,9 @@ export async function getProfileWithStats(
     ]);
 
     return { 
-      data: { 
-        profile: profile as ProfileData | null, 
-        stats: { tripCount, gearCount } 
+      data: {
+        profile: profile ? mapProfile(profile as ProfileRecord) : null,
+        stats: { tripCount, gearCount },
       }, 
       error: null 
     };
@@ -243,4 +249,3 @@ export async function getProfileWithStats(
     };
   }
 }
-

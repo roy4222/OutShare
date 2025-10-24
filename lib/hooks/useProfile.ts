@@ -8,6 +8,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { UserProfile } from '@/lib/types/profile';
+import type { ProfileData } from '@/lib/services/prisma';
 import {
   faInstagram,
   faSquareFacebook,
@@ -24,8 +25,7 @@ import {
  * console.log(profile.displayName);
  */
 export function useProfile(): UserProfile {
-  const [profileData, setProfileData] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [profileData, setProfileData] = useState<ProfileData | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -46,9 +46,7 @@ export function useProfile(): UserProfile {
       } catch (error) {
         console.error('Error fetching profile:', error);
       } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
+        // no-op
       }
     }
 

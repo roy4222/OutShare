@@ -94,8 +94,11 @@ return NextResponse.json({ data });
 // 獲取旅程列表
 getTripList(options?: { userId?: string })
 
-// 獲取單一旅程
-getTripById(id: string)
+// 獲取單一旅程（公開存取）
+getPublicTrip(identifier: string)
+
+// 確認擁有權後獲取旅程
+getOwnedTrip(id: string, userId: string)
 
 // 根據 slug 獲取旅程
 getTripUuidBySlug(slug: string)
@@ -125,6 +128,9 @@ getEquipmentList(options?: {
 
 // 獲取單一裝備
 getEquipmentById(id: string)
+
+// 確認擁有權後獲取裝備
+getOwnedEquipment(id: string, userId: string)
 
 // 獲取旅程的裝備
 getEquipmentByTrip(tripId: string)
@@ -224,4 +230,3 @@ npx prisma studio
 ---
 
 **記住**: Prisma Services 只處理資料，Auth 交給 Supabase！🔐
-

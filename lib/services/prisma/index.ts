@@ -15,7 +15,8 @@
 // Trips Service
 export {
   getTripList,
-  getTripById,
+  getPublicTrip,
+  getOwnedTrip,
   getTripUuidBySlug,
   createTrip,
   updateTrip,
@@ -27,6 +28,7 @@ export {
 export {
   getEquipmentList,
   getEquipmentById,
+  getOwnedEquipment,
   getEquipmentByTrip,
   createEquipment,
   updateEquipment,
@@ -45,4 +47,3 @@ export {
   getProfileWithStats,
   type ProfileData,
 } from './profiles.service';
-

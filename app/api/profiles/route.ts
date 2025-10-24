@@ -18,7 +18,7 @@ import {
  * 獲取當前使用者的 Profile
  * ⚠️ 需要認證
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // 驗證使用者身份
     const supabase = await createClient();
@@ -110,4 +110,3 @@ export async function PUT(request: NextRequest) {
     );
   }
 }
-

@@ -10,23 +10,15 @@
 
 import { prisma } from '@/lib/prisma';
 import { Trip } from '@/lib/types/trip';
+import { Equipment } from '@/lib/types/equipment';
 import { Prisma } from '@prisma/client';
-
-/**
- * 將 Prisma Trip 資料轉換為 Domain Model
- */
-function mapPrismaToTrip(prismaTrip: any): Trip {
-  return {
-    id: prismaTrip.id,
-    title: prismaTrip.title,
-    image: prismaTrip.images || [],
-    alt: prismaTrip.title, // 使用 title 作為 alt
-    location: prismaTrip.location || '',
-    duration: prismaTrip.duration || '',
-    tags: prismaTrip.tags || [],
-    description: prismaTrip.description || undefined,
-  };
-}
+import {
+  mapTrip,
+  mapTripList,
+  mapTripWithEquipment,
+  type TripRecord,
+  type TripWithGear,
+} from '@/lib/mappers/trip';
 
 /**
  * 獲取旅程列表
@@ -52,10 +44,10 @@ export async function getTripList(
       orderBy: {
         created_at: 'desc',
       },
-    });
+    }) as TripRecord[];
 
     // 轉換為 Domain Model
-    const tripList = trips.map(mapPrismaToTrip);
+    const tripList = mapTripList(trips);
 
     return { data: tripList, error: null };
   } catch (error) {
@@ -68,37 +60,65 @@ export async function getTripList(
 }
 
 /**
- * 根據 ID 或 slug 獲取單一旅程
+ * 根據 ID 或 slug 獲取公開旅程（不檢查擁有者）
  * 
- * @param id - 旅程 ID (UUID) 或 slug
+ * @param identifier - 旅程 ID (UUID) 或 slug
  * @returns 旅程資料
  */
-export async function getTripById(
-  id: string
+export async function getPublicTrip(
+  identifier: string
 ): Promise<{ data: Trip | null; error: Error | null }> {
   try {
     // 先嘗試用 slug 查詢
-    let trip = await prisma.trip.findUnique({
-      where: { slug: id },
-    });
+    let trip = (await prisma.trip.findUnique({
+      where: { slug: identifier },
+    })) as TripRecord | null;
 
     // 如果沒找到，再用 id 查詢
     if (!trip) {
-      trip = await prisma.trip.findUnique({
-        where: { id },
-      });
+      trip = (await prisma.trip.findUnique({
+        where: { id: identifier },
+      })) as TripRecord | null;
     }
 
     if (!trip) {
       return { data: null, error: null };
     }
 
-    return { data: mapPrismaToTrip(trip), error: null };
+    return { data: mapTrip(trip), error: null };
   } catch (error) {
     console.error('Error fetching trip by ID:', error);
     return { 
       data: null, 
       error: error instanceof Error ? error : new Error('Unknown error') 
+    };
+  }
+}
+
+/**
+ * 確認旅程屬於指定使用者後回傳資料
+ * 
+ * @param id - 旅程 ID
+ * @param userId - 使用者 ID
+ */
+export async function getOwnedTrip(
+  id: string,
+  userId: string
+): Promise<{ data: Trip | null; error: Error | null }> {
+  try {
+    const trip = (await prisma.trip.findFirst({
+      where: {
+        id,
+        user_id: userId,
+      },
+    })) as TripRecord | null;
+
+    return { data: trip ? mapTrip(trip) : null, error: null };
+  } catch (error) {
+    console.error('Error fetching owned trip:', error);
+    return {
+      data: null,
+      error: error instanceof Error ? error : new Error('Unknown error'),
     };
   }
 }
@@ -155,7 +175,7 @@ export async function createTrip(
       throw new Error('Unauthorized: userId is required');
     }
 
-    const trip = await prisma.trip.create({
+    const trip = (await prisma.trip.create({
       data: {
         user_id: userId,
         title: data.title,
@@ -167,9 +187,9 @@ export async function createTrip(
         tags: data.tags || [],
         slug: data.slug,
       },
-    });
+    })) as TripRecord;
 
-    return { data: mapPrismaToTrip(trip), error: null };
+    return { data: mapTrip(trip), error: null };
   } catch (error) {
     console.error('Error creating trip:', error);
     return { 
@@ -223,7 +243,7 @@ export async function updateTrip(
     }
 
     // 執行更新
-    const trip = await prisma.trip.update({
+    const trip = (await prisma.trip.update({
       where: { id },
       data: {
         ...(data.title !== undefined && { title: data.title }),
@@ -236,9 +256,9 @@ export async function updateTrip(
         ...(data.slug !== undefined && { slug: data.slug }),
         updated_at: new Date(),
       },
-    });
+    })) as TripRecord;
 
-    return { data: mapPrismaToTrip(trip), error: null };
+    return { data: mapTrip(trip), error: null };
   } catch (error) {
     console.error('Error updating trip:', error);
     return { 
@@ -305,12 +325,12 @@ export async function deleteTrip(
 export async function getTripWithEquipment(
   id: string
 ): Promise<{ 
-  data: { trip: Trip; equipment: any[] } | null; 
+  data: { trip: Trip; equipment: Equipment[] } | null; 
   error: Error | null 
 }> {
   try {
     // 先嘗試用 slug 查詢
-    let trip = await prisma.trip.findUnique({
+    let trip = (await prisma.trip.findUnique({
       where: { slug: id },
       include: {
         trip_gear: {
@@ -319,11 +339,11 @@ export async function getTripWithEquipment(
           },
         },
       },
-    });
+    })) as TripWithGear | null;
 
     // 如果沒找到，再用 id 查詢
     if (!trip) {
-      trip = await prisma.trip.findUnique({
+      trip = (await prisma.trip.findUnique({
         where: { id },
         include: {
           trip_gear: {
@@ -332,22 +352,18 @@ export async function getTripWithEquipment(
             },
           },
         },
-      });
+      })) as TripWithGear | null;
     }
 
     if (!trip) {
       return { data: null, error: new Error('Trip not found') };
     }
 
-    // 提取裝備列表
-    const equipment = trip.trip_gear.map(tg => tg.gear);
+    const result = mapTripWithEquipment(trip as TripWithGear);
 
-    return { 
-      data: { 
-        trip: mapPrismaToTrip(trip), 
-        equipment 
-      }, 
-      error: null 
+    return {
+      data: result,
+      error: null,
     };
   } catch (error) {
     console.error('Error fetching trip with equipment:', error);
@@ -357,4 +373,3 @@ export async function getTripWithEquipment(
     };
   }
 }
-

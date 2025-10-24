@@ -9,7 +9,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import {
-  getTripById,
+  getPublicTrip,
   getTripWithEquipment,
   updateTrip,
   deleteTrip,
@@ -50,7 +50,7 @@ export async function GET(
 
       return NextResponse.json({ data });
     } else {
-      const { data, error } = await getTripById(id);
+      const { data, error } = await getPublicTrip(id);
 
       if (error) {
         return NextResponse.json(
@@ -205,4 +205,3 @@ export async function DELETE(
     );
   }
 }
-

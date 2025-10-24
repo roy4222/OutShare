@@ -90,6 +90,8 @@ SELECT id, email, created_at FROM auth.users;
 
 ## 🚀 啟動開發環境
 
+> 🛠️ Zero-config：倉庫已預載 `.env` 範本，埠號沿用 Supabase CLI 預設值（54321/54322）。只要安裝 Docker + Supabase CLI，就能直接執行下列步驟。
+
 ### 完整啟動流程
 
 ```bash
@@ -136,17 +138,19 @@ npx supabase db reset
 # 開啟 Studio
 npx prisma studio
 
-# 生成 Prisma Client（修改 schema 後）
+# 同步 schema.prisma 並生成 Client（建議）
+npm run db:sync
+
+# 僅重新生成 Prisma Client
 npx prisma generate
 
-# 從資料庫同步 schema
+# 僅重新拉取 schema（請先確認 Supabase SQL 已更新）
 npx prisma db pull
-
-# 推送 schema 到資料庫
-npx prisma db push
 
 # 格式化 schema
 npx prisma format
+
+# ⚠️ Prisma Migrate / db push 已停用，請改用 `supabase db diff`
 ```
 
 ### Next.js 開發
@@ -255,33 +259,24 @@ npx supabase stop         # 停止資料庫（可選，資料會保留）
 ### 修改資料庫 Schema
 
 ```bash
-# 1. 修改 prisma/schema.prisma
-code prisma/schema.prisma
+# 1. 確認本地 Supabase 已啟動
+npx supabase start
 
-# 2. 生成新的 Prisma Client
-npx prisma generate
+# 2. 透過 Supabase Studio / SQL / psql 修改表結構
+#    (例如新增欄位、調整索引、更新 RLS)
 
-# 3. 推送變更到資料庫
-npx prisma db push
+# 3. 產生 SQL 變更檔
+supabase db diff --use-mig-dir
 
-# 4. 重啟開發伺服器
-# Ctrl+C 然後 npm run dev
+# 4. 同步 Prisma schema 與 Client
+npm run db:sync
+
+# 5. 驗證功能並提交：
+#    - supabase/migrations/<timestamp>.sql
+#    - prisma/schema.prisma
 ```
 
-### 建立新的 Migration
-
-```bash
-# 1. 修改 prisma/schema.prisma
-
-# 2. 建立 migration
-npx prisma migrate dev --name add_new_field
-
-# 3. 檢查 supabase/migrations/ 是否有新檔案
-
-# 4. 測試
-npx supabase db reset
-npx prisma generate
-```
+> ✅ 完整流程請參考 `docs/supabase/SCHEMA_WORKFLOW.md`。
 
 ---
 
@@ -383,4 +378,3 @@ Studio URL: http://127.0.0.1:54323
 **現在您可以開始開發了！** 🎉
 
 有任何問題，請查看這份文件或詢問我！
-
