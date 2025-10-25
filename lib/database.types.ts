@@ -7,52 +7,77 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
-  __InternalSupabase: {
-    PostgrestVersion: "13.0.5"
-  }
   public: {
     Tables: {
-      gear: {
+      _prisma_migrations: {
         Row: {
-          brand: string | null
-          buy_link: string | null
-          category: string
-          created_at: string
-          gear_name: string
+          applied_steps_count: number
+          checksum: string
+          finished_at: string | null
           id: string
-          image_url: string | null
-          price_twd: number | null
-          tags: string[] | null
-          user_id: string | null
-          weight_g: number | null
+          logs: string | null
+          migration_name: string
+          rolled_back_at: string | null
+          started_at: string
         }
         Insert: {
-          brand?: string | null
-          buy_link?: string | null
-          category: string
-          created_at?: string
-          gear_name: string
-          id?: string
-          image_url?: string | null
-          price_twd?: number | null
-          tags?: string[] | null
-          user_id?: string | null
-          weight_g?: number | null
+          applied_steps_count?: number
+          checksum: string
+          finished_at?: string | null
+          id: string
+          logs?: string | null
+          migration_name: string
+          rolled_back_at?: string | null
+          started_at?: string
         }
         Update: {
-          brand?: string | null
-          buy_link?: string | null
-          category?: string
+          applied_steps_count?: number
+          checksum?: string
+          finished_at?: string | null
+          id?: string
+          logs?: string | null
+          migration_name?: string
+          rolled_back_at?: string | null
+          started_at?: string
+        }
+        Relationships: []
+      }
+      gear: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          name: string
+          specs: Json | null
+          tags: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
           created_at?: string
-          gear_name?: string
+          description?: string | null
           id?: string
           image_url?: string | null
-          price_twd?: number | null
-          tags?: string[] | null
-          user_id?: string | null
-          weight_g?: number | null
+          name: string
+          specs?: Json | null
+          tags?: string[]
+          updated_at: string
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          specs?: Json | null
+          tags?: string[]
+          updated_at?: string
+          user_id?: string
         }
         Relationships: [
           {
@@ -60,7 +85,7 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -69,33 +94,33 @@ export type Database = {
           avatar_url: string | null
           bio: string | null
           created_at: string
-          dashboard_title: string | null
-          full_name: string | null
-          id: string
-          social_links: Json
-          updated_at: string | null
+          display_name: string | null
+          gear_dashboard_title: string | null
+          social_links: Json | null
+          updated_at: string
+          user_id: string
           username: string | null
         }
         Insert: {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
-          dashboard_title?: string | null
-          full_name?: string | null
-          id: string
-          social_links?: Json
-          updated_at?: string | null
+          display_name?: string | null
+          gear_dashboard_title?: string | null
+          social_links?: Json | null
+          updated_at: string
+          user_id: string
           username?: string | null
         }
         Update: {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
-          dashboard_title?: string | null
-          full_name?: string | null
-          id?: string
-          social_links?: Json
-          updated_at?: string | null
+          display_name?: string | null
+          gear_dashboard_title?: string | null
+          social_links?: Json | null
+          updated_at?: string
+          user_id?: string
           username?: string | null
         }
         Relationships: []
@@ -103,45 +128,45 @@ export type Database = {
       trip: {
         Row: {
           created_at: string
+          date: string | null
           description: string | null
           duration: string | null
           id: string
-          images: string[] | null
+          images: string[]
           location: string | null
           slug: string | null
-          tags: string[] | null
-          title: string | null
-          totalPrice: number | null
-          totalWeight: number | null
-          user_id: string | null
+          tags: string[]
+          title: string
+          updated_at: string
+          user_id: string
         }
         Insert: {
           created_at?: string
+          date?: string | null
           description?: string | null
           duration?: string | null
           id?: string
-          images?: string[] | null
+          images?: string[]
           location?: string | null
           slug?: string | null
-          tags?: string[] | null
-          title?: string | null
-          totalPrice?: number | null
-          totalWeight?: number | null
-          user_id?: string | null
+          tags?: string[]
+          title: string
+          updated_at: string
+          user_id: string
         }
         Update: {
           created_at?: string
+          date?: string | null
           description?: string | null
           duration?: string | null
           id?: string
-          images?: string[] | null
+          images?: string[]
           location?: string | null
           slug?: string | null
-          tags?: string[] | null
-          title?: string | null
-          totalPrice?: number | null
-          totalWeight?: number | null
-          user_id?: string | null
+          tags?: string[]
+          title?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: [
           {
@@ -149,42 +174,42 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedColumns: ["user_id"]
           },
         ]
       }
       trip_gear: {
         Row: {
+          created_at: string
+          gear_id: string
           id: string
           trip_id: string
-          gear_id: string
-          created_at: string
         }
         Insert: {
+          created_at?: string
+          gear_id: string
           id?: string
           trip_id: string
-          gear_id: string
-          created_at?: string
         }
         Update: {
+          created_at?: string
+          gear_id?: string
           id?: string
           trip_id?: string
-          gear_id?: string
-          created_at?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "trip_gear_trip_id_fkey"
-            columns: ["trip_id"]
-            isOneToOne: false
-            referencedRelation: "trip"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "trip_gear_gear_id_fkey"
             columns: ["gear_id"]
             isOneToOne: false
             referencedRelation: "gear"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trip_gear_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trip"
             referencedColumns: ["id"]
           },
         ]
@@ -297,25 +322,34 @@ export type Enums<
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
-> = DefaultSchemaEnumNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
   ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never
 
 export type CompositeTypes<
-  DefaultSchemaCompositeTypeNameOrOptions extends
+  PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends DefaultSchemaCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
-> = DefaultSchemaCompositeTypeNameOrOptions extends {
+> = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
-  : DefaultSchemaCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-    ? DefaultSchema["CompositeTypes"][DefaultSchemaCompositeTypeNameOrOptions]
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
+
+export const Constants = {
+  public: {
+    Enums: {},
+  },
+} as const
+

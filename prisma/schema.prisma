@@ -1,60 +1,42 @@
-// Prisma Schema for Outdoor Trails Hub
-// 此檔案映射 Supabase PostgreSQL 資料庫結構
+// Outdoor Trails Hub 的 Prisma Schema
+// 此檔案是資料庫結構的唯一真實來源 (Source of Truth)
+// 使用 `prisma migrate` 來管理資料庫變更
 
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client-js" // 指定生成 Prisma Client (JavaScript/TypeScript)
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  schemas  = ["auth", "public"]
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 // ============================================
-// Auth (Supabase 管理，僅用於關聯)
+// 公開 Schema (public) - 核心資料模型
 // ============================================
 
-/// Supabase Auth Users table (僅用於外鍵關聯，不直接操作)
-model User {
-  id         String   @id @db.Uuid
-  email      String?  @unique
-  created_at DateTime @default(now()) @db.Timestamptz(6)
-  
-  // 關聯
-  trips      Trip[]
-  gear       Gear[]
-  profile    Profile?
-  
-  @@map("users")
-  @@schema("auth")
-}
-
-// ============================================
-// Public Schema - 核心資料表
-// ============================================
-
-/// 使用者個人資料
+/// 使用者個人資料（對應 public.profiles）
 /// user_id 作為主鍵（一對一關係與 auth.users）
 model Profile {
-  user_id              String    @id @db.Uuid
-  username             String?   @unique
+  user_id              String   @id @db.Uuid
+  username             String?  @unique
   display_name         String?
   bio                  String?
   avatar_url           String?
-  social_links         Json?     @default("{}") @db.JsonB
-  gear_dashboard_title String?   @map("gear_dashboard_title")
-  created_at           DateTime  @default(now()) @db.Timestamptz(6)
-  updated_at           DateTime  @updatedAt @db.Timestamptz(6)
-  
-  // 關聯（可選，因為 Prisma Studio 可能查詢不到 auth schema）
-  user                 User?     @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  
+  social_links         Json?    @default("{}") @db.JsonB
+  gear_dashboard_title String?  @map("gear_dashboard_title")
+  created_at           DateTime @default(now()) @db.Timestamptz(6)
+  updated_at           DateTime @updatedAt @db.Timestamptz(6)
+
+  // 關聯
+  trips Trip[] // 一個 Profile 可以擁有多個 Trip
+  gear  Gear[] // 一個 Profile 可以擁有多個 Gear
+
   @@map("profiles")
-  @@schema("public")
 }
 
-/// 旅程
+/// 旅程（對應 public.trip）
 model Trip {
   id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   user_id     String    @db.Uuid
@@ -68,52 +50,45 @@ model Trip {
   slug        String?   @unique
   created_at  DateTime  @default(now()) @db.Timestamptz(6)
   updated_at  DateTime  @updatedAt @db.Timestamptz(6)
-  
-  // 關聯（可選，因為 Prisma Studio 可能查詢不到 auth schema）
-  user        User?     @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  trip_gear   TripGear[]
-  
+
+  // 關聯
+  profile   Profile    @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  trip_gear TripGear[] @relation("TripToTripGear") // 與 TripGear 的多對多關聯
+
   @@map("trip")
-  @@schema("public")
 }
 
-/// 裝備
+/// 裝備（對應 public.gear）
 model Gear {
-  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user_id     String    @db.Uuid
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id     String   @db.Uuid
   name        String
   category    String?
   description String?
   image_url   String?
-  specs       Json?     @db.JsonB
-  tags        String[]  @default([])
-  created_at  DateTime  @default(now()) @db.Timestamptz(6)
-  updated_at  DateTime  @updatedAt @db.Timestamptz(6)
-  
-  // 關聯（可選，因為 Prisma Studio 可能查詢不到 auth schema）
-  user        User?     @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  trip_gear   TripGear[]
-  
+  specs       Json?    @db.JsonB
+  tags        String[] @default([])
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime @updatedAt @db.Timestamptz(6)
+
+  // 關聯
+  profile   Profile    @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  trip_gear TripGear[] @relation("GearToTripGear") // 與 TripGear 的多對多關聯
+
   @@map("gear")
-  @@schema("public")
 }
 
-/// 旅程與裝備的多對多關聯表
+/// 旅程與裝備的多對多關聯表（對應 public.trip_gear）
 model TripGear {
   id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   trip_id    String   @db.Uuid
   gear_id    String   @db.Uuid
   created_at DateTime @default(now()) @db.Timestamptz(6)
-  
+
   // 關聯
-  trip       Trip     @relation(fields: [trip_id], references: [id], onDelete: Cascade)
-  gear       Gear     @relation(fields: [gear_id], references: [id], onDelete: Cascade)
-  
+  trip Trip @relation("TripToTripGear", fields: [trip_id], references: [id], onDelete: Cascade) // 關聯到 Trip
+  gear Gear @relation("GearToTripGear", fields: [gear_id], references: [id], onDelete: Cascade) // 關聯到 Gear
+
   @@unique([trip_id, gear_id])
   @@map("trip_gear")
-  @@schema("public")
 }
-
-
-
-

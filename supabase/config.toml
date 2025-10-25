@@ -1,0 +1,14 @@
+# Supabase local development configuration
+# Replace placeholder values with your Google OAuth credentials.
+
+[auth]
+site_url = "http://localhost:3000"
+additional_redirect_urls = [
+  "http://localhost:3000/auth/callback",
+  "http://127.0.0.1:3000/auth/callback"
+]
+
+[auth.external.google]
+enabled = true
+client_id = "YOUR_GOOGLE_CLIENT_ID" # Placeholder, will be replaced by GOOGLE_CLIENT_ID env var
+secret = "YOUR_GOOGLE_CLIENT_SECRET"   # Placeholder, will be replaced by GOOGLE_CLIENT_SECRET env var
