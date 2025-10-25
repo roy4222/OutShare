@@ -10,5 +10,6 @@ additional_redirect_urls = [
 
 [auth.external.google]
 enabled = true
-client_id = "YOUR_GOOGLE_CLIENT_ID" # Placeholder, will be replaced by GOOGLE_CLIENT_ID env var
-secret = "YOUR_GOOGLE_CLIENT_SECRET"   # Placeholder, will be replaced by GOOGLE_CLIENT_SECRET env var
+client_id ="env(GOOGLE_CLIENT_ID)"
+secret = "env(GOOGLE_CLIENT_SECRET)" 
+redirect_uri = ""
