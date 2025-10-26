@@ -106,11 +106,19 @@ export function CategoryModal({
               <Input
                 id="title"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setTitle(value);
+                  if (value.trim().length >= 8) {
+                    setError("標題長度不可超過 8 字元");
+                  } else {
+                    setError(null);
+                  }
+                }}
                 placeholder="請輸入要更改的名稱"
                 maxLength={8}
                 disabled={isLoading}
-                className="col-span-3 focus-visible:ring-[1px] focus-visible:ring-green-700 focus-visible:border-green-700"
+                className={`col-span-3 focus-visible:ring-[1px] ${error ? 'focus-visible:ring-red-500 focus-visible:border-red-500 border-red-500' : 'focus-visible:ring-green-700 focus-visible:border-green-700'}`}
                 autoFocus
               />
               {error && <p className="text-sm text-red-600">{error}</p>}
