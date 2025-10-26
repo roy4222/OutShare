@@ -7,4 +7,4 @@ export { useEquipment } from './useEquipment';
 export { useTrips } from './useTrips';
 export { useProfile, useProfileByUsername } from './useProfile';
 export { useSwiperControl } from './useSwiperControl';
-
+export { useProfileEditor } from './useProfileEditor';

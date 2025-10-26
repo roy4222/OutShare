@@ -4,4 +4,5 @@
 
 export { default as ProfileHeader } from './ProfileHeader';
 export { default as SocialLinks } from './SocialLinks';
+export { ProfileEditForm } from './ProfileEditForm';
 
