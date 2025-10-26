@@ -1,2 +1,2 @@
-export { CategoryModal } from './CategoryModal';
+export { CategoryModal } from './GearCategoryModal';
 
