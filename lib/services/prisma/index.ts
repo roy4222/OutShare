@@ -43,6 +43,7 @@ export {
   getProfileByUsername,
   createProfile,
   updateProfile,
+  ensureProfileForUser,
   isUsernameAvailable,
   getProfileWithStats,
   type ProfileData,

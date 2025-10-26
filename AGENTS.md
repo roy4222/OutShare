@@ -33,3 +33,5 @@
 - Prisma models back Supabase tables; update `schema.prisma` and run `npm run prisma:generate` after edits.
 - Cloudflare Workers host the app—verify worker behavior via `npm run start` or `npm run preview`.
 - Store secrets only in local `.env` files referenced by Supabase scripts; never commit credentials.
+
+一律用繁體中文回答

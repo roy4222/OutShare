@@ -4,6 +4,7 @@ import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyCont
 import { Button } from "@/components/ui/button";
 import { PencilIcon, ArrowLeftIcon, HomeIcon, CircleUserIcon } from "lucide-react";
 import Link from "next/link";
+
 export default function ProfileEditPage() {
   return (
     <div>

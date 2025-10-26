@@ -3,6 +3,8 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { ensureProfileForUser } from '@/lib/services/prisma'
+import type { User } from '@supabase/supabase-js'
 
 /**
  * OAuth Callback Route Handler
@@ -46,6 +48,37 @@ export async function GET(request: NextRequest) {
       }
 
       if (data.session) {
+        let user: User | null = data.user ?? null
+
+        if (!user) {
+          const { data: userData, error: getUserError } =
+            await supabase.auth.getUser()
+          if (getUserError) {
+            console.error('Failed to fetch user after session exchange:', getUserError)
+          }
+          user = userData.user ?? null
+        }
+
+        if (!user) {
+          console.error('Profile sync aborted: unable to resolve Supabase user')
+          return NextResponse.redirect(
+            `${origin}/auth/auth-code-error?reason=user-missing`
+          )
+        }
+
+        const { error: ensureError } = await ensureProfileForUser({
+          userId: user.id,
+          email: user.email,
+          metadata: user.user_metadata as Record<string, unknown>,
+        })
+
+        if (ensureError) {
+          console.error('Profile sync failed:', ensureError)
+          return NextResponse.redirect(
+            `${origin}/auth/auth-code-error?reason=profile-sync`
+          )
+        }
+
         console.log('Login successful, redirecting to:', next)
         // 登入成功，重導向到目標頁面
         return NextResponse.redirect(`${origin}${next}`)

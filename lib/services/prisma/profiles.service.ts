@@ -17,6 +17,23 @@ import {
   type ProfileRecord,
 } from '@/lib/mappers/profile';
 
+const DEFAULT_GEAR_DASHBOARD_TITLE = '我的裝備';
+
+type SupabaseUserMetadata = {
+  full_name?: string | null;
+  name?: string | null;
+  avatar_url?: string | null;
+  picture?: string | null;
+  preferred_username?: string | null;
+  [key: string]: unknown;
+};
+
+export type EnsureProfileParams = {
+  userId: string;
+  email?: string | null;
+  metadata?: Record<string, unknown> | null;
+};
+
 /**
  * Profile 資料型別（Domain Model）
  */
@@ -174,6 +191,104 @@ export async function updateProfile(
 }
 
 /**
+ * 確保 Supabase 使用者擁有對應的 Profile
+ *
+ * @param params - Supabase 使用者資訊
+ * @returns Profile 資料（新建或原有）
+ */
+export async function ensureProfileForUser(
+  params: EnsureProfileParams
+): Promise<{ data: ProfileData | null; error: Error | null }> {
+  try {
+    const metadata = (params.metadata ?? {}) as SupabaseUserMetadata;
+    const displayNameMetadata =
+      metadata.full_name?.trim() ||
+      metadata.name?.trim() ||
+      metadata.preferred_username?.trim() ||
+      params.email ||
+      null;
+    const rawAvatarUrl =
+      typeof metadata.avatar_url === 'string'
+        ? metadata.avatar_url
+        : typeof metadata.picture === 'string'
+          ? metadata.picture
+          : null;
+    const avatarUrlMetadata = rawAvatarUrl?.trim() || null;
+
+    const existingProfile = await prisma.profile.findUnique({
+      where: { user_id: params.userId },
+    });
+
+    if (!existingProfile) {
+      const profile = await prisma.profile.create({
+        data: {
+          user_id: params.userId,
+          display_name: displayNameMetadata,
+          avatar_url: avatarUrlMetadata,
+          social_links: {},
+          gear_dashboard_title: DEFAULT_GEAR_DASHBOARD_TITLE,
+        },
+      });
+
+      return {
+        data: mapProfile(profile as ProfileRecord),
+        error: null,
+      };
+    }
+
+    const updateData: Prisma.ProfileUpdateInput = {};
+
+    if (
+      (!existingProfile.display_name ||
+        existingProfile.display_name.trim().length === 0) &&
+      displayNameMetadata
+    ) {
+      updateData.display_name = displayNameMetadata;
+    }
+
+    if (!existingProfile.avatar_url && avatarUrlMetadata) {
+      updateData.avatar_url = avatarUrlMetadata;
+    }
+
+    if (
+      existingProfile.social_links === null ||
+      (typeof existingProfile.social_links === 'object' &&
+        Object.keys(existingProfile.social_links as Record<string, unknown>)
+          .length === 0)
+    ) {
+      updateData.social_links = {};
+    }
+
+    if (!existingProfile.gear_dashboard_title) {
+      updateData.gear_dashboard_title = DEFAULT_GEAR_DASHBOARD_TITLE;
+    }
+
+    if (Object.keys(updateData).length === 0) {
+      return {
+        data: mapProfile(existingProfile as ProfileRecord),
+        error: null,
+      };
+    }
+
+    const updatedProfile = await prisma.profile.update({
+      where: { user_id: params.userId },
+      data: updateData,
+    });
+
+    return {
+      data: mapProfile(updatedProfile as ProfileRecord),
+      error: null,
+    };
+  } catch (error) {
+    console.error('Error ensuring profile:', error);
+    return {
+      data: null,
+      error: error instanceof Error ? error : new Error('Unknown error'),
+    };
+  }
+}
+
+/**
  * 檢查 username 是否可用
  * 
  * @param username - 要檢查的使用者名稱
@@ -193,7 +308,7 @@ export async function isUsernameAvailable(
 
     const existingProfile = await prisma.profile.findFirst({
       where,
-      select: { id: true },
+      select: { user_id: true },
     });
 
     return { available: !existingProfile, error: null };
