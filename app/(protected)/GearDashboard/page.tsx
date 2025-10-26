@@ -107,13 +107,13 @@ export default function GearDashboardPage() {
       <Navbar />
 
       {/* 主要內容區域 */}
-      <div className="flex">
+      <div className="flex pt-16">
         {/* 側邊導航欄 */}
         <SideBar gearDashboardTitle={dashboardTitle} />
 
         {/* 主內容區（預留空間給 Sidebar，左邊距 256px = w-64） */}
         <main className="flex-1 ml-64 p-6">
-          <div className="max-w-7xl mx-auto">
+          <div className="max-w-6xl mx-auto">
             <div className="flex justify-between items-center mb-4">
               <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
                 {dashboardTitle}

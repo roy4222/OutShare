@@ -11,7 +11,7 @@ export default function TripDashboardPage() {
       <Navbar />
 
       {/* 主要內容區域 */}
-      <div className="flex">
+      <div className="flex pt-16">
         {/* 側邊導航欄 */}
         <SideBar />
 
