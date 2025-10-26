@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { useProfile } from "@/lib/hooks";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -33,8 +34,11 @@ import { useRouter } from "next/navigation";
  * <Navbar />
  * ```
  */
+const DEFAULT_DISPLAY_NAME = "使用者";
+
 const Navbar = () => {
   const { user, loading, signOut } = useAuth();
+  const profile = useProfile();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   /**
@@ -53,19 +57,33 @@ const Navbar = () => {
   /**
    * 取得使用者名稱縮寫（用於頭像 fallback）
    */
-  const getUserInitials = () => {
-    if (!user?.user_metadata?.full_name && !user?.email) return "U";
-
-    const name = user.user_metadata?.full_name || user.email || "";
-    const parts = name.split(" ");
-
+  const getInitials = (displayName: string) => {
+    if (!displayName) return "U";
+    const parts = displayName.trim().split(/\s+/);
     if (parts.length >= 2) {
       return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
     }
-    return name.slice(0, 2).toUpperCase();
+    return displayName.slice(0, 2).toUpperCase();
   };
 
   const router = useRouter();
+
+  const resolvedDisplayName = user
+    ? profile.displayName?.trim() ||
+      user.user_metadata?.full_name?.trim() ||
+      profile.username?.trim() ||
+      user.email ||
+      DEFAULT_DISPLAY_NAME
+    : DEFAULT_DISPLAY_NAME;
+
+  const avatarSrc = user
+    ? profile.avatar?.trim() ||
+      user.user_metadata?.avatar_url ||
+      user.user_metadata?.picture ||
+      undefined
+    : undefined;
+
+  const avatarFallback = getInitials(resolvedDisplayName);
 
   return (
     <nav className="fixed top-0 left-0 right-0 w-full bg-white border-b border-gray-200 z-50">
@@ -109,18 +127,11 @@ const Navbar = () => {
                   >
                     <Avatar className="h-10 w-10">
                       <AvatarImage
-                        src={
-                          user.user_metadata?.avatar_url ||
-                          user.user_metadata?.picture
-                        }
-                        alt={
-                          user.user_metadata?.full_name ||
-                          user.email ||
-                          "使用者頭像"
-                        }
+                        src={avatarSrc}
+                        alt={resolvedDisplayName}
                       />
                       <AvatarFallback className="bg-brand-primary text-white">
-                        {getUserInitials()}
+                        {avatarFallback}
                       </AvatarFallback>
                     </Avatar>
                   </Button>
@@ -129,7 +140,7 @@ const Navbar = () => {
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium leading-none">
-                        {user.user_metadata?.full_name || "使用者"}
+                        {resolvedDisplayName}
                       </p>
                       <p className="text-xs leading-none text-muted-foreground">
                         {user.email}
@@ -190,24 +201,14 @@ const Navbar = () => {
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex items-center space-x-3">
                       <Avatar className="h-10 w-10">
-                        <AvatarImage
-                          src={
-                            user.user_metadata?.avatar_url ||
-                            user.user_metadata?.picture
-                          }
-                          alt={
-                            user.user_metadata?.full_name ||
-                            user.email ||
-                            "使用者頭像"
-                          }
-                        />
+                        <AvatarImage src={avatarSrc} alt={resolvedDisplayName} />
                         <AvatarFallback className="bg-brand-primary text-white">
-                          {getUserInitials()}
+                          {avatarFallback}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex flex-col space-y-1">
                         <p className="text-sm font-medium leading-none">
-                          {user.user_metadata?.full_name || "使用者"}
+                          {resolvedDisplayName}
                         </p>
                         <p className="text-xs leading-none text-muted-foreground">
                           {user.email}
