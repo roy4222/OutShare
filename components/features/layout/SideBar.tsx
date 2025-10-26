@@ -1,10 +1,20 @@
 "use client";
 
-import { CircleUserIcon, MessageCircleMoreIcon,TentIcon,TentTreeIcon} from "lucide-react";
+import {
+  CircleUserIcon,
+  MessageCircleMoreIcon,
+  TentIcon,
+  TentTreeIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 import { NavItem } from "@/lib/types";
+import { useProfile } from "@/lib/hooks";
+
+interface SideBarProps {
+  gearDashboardTitle?: string;
+}
 
 /**
  * SideBar 側邊導航欄元件
@@ -25,8 +35,13 @@ import { NavItem } from "@/lib/types";
  * <SideBar />
  * ```
  */
-const SideBar = () => {
+const SideBar = ({ gearDashboardTitle }: SideBarProps) => {
   const router = useRouter();
+  const profile = useProfile();
+  const equipmentLabel =
+    gearDashboardTitle ||
+    profile.gearDashboardTitle ||
+    "我的裝備";
 
   /**
    * 導航選項配置
@@ -34,7 +49,7 @@ const SideBar = () => {
   const navItems: NavItem[] = [
     {
       id: "equipment",
-      label: "我的裝備",
+      label: equipmentLabel,
       icon: TentIcon,
       href: "/GearDashboard",
     },

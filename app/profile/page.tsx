@@ -28,6 +28,7 @@ export default function ProfilePage() {
 
         {/* 旅行/裝備切換標籤頁 */}
         <TripsToggleGroup
+          gearDashboardTitle={profile.gearDashboardTitle}
           tripsContent={
             <div className="w-full space-y-4 px-4">
               {isLoadingTrips ? (

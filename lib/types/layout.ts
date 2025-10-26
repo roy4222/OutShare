@@ -44,5 +44,5 @@ export interface TabLayoutProps {
 export interface TripsToggleGroupProps {
   tripsContent: React.ReactNode;
   gearContent: React.ReactNode;
+  gearDashboardTitle?: string;
 }
-

@@ -19,7 +19,9 @@ import { TabItem, TripsToggleGroupProps } from "@/lib/types";
 const TripsToggleGroup = ({
   tripsContent,
   gearContent,
+  gearDashboardTitle,
 }: TripsToggleGroupProps) => {
+  const gearLabel = gearDashboardTitle || "我的裝備";
   const tabs: TabItem[] = [
     {
       value: "trips",
@@ -28,7 +30,7 @@ const TripsToggleGroup = ({
     },
     {
       value: "gear",
-      label: "我的裝備",
+      label: gearLabel,
       content: gearContent,
     },
   ];

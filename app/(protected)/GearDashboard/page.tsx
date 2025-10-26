@@ -15,6 +15,8 @@ import {
 import { FolderCodeIcon, SquarePenIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useProtectedUser } from "@/lib/hooks/useProtectedUser";
+
+const DEFAULT_GEAR_DASHBOARD_TITLE = "我的裝備";
 /**
  * 受保護的 GearDashboard 頁面
  *
@@ -31,7 +33,9 @@ export default function GearDashboardPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // 標題狀態
-  const [dashboardTitle, setDashboardTitle] = useState<string>("我的裝備");
+  const [dashboardTitle, setDashboardTitle] = useState<string>(
+    DEFAULT_GEAR_DASHBOARD_TITLE,
+  );
   const [isTitleLoading, setIsTitleLoading] = useState(true);
 
   // 載入使用者的自訂標題
@@ -41,8 +45,12 @@ export default function GearDashboardPage() {
         const response = await fetch("/api/profiles");
         const result = await response.json();
 
-        if (result.data?.dashboard_title) {
-          setDashboardTitle(result.data.dashboard_title);
+        if (result.data?.gear_dashboard_title) {
+          setDashboardTitle(
+            result.data.gear_dashboard_title || DEFAULT_GEAR_DASHBOARD_TITLE,
+          );
+        } else {
+          setDashboardTitle(DEFAULT_GEAR_DASHBOARD_TITLE);
         }
       } catch (error) {
         console.error("Error loading dashboard title:", error);
@@ -71,7 +79,7 @@ export default function GearDashboardPage() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        dashboard_title: newTitle.trim(),
+        gear_dashboard_title: newTitle.trim(),
       }),
     });
 
@@ -101,7 +109,7 @@ export default function GearDashboardPage() {
       {/* 主要內容區域 */}
       <div className="flex">
         {/* 側邊導航欄 */}
-        <SideBar />
+        <SideBar gearDashboardTitle={dashboardTitle} />
 
         {/* 主內容區（預留空間給 Sidebar，左邊距 256px = w-64） */}
         <main className="flex-1 ml-64 p-6">

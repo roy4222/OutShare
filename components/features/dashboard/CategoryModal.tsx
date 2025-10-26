@@ -29,7 +29,7 @@ interface CategoryModalProps {
 
 /**
  * CategoryModal - 裝備管理頁面標題編輯彈窗
- * 
+ *
  * 使用 Radix UI Dialog 元件實作，提供標題編輯功能
  */
 export function CategoryModal({
@@ -57,14 +57,14 @@ export function CategoryModal({
 
     // 驗證標題
     const trimmedTitle = title.trim();
-    
+
     if (!trimmedTitle) {
       setError("標題不可為空");
       return;
     }
 
-    if (trimmedTitle.length > 50) {
-      setError("標題長度不可超過 50 字元");
+    if (trimmedTitle.length > 8) {
+      setError("標題長度不可超過 8 字元");
       return;
     }
 
@@ -107,18 +107,14 @@ export function CategoryModal({
                 id="title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="租借裝備"
-                maxLength={50}
+                placeholder="請輸入要更改的名稱"
+                maxLength={8}
                 disabled={isLoading}
-                className="col-span-3"
+                className="col-span-3 focus-visible:ring-[1px] focus-visible:ring-green-700 focus-visible:border-green-700"
                 autoFocus
               />
-              {error && (
-                <p className="text-sm text-red-600">{error}</p>
-              )}
-              <p className="text-xs text-gray-500">
-                {title.length} / 50 字元
-              </p>
+              {error && <p className="text-sm text-red-600">{error}</p>}
+              <p className="text-xs text-gray-500">{title.length} / 8 字元</p>
             </div>
           </div>
 
@@ -144,4 +140,3 @@ export function CategoryModal({
     </Dialog>
   );
 }
-

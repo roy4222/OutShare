@@ -22,6 +22,7 @@ export interface UserProfile {
   displayName: string;
   avatar?: string;
   bio?: string;
+  gearDashboardTitle?: string;
   socialLinks?: SocialLink[];
 }
 

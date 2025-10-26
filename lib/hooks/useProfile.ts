@@ -15,6 +15,8 @@ import {
   faThreads,
 } from '@fortawesome/free-brands-svg-icons';
 
+const DEFAULT_GEAR_DASHBOARD_TITLE = '我的裝備';
+
 /**
  * 獲取當前使用者的個人資料
  * 
@@ -90,6 +92,8 @@ export function useProfile(): UserProfile {
         displayName: profileData.display_name || profileData.username || 'User',
         avatar: profileData.avatar_url || '/S__40583184_0.jpg',
         bio: profileData.bio || '',
+        gearDashboardTitle:
+          profileData.gear_dashboard_title || DEFAULT_GEAR_DASHBOARD_TITLE,
         socialLinks,
       };
     }
@@ -100,6 +104,7 @@ export function useProfile(): UserProfile {
       displayName: 'KJ',
       avatar: '/S__40583184_0.jpg',
       bio: '新創產品經理・登山野營・單車野營・自助旅行',
+      gearDashboardTitle: DEFAULT_GEAR_DASHBOARD_TITLE,
       socialLinks: [
         {
           href: 'https://www.instagram.com/kj.h.730/',
