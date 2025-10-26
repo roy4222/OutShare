@@ -1,6 +1,5 @@
 "use client";
 
-import { useRequireAuth } from "@/lib/hooks/useAuth";
 import { useState, useEffect } from "react";
 import Navbar from "@/components/features/layout/Navbar";
 import SideBar from "@/components/features/layout/SideBar";
@@ -15,41 +14,38 @@ import {
 } from "@/components/ui/empty";
 import { FolderCodeIcon, SquarePenIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useProtectedUser } from "@/lib/hooks/useProtectedUser";
 /**
  * 受保護的 GearDashboard 頁面
  *
  * 這個頁面示範如何:
- * 1. 使用 useRequireAuth hook 來保護頁面
+ * 1. 透過 AuthGuard 集中處理認證
  * 2. 顯示使用者資訊
  * 3. 實作登出功能
- * 4. 當使用者未登入時，自動重導向到登入頁
- * 5. 整合 Sidebar 側邊導航欄
+ * 4. 整合 Sidebar 側邊導航欄
  */
 export default function GearDashboardPage() {
-  // 使用 useRequireAuth hook，自動處理認證邏輯
-  const { user, loading } = useRequireAuth();
-  
+  const user = useProtectedUser();
+
   // 彈窗狀態
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
+
   // 標題狀態
   const [dashboardTitle, setDashboardTitle] = useState<string>("我的裝備");
   const [isTitleLoading, setIsTitleLoading] = useState(true);
 
   // 載入使用者的自訂標題
   useEffect(() => {
-    if (!user) return;
-
     const loadDashboardTitle = async () => {
       try {
-        const response = await fetch('/api/profiles');
+        const response = await fetch("/api/profiles");
         const result = await response.json();
 
         if (result.data?.dashboard_title) {
           setDashboardTitle(result.data.dashboard_title);
         }
       } catch (error) {
-        console.error('Error loading dashboard title:', error);
+        console.error("Error loading dashboard title:", error);
       } finally {
         setIsTitleLoading(false);
       }
@@ -60,21 +56,19 @@ export default function GearDashboardPage() {
 
   // 處理標題儲存
   const handleSaveTitle = async (newTitle: string) => {
-    if (!user) return;
-
     // 驗證標題
     if (!newTitle || newTitle.trim().length === 0) {
-      throw new Error('標題不可為空');
+      throw new Error("標題不可為空");
     }
 
     if (newTitle.length > 50) {
-      throw new Error('標題長度不可超過 50 字元');
+      throw new Error("標題長度不可超過 50 字元");
     }
 
-    const response = await fetch('/api/profiles', {
-      method: 'PUT',
+    const response = await fetch("/api/profiles", {
+      method: "PUT",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         dashboard_title: newTitle.trim(),
@@ -84,23 +78,19 @@ export default function GearDashboardPage() {
     const result = await response.json();
 
     if (!response.ok || result.error) {
-      throw new Error(result.error || '儲存失敗');
+      throw new Error(result.error || "儲存失敗");
     }
 
     // 更新本地狀態
     setDashboardTitle(newTitle);
   };
 
-  if (loading || isTitleLoading) {
+  if (isTitleLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-lg">載入中...</div>
       </div>
     );
-  }
-
-  if (!user) {
-    return null; // 將會重導向到首頁
   }
 
   return (

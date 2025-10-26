@@ -29,10 +29,10 @@ const ProfileHeader = ({ profile, className }: ProfileHeaderProps) => {
         <AvatarImage src={avatarSrc} alt={displayName} />
         <AvatarFallback>{avatarFallback}</AvatarFallback>
       </Avatar>
-      
+
       {/* 顯示名稱 */}
       <div className="text-2xl font-bold mt-4">{displayName}</div>
-      
+
       {/* 個人簡介 */}
       {profile.bio && (
         <div className="text-base mt-2 text-gray-500 text-center">
