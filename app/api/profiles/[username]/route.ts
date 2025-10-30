@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import {
   getProfileByUsername,
   getProfileWithStats,
-} from '@/lib/services/prisma';
+} from '@/lib/services/db';
 
 /**
  * GET /api/profiles/[username]

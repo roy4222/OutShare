@@ -1,6 +1,6 @@
 /**
  * Trips API Route
- * 
+ *
  * 處理旅程相關的 API 請求
  * GET /api/trips - 獲取旅程列表
  * POST /api/trips - 建立新旅程
@@ -11,11 +11,11 @@ import { createClient } from '@/lib/supabase/server';
 import {
   getTripList,
   createTrip,
-} from '@/lib/services/prisma';
+} from '@/lib/services/db';
 
 /**
  * GET /api/trips
- * 
+ *
  * 獲取旅程列表
  * Query Parameters:
  * - userId: 可選，過濾特定使用者的旅程
@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
 
 /**
  * POST /api/trips
- * 
+ *
  * 建立新旅程
  * ⚠️ 需要認證
  */
@@ -106,4 +106,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

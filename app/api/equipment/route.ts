@@ -1,6 +1,6 @@
 /**
  * Equipment API Route
- * 
+ *
  * 處理裝備相關的 API 請求
  * GET /api/equipment - 獲取裝備列表
  * POST /api/equipment - 建立新裝備
@@ -11,11 +11,11 @@ import { createClient } from '@/lib/supabase/server';
 import {
   getEquipmentList,
   createEquipment,
-} from '@/lib/services/prisma';
+} from '@/lib/services/db';
 
 /**
  * GET /api/equipment
- * 
+ *
  * 獲取裝備列表
  * Query Parameters:
  * - userId: 可選，過濾特定使用者的裝備
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
 
 /**
  * POST /api/equipment
- * 
+ *
  * 建立新裝備
  * ⚠️ 需要認證
  */
@@ -112,4 +112,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

@@ -10,7 +10,7 @@ import { createClient } from '@/lib/supabase/server';
 import {
   getProfileByUserId,
   updateProfile,
-} from '@/lib/services/prisma';
+} from '@/lib/services/db';
 
 /**
  * GET /api/profiles

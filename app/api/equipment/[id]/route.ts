@@ -1,6 +1,6 @@
 /**
  * Equipment API Route (單一裝備)
- * 
+ *
  * GET /api/equipment/[id] - 獲取單一裝備
  * PUT /api/equipment/[id] - 更新裝備
  * DELETE /api/equipment/[id] - 刪除裝備
@@ -12,15 +12,15 @@ import {
   getEquipmentById,
   updateEquipment,
   deleteEquipment,
-} from '@/lib/services/prisma';
+} from '@/lib/services/db';
 
 /**
  * GET /api/equipment/[id]
- * 
+ *
  * 獲取單一裝備
  */
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -54,7 +54,7 @@ export async function GET(
 
 /**
  * PUT /api/equipment/[id]
- * 
+ *
  * 更新裝備
  * ⚠️ 需要認證，且只能更新自己的裝備
  */
@@ -125,12 +125,12 @@ export async function PUT(
 
 /**
  * DELETE /api/equipment/[id]
- * 
+ *
  * 刪除裝備
  * ⚠️ 需要認證，且只能刪除自己的裝備
  */
 export async function DELETE(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -178,4 +178,3 @@ export async function DELETE(
     );
   }
 }
-

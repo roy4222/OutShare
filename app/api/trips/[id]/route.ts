@@ -1,6 +1,6 @@
 /**
  * Trip API Route (單一旅程)
- * 
+ *
  * GET /api/trips/[id] - 獲取單一旅程
  * PUT /api/trips/[id] - 更新旅程
  * DELETE /api/trips/[id] - 刪除旅程
@@ -13,11 +13,11 @@ import {
   getTripWithEquipment,
   updateTrip,
   deleteTrip,
-} from '@/lib/services/prisma';
+} from '@/lib/services/db';
 
 /**
  * GET /api/trips/[id]
- * 
+ *
  * 獲取單一旅程（可選：包含裝備）
  * Query Parameters:
  * - includeEquipment: 是否包含關聯的裝備
@@ -79,7 +79,7 @@ export async function GET(
 
 /**
  * PUT /api/trips/[id]
- * 
+ *
  * 更新旅程
  * ⚠️ 需要認證，且只能更新自己的旅程
  */
@@ -152,7 +152,7 @@ export async function PUT(
 
 /**
  * DELETE /api/trips/[id]
- * 
+ *
  * 刪除旅程
  * ⚠️ 需要認證，且只能刪除自己的旅程
  */

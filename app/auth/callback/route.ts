@@ -3,7 +3,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { ensureProfileForUser } from '@/lib/services/prisma'
+import { ensureProfileForUser } from '@/lib/services/db'
 import type { User } from '@supabase/supabase-js'
 
 /**

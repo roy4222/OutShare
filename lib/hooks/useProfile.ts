@@ -8,7 +8,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { UserProfile } from '@/lib/types/profile';
-import type { ProfileData } from '@/lib/services/prisma';
+import type { ProfileData } from '@/lib/services/db';
 import {
   faInstagram,
   faSquareFacebook,
