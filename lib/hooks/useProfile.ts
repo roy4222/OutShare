@@ -90,7 +90,7 @@ export function useProfile(): UserProfile {
       return {
         username: profileData.username || 'user',
         displayName: profileData.display_name || profileData.username || 'User',
-        avatar: profileData.avatar_url || '/S__40583184_0.jpg',
+        avatar: profileData.avatar_url?.trim() || '',
         bio: profileData.bio || '',
         gearDashboardTitle:
           profileData.gear_dashboard_title || DEFAULT_GEAR_DASHBOARD_TITLE,
@@ -102,7 +102,7 @@ export function useProfile(): UserProfile {
     return {
       username: 'kj',
       displayName: 'KJ',
-      avatar: '/S__40583184_0.jpg',
+      avatar: 'https://moegirl.uk/images/c/c1/Yanami_Anna_icon.png',
       bio: '新創產品經理・登山野營・單車野營・自助旅行',
       gearDashboardTitle: DEFAULT_GEAR_DASHBOARD_TITLE,
       socialLinks: [
@@ -192,7 +192,7 @@ export function useProfileByUsername(username: string): {
           setProfile({
             username: profileData.username || 'user',
             displayName: profileData.display_name || profileData.username || 'User',
-            avatar: profileData.avatar_url || '/S__40583184_0.jpg',
+            avatar: profileData.avatar_url?.trim() || '',
             bio: profileData.bio || '',
             socialLinks,
           });
