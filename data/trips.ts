@@ -14,7 +14,7 @@ export const tripsData: Trip[] = [
   {
     id: "Kumano_Kodo",
     title: "日本熊野古道 4 天 3 夜",
-    image: ["/_R812133.webp","/_R812134.JPG.webp","/_R812136.JPG.webp","/_R812137.JPG.webp","/_R812139.JPG.webp"],
+    image: [],
     alt: "日本熊野古道 4 天 3 夜",
     location: "中邊路",
     duration: "4 天",
@@ -38,7 +38,7 @@ export const tripsData: Trip[] = [
   {
     id: "Jiali_Mountain_Fengmei_Stream",
     title: "加里山風美溪 3 天 2 夜",
-    image: ["/_R812550.JPG.webp","/_R812560.JPG 的副本.webp","/_R812576.JPG 的副本.webp","/_R812587.JPG 的副本.webp"],
+    image: [],
     alt: "加里山風美溪 3 天 2 夜",
     location: "加里山風美溪",
     duration: "3 天",
@@ -47,7 +47,7 @@ export const tripsData: Trip[] = [
   {
     id: "Bikepacking_Tonghou_Forest_Road",
     title: "Bikpacking - 桶后林道 2 天 1 夜",
-    image: ["/_R812632.JPG 的副本.webp","/_R812646.JPG 的副本.webp","/_R812650.JPG 的副本.webp","/_R812677.JPG 的副本.webp","/_R812678.JPG 的副本.webp"],
+    image: [],
     alt: "Bikpacking - 桶后林道 2 天 1 夜",
     location: "桶后林道",
     duration: "2 天",
@@ -56,7 +56,7 @@ export const tripsData: Trip[] = [
   {
     id: "Bikepacking_Huayan_Mountain_Foot",
     title: "Bikpacking - 火炎山山腳 2 天 1 夜",
-    image: ["/S__40583178_0.webp","/S__40583180_0.webp","/S__40583181_0.webp"],
+    image: [],
     alt: "Bikpacking - 火炎山山腳 2 天 1 夜",
     location: "火炎山山腳",
     duration: "2 天",

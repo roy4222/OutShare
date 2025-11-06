@@ -17,7 +17,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Tech Stack:**
 - **Frontend**: Next.js 15.5.2 (App Router), React 19, Tailwind CSS v4, Shadcn/ui
 - **Backend**: Supabase Auth (OAuth), PostgreSQL (Supabase-hosted)
-- **ORM**: Prisma 6.17.1 (migrating to Drizzle - see `docs/PRISMA_TO_DRIZZLE_MIGRATION.md`)
+- **ORM**: Drizzle ORM (migrated from Prisma - see `docs/PRISMA_TO_DRIZZLE_MIGRATION.md`)
 - **Deployment**: Cloudflare Pages/Workers with OpenNext.js
 - **Planned**: Cloudflare R2 for image storage, Imgproxy for optimization
 
@@ -47,8 +47,9 @@ lib/
 │   ├── server.ts       # Server client
 │   └── middleware.ts   # Session update
 ├── db/
-│   └── schema.ts       # Drizzle schema (in progress)
-├── services/prisma/    # Business logic layer
+│   ├── schema.ts       # Drizzle schema
+│   └── index.ts        # Drizzle client singleton
+├── services/db/        # Business logic layer (Drizzle)
 │   ├── trips.service.ts
 │   ├── equipment.service.ts
 │   └── profiles.service.ts
@@ -60,19 +61,21 @@ lib/
 │   └── useProtectedUser.tsx # Protected route context
 ├── mappers/            # Data transformers (DB → Domain)
 ├── types/              # TypeScript definitions
-├── prisma.ts           # Prisma client singleton
+├── validation/         # Input validation schemas
 └── utils.ts            # Utility functions (cn for CSS)
 
-components/features/
-├── layout/             # Navbar, Sidebar, TabLayout
-├── profile/            # ProfileHeader, ProfileEditForm, SocialLinks
-├── trips/              # TripCard, TripDetail, TripDialog, TripList
-├── equipment/          # EquipmentCard, EquipmentList, EquipmentGroup
-└── dashboard/          # GearCategoryModal
+components/
+├── features/           # Feature-specific components
+│   ├── layout/         # Navbar, Sidebar, TabLayout
+│   ├── profile/        # ProfileHeader, ProfileEditForm, SocialLinks
+│   ├── trips/          # TripCard, TripDetail, TripDialog, TripList
+│   ├── equipment/      # EquipmentCard, EquipmentList, EquipmentGroup
+│   └── dashboard/      # GearCategoryModal
+├── shared/             # Shared/reusable components
+│   └── modals/         # Modal components
+└── ui/                 # Shadcn/ui components
 
-prisma/
-├── schema.prisma       # Database schema
-└── migrations/         # Database migrations
+drizzle/                # Drizzle migrations folder
 ```
 
 ## Architecture Patterns
@@ -86,9 +89,9 @@ Custom Hooks (Data Fetching)
     ↓ fetch API
 API Routes (Business Logic)
     ↓ auth check, validation
-Prisma Services (Database Access)
+Drizzle Services (Database Access)
     ↓ database queries
-Prisma Client → PostgreSQL
+Drizzle Client → PostgreSQL
     ↓ return data
 Mappers (Transform DB → Domain)
     ↓ return to hook
@@ -98,27 +101,29 @@ Component renders UI
 **Key Principles:**
 1. **Separation of Concerns**: Components handle UI only, hooks handle data fetching, services handle business logic
 2. **Authentication-First**: Middleware refreshes session on every request, protected routes use AuthGuard
-3. **Type Safety**: Prisma generates types, mappers transform DB records to domain models
+3. **Type Safety**: Drizzle provides full TypeScript inference, mappers transform DB records to domain models
 4. **Error Handling**: Services return `{ data, error }` tuple pattern
 
-### Database Schema (Prisma)
+### Database Schema (Drizzle)
 
-**Core Models:**
-- **Profile**: User profiles (user_id PK from Supabase Auth)
-  - Fields: username, display_name, bio, avatar_url, social_links (JSONB), gear_dashboard_title
+**Core Tables:**
+- **profiles**: User profiles (user_id PK from Supabase Auth)
+  - Fields: user_id, username, display_name, bio, avatar_url, social_links (JSONB), gear_dashboard_title, created_at, updated_at
   - Relations: trips[], gear[]
 
-- **Trip**: Travel records
-  - Fields: id, user_id, title, description, location, duration, date, images[], tags[], slug
+- **trip**: Travel records
+  - Fields: id, user_id, title, description, location, duration, date, images[], tags[], slug, created_at, updated_at
   - Relations: profile, trip_gear[]
 
-- **Gear**: Equipment inventory
-  - Fields: id, user_id, name, category, description, image_url, specs (JSONB), tags[]
+- **gear**: Equipment inventory
+  - Fields: id, user_id, name, category, description, image_url, specs (JSONB), tags[], created_at, updated_at
   - Relations: profile, trip_gear[]
 
-- **TripGear**: Junction table for trip-gear many-to-many relationship
+- **trip_gear**: Junction table for trip-gear many-to-many relationship
   - Fields: id, trip_id, gear_id
   - Unique constraint: [trip_id, gear_id]
+
+**Schema Location**: [lib/db/schema.ts](lib/db/schema.ts)
 
 ## Authentication System
 
@@ -136,10 +141,11 @@ Component renders UI
 4. API routes verify user with `createClient().auth.getUser()`
 
 **Important Notes:**
-- **Supabase client is for AUTH ONLY** - use Prisma services for database queries
+- **Supabase client is for AUTH ONLY** - use Drizzle services for database queries
 - Use `lib/supabase/client.ts` in browser components
 - Use `lib/supabase/server.ts` in API routes and server components
 - Session cookies automatically handled by Supabase SSR middleware
+- Profile creation is automatic via Supabase database trigger on auth.users insert
 
 ## API Design
 
@@ -160,8 +166,8 @@ All routes in `/app/api/` follow REST conventions:
 **Standard Pattern:**
 1. Parse query parameters or request body
 2. Verify authentication (for protected endpoints)
-3. Validate input
-4. Call Prisma service with userId
+3. Validate input (using schemas from `lib/validation/`)
+4. Call Drizzle service with userId
 5. Return `{ data }` or `{ error }` JSON response
 
 **Service Return Pattern:**
@@ -171,6 +177,11 @@ if (error) {
   return NextResponse.json({ error: error.message }, { status: 500 });
 }
 return NextResponse.json({ data });
+```
+
+**Service Import Pattern:**
+```typescript
+import { getTripList, createTrip } from '@/lib/services/db';
 ```
 
 ## Data Fetching with Custom Hooks
@@ -264,23 +275,24 @@ function GearContent() {
 pnpm dev                # Start dev server (localhost:3000)
 pnpm build              # Build for production
 pnpm lint               # Run ESLint
-pnpm start              # Start production server (after build)
+pnpm start              # Build and start OpenNext.js Cloudflare server
 
-# Database (Prisma)
-pnpm prisma:generate    # Generate Prisma client
-pnpm prisma:push        # Sync schema to database (dev)
-pnpm prisma:migrate     # Create migration (npx prisma migrate dev --name <name>)
-pnpm prisma:studio      # Open Prisma Studio GUI
-pnpm db:sync            # Pull schema from DB and generate client
+# Database (Drizzle)
+pnpm db:push            # Sync schema to database (drizzle-kit push)
+pnpm db:generate        # Generate migrations (drizzle-kit generate)
+pnpm db:studio          # Open Drizzle Studio GUI (drizzle-kit studio)
+pnpm db:migrate         # Run migrations (drizzle-kit migrate)
 
 # Supabase (local development)
 pnpm supabase:start     # Start local Supabase
 pnpm supabase:stop      # Stop local Supabase
+pnpm supabase:status    # Check local Supabase status
 pnpm supabase:reset     # Reset local database
 
 # Deployment (Cloudflare)
-pnpm preview            # Preview production build
-pnpm deploy             # Deploy to Cloudflare Pages
+pnpm preview            # Build and preview production build
+pnpm deploy             # Build and deploy to Cloudflare Pages
+pnpm upload             # Build and upload to Cloudflare
 pnpm cf-typegen         # Generate Cloudflare Worker types
 ```
 
@@ -292,11 +304,13 @@ git clone <repo> && cd outdoor-trails-hub
 pnpm install
 
 # 2. Setup environment
-cp .env.example .env.local
-# Edit .env.local with Supabase credentials
+# Create .env.local with Supabase credentials:
+# - DATABASE_URL (PostgreSQL connection string)
+# - NEXT_PUBLIC_SUPABASE_URL
+# - NEXT_PUBLIC_SUPABASE_ANON_KEY
 
 # 3. Sync database
-npx prisma db push
+pnpm db:push
 
 # 4. Start dev server
 pnpm dev
@@ -305,7 +319,7 @@ pnpm dev
 ### Add New API Endpoint
 
 1. Create `/app/api/[resource]/route.ts`
-2. Import Prisma service: `import { getResourceList } from '@/lib/services/prisma'`
+2. Import Drizzle service: `import { getResourceList } from '@/lib/services/db'`
 3. Implement GET/POST handlers
 4. Add auth check for protected endpoints:
    ```typescript
@@ -321,11 +335,13 @@ pnpm dev
 ### Update Database Schema
 
 ```bash
-# 1. Edit prisma/schema.prisma
-# 2. Create migration
-npx prisma migrate dev --name add_new_field
-# 3. Review migration file in prisma/migrations/
-# 4. Commit migration to git
+# 1. Edit lib/db/schema.ts
+# 2. Generate migration
+pnpm db:generate
+# 3. Review migration file in drizzle/ folder
+# 4. Push to database
+pnpm db:push
+# 5. Commit schema and migration to git
 ```
 
 ### Add New React Hook
@@ -355,8 +371,8 @@ npx prisma migrate dev --name add_new_field
 
 **Database Queries:**
 ```typescript
-// Use Prisma Services for all database queries
-import { getProfileByUserId } from '@/lib/services/prisma';
+// Use Drizzle Services for all database queries
+import { getProfileByUserId } from '@/lib/services/db';
 const { data, error } = await getProfileByUserId(userId);
 ```
 
@@ -381,12 +397,16 @@ const user = useProtectedUser();
 **Ownership Checks:**
 ```typescript
 // Always verify user owns the resource before update/delete
-const existing = await prisma.trip.findUnique({
-  where: { id },
-  select: { user_id: true }
+import { db } from '@/lib/db';
+import { trip } from '@/lib/db/schema';
+import { eq } from 'drizzle-orm';
+
+const existing = await db.query.trip.findFirst({
+  where: eq(trip.id, id),
+  columns: { user_id: true }
 });
 
-if (existing.user_id !== userId) {
+if (!existing || existing.user_id !== userId) {
   throw new Error('Unauthorized');
 }
 ```
@@ -398,7 +418,7 @@ if (existing.user_id !== userId) {
 // Don't use Supabase client for database queries
 const { data, error } = await supabase
   .from('profiles')
-  .select('*'); // ❌ Use Prisma instead
+  .select('*'); // ❌ Use Drizzle services instead
 ```
 
 **Authentication:**
@@ -436,13 +456,14 @@ const { trips, isLoading, error } = useTrips({ userId });
 const { formState, isSaving, saveProfile } = useProfileEditor(userId);
 ```
 
-## Ongoing Migration
+## Migration History
 
-**Prisma → Drizzle ORM:**
-- See `docs/PRISMA_TO_DRIZZLE_MIGRATION.md` for full migration plan
-- Drizzle schema defined in `lib/db/schema.ts`
-- Drizzle is lighter, better for Cloudflare Workers
-- Migration in progress - both ORMs may coexist temporarily
+**Prisma → Drizzle ORM (COMPLETED):**
+- See `docs/PRISMA_TO_DRIZZLE_MIGRATION.md` for migration details
+- Drizzle schema: [lib/db/schema.ts](lib/db/schema.ts)
+- Drizzle client: [lib/db/index.ts](lib/db/index.ts)
+- Benefits: Lighter bundle, better for Cloudflare Workers, faster startup
+- All services migrated to Drizzle in `lib/services/db/`
 
 ## Image Storage (Planned)
 
@@ -466,21 +487,23 @@ Run the application and verify:
 ## Build Configuration
 
 **Cloudflare Pages:**
-- Build command: `npx prisma generate && next build`
+- Build command: `next build`
 - Framework: Next.js (OpenNext.js adapter)
 - Node compatibility: `nodejs_compat` flag enabled
-- Environment variables: Set in Cloudflare Pages dashboard
+- Environment variables: Set in Cloudflare Pages dashboard (DATABASE_URL, NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY)
 
 **Important Files:**
 - `next.config.ts` - Next.js configuration
 - `wrangler.jsonc` - Cloudflare Workers config
 - `open-next.config.ts` - OpenNext adapter for Cloudflare
+- `drizzle.config.ts` - Drizzle Kit configuration
 - `middleware.ts` - Session refresh middleware (runs on every request)
 
 ## Resources
 
 - [Next.js App Router Docs](https://nextjs.org/docs)
-- [Prisma Documentation](https://www.prisma.io/docs/)
+- [Drizzle ORM Documentation](https://orm.drizzle.team/)
 - [Supabase Auth Guide](https://supabase.com/docs/guides/auth)
 - [Shadcn/ui Components](https://ui.shadcn.com/)
 - [Cloudflare Pages](https://pages.cloudflare.com/)
+- [OpenNext.js Cloudflare](https://opennext.js.org/cloudflare)

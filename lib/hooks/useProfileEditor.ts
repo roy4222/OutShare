@@ -42,11 +42,9 @@ const DEFAULT_SOCIAL_LINKS: SocialLinksFormState = {
   x: "",
 };
 
-const DEFAULT_AVATAR_URL = "/S__40583184_0.jpg";
-
 export const createDefaultFormState = (): ProfileFormState => ({
   displayName: "",
-  avatarUrl: DEFAULT_AVATAR_URL,
+  avatarUrl: "",
   bio: "",
   socialLinks: { ...DEFAULT_SOCIAL_LINKS },
 });
@@ -68,7 +66,7 @@ export function useProfileEditor(userId: string | null | undefined) {
           typeof data.avatar_url === "string" ? data.avatar_url.trim() : "";
         setFormState({
           displayName: data.display_name ?? "",
-          avatarUrl: avatarUrl || DEFAULT_AVATAR_URL,
+          avatarUrl: avatarUrl || "",
           bio: data.bio ?? "",
           socialLinks: {
             facebook: links.facebook ?? "",
