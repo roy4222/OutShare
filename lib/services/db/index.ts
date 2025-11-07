@@ -12,3 +12,6 @@ export * from './trips.service';
 
 // Equipment Services
 export * from './equipment.service';
+
+// Categories Services
+export * from './categories.service';

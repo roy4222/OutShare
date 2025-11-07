@@ -12,6 +12,7 @@ export interface Equipment {
   price: number; // 單位：台幣
   tags?: string[];
   buy_link?: string;
+  link_name?: string; // 連結顯示名稱
   image?: string;
   category: string; // 裝備分類
   trips?: string[]; // 關聯的旅程標題

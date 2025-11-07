@@ -87,7 +87,7 @@ export function createEquipmentColumns(
       header: "連結名稱",
       cell: ({ row }) => {
         const buyLink = row.original.buy_link;
-        const linkName = row.original.trips?.[0]; // 使用 trips 作為 link_name 的臨時儲存
+        const linkName = row.original.link_name;
 
         if (!buyLink) {
           return <span className="text-gray-400">–</span>;

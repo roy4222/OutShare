@@ -231,6 +231,8 @@ export async function createEquipment(
       image_url: data.image_url,
       specs: data.specs || {},
       tags: data.tags || [],
+      created_at: new Date(),
+      updated_at: new Date(),
     }).returning();
 
     return { data: mapGear(newGear as GearWithRelations), error: null };
