@@ -11,8 +11,9 @@ import { EquipmentListProps } from "@/lib/types/equipment";
 import { useEquipment } from "@/lib/hooks/useEquipment";
 import EquipmentGroup from "./EquipmentGroup";
 
-const EquipmentList = ({ tripTitle, tripId, className }: EquipmentListProps) => {
+const EquipmentList = ({ userId, tripTitle, tripId, className }: EquipmentListProps) => {
   const { groupedEquipment, isEmpty, isLoading, error } = useEquipment({
+    userId,
     tripTitle,
     tripId,
     groupByCategory: true,

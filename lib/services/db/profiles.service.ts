@@ -224,8 +224,30 @@ export async function ensureProfileForUser(
     });
 
     if (!existingProfile) {
+      // 自動生成唯一 username
+      const emailPrefix = params.email?.split('@')[0] || 'user';
+      const sanitized = emailPrefix.toLowerCase().replace(/[^a-z0-9_-]/g, '_');
+
+      let username = sanitized;
+      let attempt = 0;
+
+      // 嘗試找到可用的 username（最多 10 次）
+      while (attempt < 10) {
+        const { available } = await isUsernameAvailable(username);
+        if (available) break;
+
+        attempt++;
+        username = `${sanitized}_${Math.floor(Math.random() * 10000)}`;
+      }
+
+      // 最後手段：使用 UUID 前 8 碼
+      if (attempt >= 10) {
+        username = `user_${params.userId.substring(0, 8)}`;
+      }
+
       const [profile] = await db.insert(profiles).values({
         user_id: params.userId,
+        username: username,
         display_name: displayNameMetadata,
         avatar_url: avatarUrlMetadata,
         social_links: {},

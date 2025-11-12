@@ -44,6 +44,18 @@ export const trip = pgTable('trip', {
 });
 
 // ============================================
+// Categories Table (裝備類別)
+// ============================================
+
+export const categories = pgTable('categories', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  user_id: uuid('user_id').notNull().references(() => profiles.user_id, { onDelete: 'cascade' }),
+  name: text('name').notNull(),
+  created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
+  updated_at: timestamp('updated_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
+});
+
+// ============================================
 // Gear Table (裝備)
 // ============================================
 
@@ -51,7 +63,7 @@ export const gear = pgTable('gear', {
   id: uuid('id').defaultRandom().primaryKey(),
   user_id: uuid('user_id').notNull().references(() => profiles.user_id, { onDelete: 'cascade' }),
   name: text('name').notNull(),
-  category: text('category'),
+  category: text('category'), // 保持 text 類型以向後兼容
   description: text('description'),
   image_url: text('image_url'),
   specs: jsonb('specs').$type<Record<string, unknown>>(),
@@ -78,6 +90,7 @@ export const tripGear = pgTable('trip_gear', {
 export const profilesRelations = relations(profiles, ({ many }) => ({
   trips: many(trip),
   gear: many(gear),
+  categories: many(categories),
 }));
 
 export const tripRelations = relations(trip, ({ one, many }) => ({
@@ -107,6 +120,13 @@ export const tripGearRelations = relations(tripGear, ({ one }) => ({
   }),
 }));
 
+export const categoriesRelations = relations(categories, ({ one }) => ({
+  profile: one(profiles, {
+    fields: [categories.user_id],
+    references: [profiles.user_id],
+  }),
+}));
+
 // ============================================
 // Type Exports
 // ============================================
@@ -122,3 +142,6 @@ export type NewGear = typeof gear.$inferInsert;
 
 export type TripGear = typeof tripGear.$inferSelect;
 export type NewTripGear = typeof tripGear.$inferInsert;
+
+export type Category = typeof categories.$inferSelect;
+export type NewCategory = typeof categories.$inferInsert;

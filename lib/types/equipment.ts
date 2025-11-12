@@ -6,6 +6,7 @@
  * 裝備資料模型（Domain Model）
  */
 export interface Equipment {
+  id: string; // 裝備唯一識別碼（UUID from database）
   name: string;
   brand: string;
   weight: number; // 單位：公克
@@ -46,6 +47,7 @@ export interface EquipmentCardProps {
  * 裝備列表組件 Props
  */
 export interface EquipmentListProps {
+  userId?: string; // 可選的使用者 ID，用於過濾特定使用者的裝備（公開 profile 頁面使用）
   tripTitle?: string; // 可選的旅程標題，用於過濾裝備（向後相容，建議使用 tripId）
   tripId?: string; // 可選的旅程 ID 或 slug，用於過濾裝備（推薦）
   className?: string;

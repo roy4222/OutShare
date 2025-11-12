@@ -15,7 +15,7 @@ import { useProfile, useTrips } from "@/lib/hooks";
 
 export default function ProfilePage() {
   const profile = useProfile();
-  const { trips, isLoading: isLoadingTrips } = useTrips();
+  const { trips, isLoading: isLoadingTrips } = useTrips({ userId: profile.userId });
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-white py-8 max-w-lg mx-auto">
@@ -42,7 +42,7 @@ export default function ProfilePage() {
             <div className="w-full space-y-4 px-4">
               <div className="flex justify-center">
                 <div className="w-80 md:w-100">
-                  <EquipmentList />
+                  <EquipmentList userId={profile.userId} />
                 </div>
               </div>
             </div>

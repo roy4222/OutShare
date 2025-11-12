@@ -88,6 +88,7 @@ export function useProfile(): UserProfile {
       }
 
       return {
+        userId: profileData.user_id,
         username: profileData.username || 'user',
         displayName: profileData.display_name || profileData.username || 'User',
         avatar: profileData.avatar_url?.trim() || '',
@@ -100,6 +101,7 @@ export function useProfile(): UserProfile {
 
     // 預設資料（向後相容）
     return {
+      userId: '00000000-0000-0000-0000-000000000000', // 預設 UUID
       username: 'kj',
       displayName: 'KJ',
       avatar: 'https://moegirl.uk/images/c/c1/Yanami_Anna_icon.png',
@@ -190,6 +192,7 @@ export function useProfileByUsername(username: string): {
           }
 
           setProfile({
+            userId: profileData.user_id,
             username: profileData.username || 'user',
             displayName: profileData.display_name || profileData.username || 'User',
             avatar: profileData.avatar_url?.trim() || '',

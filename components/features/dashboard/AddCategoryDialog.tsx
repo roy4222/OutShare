@@ -14,7 +14,7 @@ interface AddCategoryDialogProps {
   /** 關閉彈窗的回調函數 */
   onClose: () => void;
   /** 確認新增類別的回調函數，返回類別名稱 */
-  onConfirm: (categoryName: string) => void;
+  onConfirm: (categoryName: string) => Promise<void>;
 }
 
 /**
@@ -29,8 +29,8 @@ export function AddCategoryDialog({
   onConfirm,
 }: AddCategoryDialogProps) {
   const handleSubmit = async (categoryName: string) => {
-    // 直接呼叫 onConfirm，不需要 await
-    onConfirm(categoryName);
+    // 等待 onConfirm 完成，讓對話框能正確顯示 loading 狀態和錯誤訊息
+    return await onConfirm(categoryName);
   };
 
   return (

@@ -1,12 +1,12 @@
 /**
  * useEquipment Hook
- * 
- * 封裝裝備資料和過濾邏輯（從 API 獲取，使用 Prisma Services）
+ *
+ * 封裝裝備資料和過濾邏輯（從 API 獲取，使用 Drizzle Services）
  */
 
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { Equipment, GroupedEquipment } from '@/lib/types/equipment';
 import {
   filterEquipmentByTrip,
@@ -32,6 +32,7 @@ interface UseEquipmentResult {
   isEmpty: boolean;
   isLoading: boolean;
   error: Error | null;
+  refetch: () => Promise<void>;
 }
 
 /**
@@ -52,17 +53,79 @@ export function useEquipment(
   options: UseEquipmentOptions = {}
 ): UseEquipmentResult {
   const { tripTitle, tripId, groupByCategory = false, userId } = options;
-  
+
   const [equipment, setEquipment] = useState<Equipment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const isMountedRef = useRef(true);
 
-  // 從 API 獲取裝備資料
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  // 從 API 獲取裝備資料（抽取為獨立函數以便重複使用）
+  const fetchEquipment = useCallback(async () => {
+    try {
+      if (isMountedRef.current) {
+        setIsLoading(true);
+        setError(null);
+      }
+
+      // 構建 API URL
+      const params = new URLSearchParams();
+      if (userId) {
+        params.append('userId', userId);
+      }
+      if (tripId) {
+        params.append('tripId', tripId);
+      }
+      // 修正：當需要 tripTitle 過濾時，自動加上 includeTrips
+      if (tripTitle) {
+        params.append('includeTrips', 'true');
+      }
+
+      const url = `/api/equipment${params.toString() ? `?${params.toString()}` : ''}`;
+
+      // 呼叫 API Route
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to fetch equipment');
+      }
+
+      const { data } = await response.json();
+      if (!isMountedRef.current) {
+        return;
+      }
+
+      setEquipment(data || []);
+    } catch (err) {
+      console.error('Error fetching equipment:', err);
+      if (!isMountedRef.current) {
+        return;
+      }
+
+      setError(err instanceof Error ? err : new Error('Unknown error'));
+      setEquipment([]);
+    } finally {
+      if (isMountedRef.current) {
+        setIsLoading(false);
+      }
+    }
+  }, [tripId, userId, tripTitle]);
+
   useEffect(() => {
     let isMounted = true;
 
-    async function fetchEquipment() {
+    const loadEquipment = async () => {
+      const abortController = new AbortController();
+
       try {
+        if (!isMounted) return;
         setIsLoading(true);
         setError(null);
 
@@ -74,13 +137,17 @@ export function useEquipment(
         if (tripId) {
           params.append('tripId', tripId);
         }
+        // 修正：當需要 tripTitle 過濾時，自動加上 includeTrips
+        if (tripTitle) {
+          params.append('includeTrips', 'true');
+        }
 
         const url = `/api/equipment${params.toString() ? `?${params.toString()}` : ''}`;
 
-        // 呼叫 API Route
-        const response = await fetch(url);
-
-        if (!isMounted) return;
+        // 呼叫 API Route with abort signal
+        const response = await fetch(url, {
+          signal: abortController.signal,
+        });
 
         if (!response.ok) {
           const errorData = await response.json();
@@ -88,25 +155,33 @@ export function useEquipment(
         }
 
         const { data } = await response.json();
-        setEquipment(data || []);
+
+        if (isMounted) {
+          setEquipment(data || []);
+        }
       } catch (err) {
-        if (!isMounted) return;
+        // 忽略取消請求的錯誤
+        if (err instanceof Error && err.name === 'AbortError') {
+          return;
+        }
         console.error('Error fetching equipment:', err);
-        setError(err instanceof Error ? err : new Error('Unknown error'));
-        setEquipment([]);
+        if (isMounted) {
+          setError(err instanceof Error ? err : new Error('Unknown error'));
+          setEquipment([]);
+        }
       } finally {
         if (isMounted) {
           setIsLoading(false);
         }
       }
-    }
+    };
 
-    fetchEquipment();
+    loadEquipment();
 
     return () => {
       isMounted = false;
     };
-  }, [tripId, userId]);
+  }, [fetchEquipment, userId, tripId, tripTitle]);
 
   // 如果使用 tripTitle 過濾（向後相容）
   const filteredEquipment = useMemo(() => {
@@ -130,6 +205,6 @@ export function useEquipment(
     isEmpty: filteredEquipment.length === 0,
     isLoading,
     error,
+    refetch: fetchEquipment,
   };
 }
-

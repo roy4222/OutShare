@@ -3,7 +3,16 @@
 import { useState, useEffect } from "react";
 import Navbar from "@/components/features/layout/Navbar";
 import SideBar from "@/components/features/layout/SideBar";
-import { CategoryModal } from "@/components/features/dashboard";
+import {
+  CategoryModal,
+  AddCategoryDialog,
+  EquipmentFormDialog,
+  GearCategorySection,
+  RenameCategoryDialog,
+  DeleteCategoryDialog,
+  EquipmentFormData,
+  EquipmentWithId,
+} from "@/components/features/dashboard";
 import {
   Empty,
   EmptyHeader,
@@ -15,28 +24,58 @@ import {
 import { FolderCodeIcon, SquarePenIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useProtectedUser } from "@/lib/hooks/useProtectedUser";
+import { useEquipment } from "@/lib/hooks/useEquipment";
+import { useCategories } from "@/lib/hooks/useCategories";
 
 const DEFAULT_GEAR_DASHBOARD_TITLE = "我的裝備";
+
 /**
  * 受保護的 GearDashboard 頁面
  *
- * 這個頁面示範如何:
- * 1. 透過 AuthGuard 集中處理認證
- * 2. 顯示使用者資訊
- * 3. 實作登出功能
- * 4. 整合 Sidebar 側邊導航欄
+ * 功能:
+ * 1. 顯示使用者的裝備分類管理介面
+ * 2. 支援新增/編輯/刪除類別
+ * 3. 支援新增/編輯/刪除裝備
+ * 4. 使用 Data Table 展示裝備列表
  */
 export default function GearDashboardPage() {
   const user = useProtectedUser();
 
-  // 彈窗狀態
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // 對話框狀態
+  const [isTitleModalOpen, setIsTitleModalOpen] = useState(false);
+  const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
+  const [isEquipmentFormOpen, setIsEquipmentFormOpen] = useState(false);
+  const [isRenameCategoryOpen, setIsRenameCategoryOpen] = useState(false);
+  const [isDeleteCategoryOpen, setIsDeleteCategoryOpen] = useState(false);
+
+  // 表單狀態
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [categoryToEdit, setCategoryToEdit] = useState<string>("");
+  const [categoryToDelete, setCategoryToDelete] = useState<string>("");
+
+  // 批次操作載入狀態
+  const [isBulkOperating, setIsBulkOperating] = useState(false);
 
   // 標題狀態
   const [dashboardTitle, setDashboardTitle] = useState<string>(
-    DEFAULT_GEAR_DASHBOARD_TITLE,
+    DEFAULT_GEAR_DASHBOARD_TITLE
   );
   const [isTitleLoading, setIsTitleLoading] = useState(true);
+
+  // 使用 useCategories hook 管理類別
+  const {
+    categories,
+    isLoading: isCategoriesLoading,
+    refetch: refetchCategories,
+    renameCategoryWithEquipment,
+    deleteCategoryWithEquipment,
+  } = useCategories();
+
+  // 獲取裝備資料
+  const { groupedEquipment, isEmpty, isLoading, error, refetch } = useEquipment({
+    userId: user.id,
+    groupByCategory: true,
+  });
 
   // 載入使用者的自訂標題
   useEffect(() => {
@@ -47,7 +86,7 @@ export default function GearDashboardPage() {
 
         if (result.data?.gear_dashboard_title) {
           setDashboardTitle(
-            result.data.gear_dashboard_title || DEFAULT_GEAR_DASHBOARD_TITLE,
+            result.data.gear_dashboard_title || DEFAULT_GEAR_DASHBOARD_TITLE
           );
         } else {
           setDashboardTitle(DEFAULT_GEAR_DASHBOARD_TITLE);
@@ -64,7 +103,6 @@ export default function GearDashboardPage() {
 
   // 處理標題儲存
   const handleSaveTitle = async (newTitle: string) => {
-    // 驗證標題
     if (!newTitle || newTitle.trim().length === 0) {
       throw new Error("標題不可為空");
     }
@@ -89,11 +127,176 @@ export default function GearDashboardPage() {
       throw new Error(result.error || "儲存失敗");
     }
 
-    // 更新本地狀態
     setDashboardTitle(newTitle);
   };
 
-  if (isTitleLoading) {
+  // 處理新增類別
+  const handleAddCategory = () => {
+    setIsAddCategoryOpen(true);
+  };
+
+  // 處理類別確認（建立新類別到資料庫）
+  const handleCategoryConfirm = async (categoryName: string) => {
+    try {
+      const response = await fetch("/api/categories", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name: categoryName }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || result.error) {
+        throw new Error(result.error || "新增類別失敗");
+      }
+
+      // 重新載入類別列表
+      await refetchCategories();
+
+      setIsAddCategoryOpen(false);
+    } catch (error) {
+      console.error("Error creating category:", error);
+      throw error;
+    }
+  };
+
+  // 處理新增裝備（從類別區域觸發）
+  const handleAddEquipment = (category: string) => {
+    setSelectedCategory(category);
+    setIsEquipmentFormOpen(true);
+  };
+
+  // 處理裝備表單提交
+  const handleEquipmentSubmit = async (formData: EquipmentFormData) => {
+    try {
+      const response = await fetch("/api/equipment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          category: formData.category,
+          description: formData.description,
+          image_url: formData.image_url,
+          specs: {
+            brand: formData.brand,
+            weight_g: formData.weight,
+            price_twd: formData.price,
+            buy_link: formData.buy_link,
+            link_name: formData.link_name,
+          },
+          tags: formData.tags || [],
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || result.error) {
+        throw new Error(result.error || "新增裝備失敗");
+      }
+
+      // 成功後重新獲取裝備資料以顯示新裝備
+      await refetch();
+    } catch (error) {
+      console.error("Error creating equipment:", error);
+      throw error;
+    }
+  };
+
+  // 處理編輯裝備（預留）
+  const handleEditEquipment = (equipment: EquipmentWithId) => {
+    // TODO: 實作編輯功能
+    console.log("Edit equipment:", equipment);
+  };
+
+  // 處理刪除裝備（預留）
+  const handleDeleteEquipment = async (equipment: EquipmentWithId) => {
+    // TODO: 實作刪除功能
+    console.log("Delete equipment:", equipment);
+  };
+
+  // 處理編輯類別名稱
+  const handleEditCategory = (category: string) => {
+    setCategoryToEdit(category);
+    setIsRenameCategoryOpen(true);
+  };
+
+  // 處理類別重新命名確認（使用交易）
+  const handleRenameCategoryConfirm = async (newCategoryName: string) => {
+    if (!categoryToEdit) return;
+
+    try {
+      setIsBulkOperating(true);
+
+      // 1. 找到類別的 ID
+      const category = categories.find((cat) => cat.name === categoryToEdit);
+      if (!category) {
+        throw new Error("Category not found");
+      }
+
+      // 2. 收集該類別下所有裝備的 ID
+      const categoryEquipment = groupedEquipment?.[categoryToEdit] || [];
+      const equipmentIds = categoryEquipment.map((eq) => eq.id);
+
+      // 3. 使用 hook 的交易式方法更新類別和所有裝備
+      await renameCategoryWithEquipment(category.id, newCategoryName, equipmentIds);
+
+      // 4. 重新載入裝備資料
+      await refetch();
+
+      setIsRenameCategoryOpen(false);
+      setCategoryToEdit("");
+    } catch (error) {
+      console.error("Error renaming category:", error);
+      throw error;
+    } finally {
+      setIsBulkOperating(false);
+    }
+  };
+
+  // 處理刪除類別
+  const handleDeleteCategory = (category: string) => {
+    setCategoryToDelete(category);
+    setIsDeleteCategoryOpen(true);
+  };
+
+  // 處理刪除類別確認（使用交易）
+  const handleDeleteCategoryConfirm = async () => {
+    if (!categoryToDelete) return;
+
+    try {
+      setIsBulkOperating(true);
+
+      // 1. 找到類別的 ID
+      const category = categories.find((cat) => cat.name === categoryToDelete);
+      if (!category) {
+        throw new Error("Category not found");
+      }
+
+      // 2. 收集該類別下所有裝備的 ID
+      const categoryEquipment = groupedEquipment?.[categoryToDelete] || [];
+      const equipmentIds = categoryEquipment.map((eq) => eq.id);
+
+      // 3. 使用 hook 的交易式方法刪除類別和所有裝備
+      await deleteCategoryWithEquipment(category.id, equipmentIds);
+
+      // 4. 重新載入裝備資料
+      await refetch();
+
+      setIsDeleteCategoryOpen(false);
+      setCategoryToDelete("");
+    } catch (error) {
+      console.error("Error deleting category:", error);
+      throw error;
+    } finally {
+      setIsBulkOperating(false);
+    }
+  };
+
+  if (isTitleLoading || isLoading || isCategoriesLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-lg">載入中...</div>
@@ -101,8 +304,26 @@ export default function GearDashboardPage() {
     );
   }
 
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-lg text-red-600">載入失敗: {error.message}</div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 relative">
+      {/* 批次操作載入中遮罩 */}
+      {isBulkOperating && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+          <div className="bg-white rounded-lg p-6 shadow-xl flex flex-col items-center gap-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-700"></div>
+            <p className="text-lg font-medium text-gray-900">處理中，請稍候...</p>
+          </div>
+        </div>
+      )}
+
       {/* 頂部導航列 */}
       <Navbar />
 
@@ -114,50 +335,135 @@ export default function GearDashboardPage() {
         {/* 主內容區（預留空間給 Sidebar，左邊距 256px = w-64） */}
         <main className="flex-1 ml-64 p-6">
           <div className="max-w-6xl mx-auto">
-            <div className="flex justify-between items-center mb-4">
+            {/* 標題列 */}
+            <div className="flex justify-between items-center mb-6">
               <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
                 {dashboardTitle}
                 <button
-                  onClick={() => setIsModalOpen(true)}
+                  onClick={() => setIsTitleModalOpen(true)}
                   className="p-1 hover:bg-gray-100 rounded transition-colors"
                   aria-label="編輯標題"
                 >
                   <SquarePenIcon className="size-5 text-green-700" />
                 </button>
               </h1>
-              <div className="flex bg-green-700 text-white rounded-md">
-                <Button>+ 新增類別</Button>
+              <Button
+                onClick={handleAddCategory}
+                className="bg-green-700 hover:bg-green-800 text-white"
+              >
+                + 新增類別
+              </Button>
+            </div>
+
+            {/* 裝備列表或空狀態 */}
+            {isEmpty && categories.length === 0 ? (
+              <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
+                <Empty>
+                  <EmptyHeader>
+                    <EmptyMedia variant="icon">
+                      <FolderCodeIcon className="size-6" />
+                    </EmptyMedia>
+                    <EmptyTitle>新增類別</EmptyTitle>
+                    <EmptyDescription>
+                      開始新增你的第一個裝備，建立你的裝備清單
+                    </EmptyDescription>
+                  </EmptyHeader>
+                  <EmptyContent>
+                    <Button
+                      onClick={handleAddCategory}
+                      className="bg-green-700 hover:bg-green-800 text-white"
+                    >
+                      + 新增類別
+                    </Button>
+                  </EmptyContent>
+                </Empty>
               </div>
-            </div>
-            {/* Empty State UI */}
-            <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
-              <Empty>
-                <EmptyHeader>
-                  <EmptyMedia variant="icon">
-                    <FolderCodeIcon className="size-6" />
-                  </EmptyMedia>
-                  <EmptyTitle>新增類別</EmptyTitle>
-                  <EmptyDescription>
-                    開始新增你的第一個裝備，建立你的裝備清單
-                  </EmptyDescription>
-                </EmptyHeader>
-                <EmptyContent>
-                  <div className="flex bg-green-700  text-white rounded-md ">
-                    <Button>+ 新增類別</Button>
-                  </div>
-                </EmptyContent>
-              </Empty>
-            </div>
+            ) : (
+              <div className="space-y-6">
+                {/* 顯示空類別（還沒有裝備的類別） */}
+                {categories
+                  .filter((cat) => !groupedEquipment || !groupedEquipment[cat.name])
+                  .map((category) => (
+                    <GearCategorySection
+                      key={`empty-${category.id}`}
+                      category={category.name}
+                      equipment={[]}
+                      onAddEquipment={handleAddEquipment}
+                      onEditCategory={handleEditCategory}
+                      onDeleteCategory={handleDeleteCategory}
+                      onEditEquipment={handleEditEquipment}
+                      onDeleteEquipment={handleDeleteEquipment}
+                    />
+                  ))}
+
+                {/* 顯示有裝備的類別 */}
+                {groupedEquipment &&
+                  Object.entries(groupedEquipment).map(
+                    ([category, equipmentList]) => (
+                      <GearCategorySection
+                        key={category}
+                        category={category}
+                        equipment={equipmentList as EquipmentWithId[]}
+                        onAddEquipment={handleAddEquipment}
+                        onEditCategory={handleEditCategory}
+                        onDeleteCategory={handleDeleteCategory}
+                        onEditEquipment={handleEditEquipment}
+                        onDeleteEquipment={handleDeleteEquipment}
+                      />
+                    )
+                  )}
+              </div>
+            )}
           </div>
         </main>
       </div>
 
       {/* 標題編輯彈窗 */}
       <CategoryModal
-        open={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        open={isTitleModalOpen}
+        onClose={() => setIsTitleModalOpen(false)}
         currentTitle={dashboardTitle}
         onSave={handleSaveTitle}
+      />
+
+      {/* 新增類別對話框 */}
+      <AddCategoryDialog
+        open={isAddCategoryOpen}
+        onClose={() => setIsAddCategoryOpen(false)}
+        onConfirm={handleCategoryConfirm}
+      />
+
+      {/* 裝備表單對話框 */}
+      <EquipmentFormDialog
+        open={isEquipmentFormOpen}
+        onClose={() => {
+          setIsEquipmentFormOpen(false);
+          setSelectedCategory("");
+        }}
+        defaultCategory={selectedCategory}
+        onSubmit={handleEquipmentSubmit}
+      />
+
+      {/* 重新命名類別對話框 */}
+      <RenameCategoryDialog
+        open={isRenameCategoryOpen}
+        onClose={() => {
+          setIsRenameCategoryOpen(false);
+          setCategoryToEdit("");
+        }}
+        currentName={categoryToEdit}
+        onConfirm={handleRenameCategoryConfirm}
+      />
+
+      {/* 刪除類別確認對話框 */}
+      <DeleteCategoryDialog
+        open={isDeleteCategoryOpen}
+        onClose={() => {
+          setIsDeleteCategoryOpen(false);
+          setCategoryToDelete("");
+        }}
+        categoryName={categoryToDelete}
+        onConfirm={handleDeleteCategoryConfirm}
       />
     </div>
   );

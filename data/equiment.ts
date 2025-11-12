@@ -10,7 +10,8 @@
 
 import { Equipment } from "@/lib/types/equipment";
 
-export const equipmentData: Equipment[] = [
+// Legacy data without IDs (for backup/reference only)
+export const equipmentData: Omit<Equipment, 'id'>[] = [
   {
     name: "Stellaridge Tent 1 Rain Fly",
     brand: "mont-bell",

@@ -17,7 +17,7 @@ export interface SocialLink {
  * 使用者個人資料（Domain Model）
  */
 export interface UserProfile {
-  id?: string;
+  userId: string;  // 使用者 UUID，用於查詢該使用者的資料
   username: string;
   displayName: string;
   avatar?: string;

@@ -16,11 +16,13 @@ import {
 /**
  * GET /api/equipment
  *
- * 獲取裝備列表
+ * 獲取裝備列表（公開 API，支援多種查詢模式）
  * Query Parameters:
- * - userId: 可選，過濾特定使用者的裝備
- * - tripId: 可選，過濾特定旅程的裝備
- * - includeTrips: 可選，是否包含關聯的旅程資訊
+ * - userId: 過濾特定使用者的裝備
+ * - tripId: 過濾特定旅程的裝備
+ * - includeTrips: 是否包含關聯的旅程資訊
+ *
+ * ⚠️ 安全限制：必須至少提供 userId 或 tripId 其中之一，防止全站資料外洩
  */
 export async function GET(request: NextRequest) {
   try {
@@ -28,6 +30,17 @@ export async function GET(request: NextRequest) {
     const userId = searchParams.get('userId') || undefined;
     const tripId = searchParams.get('tripId') || undefined;
     const includeTrips = searchParams.get('includeTrips') === 'true';
+
+    // 安全檢查：必須至少提供 userId 或 tripId
+    if (!userId && !tripId) {
+      return NextResponse.json(
+        {
+          error: 'Must provide either userId or tripId parameter',
+          hint: 'Public equipment viewing requires explicit user or trip identification'
+        },
+        { status: 400 }
+      );
+    }
 
     const { data, error } = await getEquipmentList({
       userId,

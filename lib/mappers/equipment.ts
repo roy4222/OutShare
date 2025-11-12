@@ -5,10 +5,12 @@ export type GearSpecs = {
   weight_g?: number;
   price_twd?: number;
   buy_link?: string;
+  link_name?: string;
   [key: string]: unknown;
 };
 
 export interface GearWithRelations {
+  id: string;
   name: string;
   category: string | null;
   description: string | null;
@@ -36,12 +38,14 @@ export function mapGear(
       : undefined;
 
   return {
+    id: gear.id,
     name: gear.name,
     brand: specs.brand ?? '',
     weight: specs.weight_g ?? 0,
     price: specs.price_twd ?? 0,
     tags: gear.tags ?? [],
     buy_link: specs.buy_link ?? undefined,
+    link_name: specs.link_name ?? undefined,
     image: gear.image_url ?? undefined,
     category: gear.category ?? '',
     trips,
