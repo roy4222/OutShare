@@ -10,6 +10,8 @@
 import { EquipmentListProps } from "@/lib/types/equipment";
 import { useEquipment } from "@/lib/hooks/useEquipment";
 import EquipmentGroup from "./EquipmentGroup";
+import { EquipmentListSkeleton } from "@/components/ui/loading/SkeletonVariants";
+import { cn } from "@/lib/utils";
 
 const EquipmentList = ({ userId, tripTitle, tripId, className }: EquipmentListProps) => {
   const { groupedEquipment, isEmpty, isLoading, error } = useEquipment({
@@ -20,11 +22,7 @@ const EquipmentList = ({ userId, tripTitle, tripId, className }: EquipmentListPr
   });
 
   if (isLoading) {
-    return (
-      <div className="text-center text-gray-500 py-8">
-        載入裝備資料中...
-      </div>
-    );
+    return <EquipmentListSkeleton count={3} />;
   }
 
   if (error) {
@@ -48,7 +46,7 @@ const EquipmentList = ({ userId, tripTitle, tripId, className }: EquipmentListPr
   }
 
   return (
-    <div className={`space-y-6 ${className || ''}`}>
+    <div className={cn("space-y-6", className)}>
       {Object.entries(groupedEquipment).map(([category, equipmentList]) => (
         <EquipmentGroup
           key={category}

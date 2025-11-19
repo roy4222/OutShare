@@ -3,6 +3,8 @@
 import { useRequireAuth } from "@/lib/hooks/useAuth";
 import { ProtectedUserProvider } from "@/lib/hooks/useProtectedUser";
 
+import { LoadingLogo } from "@/components/ui/loading/LoadingLogo";
+
 export default function AuthGuard({
   children,
 }: {
@@ -12,8 +14,11 @@ export default function AuthGuard({
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center">
-        <span className="text-lg text-gray-600">載入中...</span>
+      <div
+        className="flex h-screen items-center justify-center"
+        style={{ backgroundColor: "#FAFAFA" }}
+      >
+        <LoadingLogo text="驗證身分中..." />
       </div>
     );
   }

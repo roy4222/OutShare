@@ -48,6 +48,8 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers"; // Added import
+import { LoadingOverlay } from "@/components/ui/loading/LoadingOverlay";
+import { Skeleton } from "@/components/ui/loading/LoadingSkeleton";
 
 const DEFAULT_GEAR_DASHBOARD_TITLE = "我的裝備";
 
@@ -465,11 +467,7 @@ export default function GearDashboardPage() {
   };
 
   if (isTitleLoading || isLoading || isCategoriesLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">載入中...</div>
-      </div>
-    );
+    return <GearDashboardSkeleton />;
   }
 
   if (error) {
@@ -481,18 +479,14 @@ export default function GearDashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 relative">
-      {/* 批次操作載入中遮罩 */}
-      {isBulkOperating && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
-          <div className="bg-white rounded-lg p-6 shadow-xl flex flex-col items-center gap-4">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-700"></div>
-            <p className="text-lg font-medium text-gray-900">
-              處理中，請稍候...
-            </p>
-          </div>
-        </div>
-      )}
+    <div
+      className="relative min-h-screen"
+      style={{ backgroundColor: "#FAFAFA" }}
+    >
+      <LoadingOverlay
+        isLoading={isBulkOperating}
+        message="處理中，請稍候..."
+      />
 
       {/* 頂部導航列 */}
       <Navbar />
@@ -645,3 +639,56 @@ export default function GearDashboardPage() {
     </div>
   );
 }
+
+const GearDashboardSkeleton = () => {
+  return (
+    <div
+      className="min-h-screen"
+      style={{ backgroundColor: "#FAFAFA" }}
+    >
+      <div className="border-b border-grey-400 bg-white">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+          <Skeleton className="h-6 w-32" />
+          <Skeleton className="h-10 w-10 rounded-full" />
+        </div>
+      </div>
+
+      <div className="flex">
+        <div className="hidden w-64 border-r border-grey-400 bg-white p-6 md:block">
+          <div className="space-y-4">
+            <Skeleton className="h-5 w-40" />
+            {Array.from({ length: 4 }).map((_, index) => (
+              <Skeleton key={index} className="h-4 w-3/4" />
+            ))}
+          </div>
+        </div>
+
+        <main className="flex-1 p-6">
+          <div className="mx-auto max-w-6xl space-y-6">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div className="space-y-2">
+                <Skeleton className="h-8 w-48" />
+                <Skeleton className="h-4 w-64" />
+              </div>
+              <Skeleton className="h-10 w-32 rounded-md" />
+            </div>
+
+            <div className="space-y-4">
+              {Array.from({ length: 3 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="space-y-3 rounded-lg border border-grey-400 bg-white p-4"
+                >
+                  <Skeleton className="h-5 w-40" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-4 w-2/3" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+};

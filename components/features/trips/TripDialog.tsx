@@ -18,6 +18,7 @@ import { TripDialogProps } from "@/lib/types/trip";
 import { cn } from "@/lib/utils";
 import { useTripStats } from "@/lib/hooks/useTripStats";
 import TripDetail from "./TripDetail";
+import { LoadingSpinner } from "@/components/ui/loading/LoadingSpinner";
 
 const TripDialog = ({ trip, trigger, className }: TripDialogProps) => {
   const { stats, isLoading } = useTripStats(trip.id);
@@ -39,7 +40,12 @@ const TripDialog = ({ trip, trigger, className }: TripDialogProps) => {
         </DialogHeader>
 
         {isLoading ? (
-          <div className="text-center py-4">載入統計資料中...</div>
+          <div className="flex flex-col items-center justify-center py-6">
+            <LoadingSpinner size="sm" />
+            <p className="mt-3 text-sm" style={{ color: "#54585A" }}>
+              載入統計資料中...
+            </p>
+          </div>
         ) : (
           <TripDetail trip={trip} stats={stats} />
         )}

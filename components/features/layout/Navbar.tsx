@@ -19,6 +19,7 @@ import { useState } from "react";
 import BetaLogo from "@/asset/logo/BetaLogo";
 import { ExternalLinkIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { SkeletonAvatar } from "@/components/ui/loading/LoadingSkeleton";
 
 /**
  * Navbar 導航列元件
@@ -116,7 +117,7 @@ const Navbar = () => {
             </Button>
             {loading ? (
               // 載入狀態
-              <div className="w-10 h-10 bg-gray-200 rounded-full animate-pulse" />
+              <SkeletonAvatar className="h-10 w-10" />
             ) : user ? (
               // 已登入：顯示頭像下拉選單
               <DropdownMenu>
@@ -179,7 +180,7 @@ const Navbar = () => {
           <div className="md:hidden flex items-center">
             {loading ? (
               // 載入狀態
-              <div className="w-10 h-10 bg-gray-200 rounded-full animate-pulse" />
+              <SkeletonAvatar className="h-10 w-10" />
             ) : user ? (
               // 已登入：顯示漢堡選單
               <DropdownMenu
