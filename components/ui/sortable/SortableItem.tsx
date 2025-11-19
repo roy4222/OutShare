@@ -27,9 +27,10 @@ export function SortableItem({ id, children, className }: SortableItemProps) {
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
+    transition: isDragging ? "none" : "all 200ms cubic-bezier(0.4, 0, 0.2, 1)", // Smoother transition for sorting, none for dragging
     zIndex: isDragging ? 10 : 1,
     opacity: isDragging ? 0.5 : 1,
+    willChange: isDragging ? "transform" : "auto", // GPU optimization
   };
 
   return (

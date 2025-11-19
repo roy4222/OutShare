@@ -33,7 +33,7 @@ import {
 } from "@/lib/services/equipment.client";
 import {
   DndContext,
-  closestCenter,
+  closestCorners, // Changed from closestCenter
   KeyboardSensor,
   PointerSensor,
   useSensor,
@@ -47,6 +47,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import { restrictToVerticalAxis } from "@dnd-kit/modifiers"; // Added import
 
 const DEFAULT_GEAR_DASHBOARD_TITLE = "我的裝備";
 
@@ -110,7 +111,7 @@ export default function GearDashboardPage() {
   }, [categories]);
 
   useEffect(() => {
-    if (groupedEquipment) {
+    if (groupedEquipment && categories) {
       const newOrderedEquipment: Record<string, EquipmentWithId[]> = {};
       // Ensure all categories have an entry, even if empty
       categories.forEach((cat) => {
@@ -133,7 +134,11 @@ export default function GearDashboardPage() {
 
   // DnD Sensors
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // 8px movement required to start drag
+      },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
@@ -546,7 +551,8 @@ export default function GearDashboardPage() {
             ) : (
               <DndContext
                 sensors={sensors}
-                collisionDetection={closestCenter}
+                collisionDetection={closestCorners}
+                modifiers={[restrictToVerticalAxis]}
                 onDragEnd={handleDragEnd}
               >
                 <div className="space-y-6">
