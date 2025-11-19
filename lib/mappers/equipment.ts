@@ -43,6 +43,7 @@ export function mapGear(
     brand: specs.brand ?? '',
     weight: specs.weight_g ?? 0,
     price: specs.price_twd ?? 0,
+    description: gear.description ?? undefined,
     tags: gear.tags ?? [],
     buy_link: specs.buy_link ?? undefined,
     link_name: specs.link_name ?? undefined,

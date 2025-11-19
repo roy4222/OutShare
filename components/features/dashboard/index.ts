@@ -4,7 +4,7 @@ export { EquipmentFormDialog } from './EquipmentFormDialog';
 export { GearCategorySection } from './GearCategorySection';
 export { RenameCategoryDialog } from './RenameCategoryDialog';
 export { DeleteCategoryDialog } from './DeleteCategoryDialog';
+export { DeleteEquipmentDialog } from './DeleteEquipmentDialog';
 export { createEquipmentColumns } from './equipment-columns';
 export type { EquipmentWithId } from './equipment-columns';
 export type { EquipmentFormData } from './EquipmentFormDialog';
-

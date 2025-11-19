@@ -11,6 +11,7 @@ export interface Equipment {
   brand: string;
   weight: number; // 單位：公克
   price: number; // 單位：台幣
+  description?: string; // 裝備說明
   tags?: string[];
   buy_link?: string;
   link_name?: string; // 連結顯示名稱
@@ -52,4 +53,3 @@ export interface EquipmentListProps {
   tripId?: string; // 可選的旅程 ID 或 slug，用於過濾裝備（推薦）
   className?: string;
 }
-

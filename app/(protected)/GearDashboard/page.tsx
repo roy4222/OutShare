@@ -10,6 +10,7 @@ import {
   GearCategorySection,
   RenameCategoryDialog,
   DeleteCategoryDialog,
+  DeleteEquipmentDialog,
   EquipmentFormData,
   EquipmentWithId,
 } from "@/components/features/dashboard";
@@ -26,6 +27,7 @@ import { Button } from "@/components/ui/button";
 import { useProtectedUser } from "@/lib/hooks/useProtectedUser";
 import { useEquipment } from "@/lib/hooks/useEquipment";
 import { useCategories } from "@/lib/hooks/useCategories";
+import { createOrUpdateEquipment, deleteEquipment } from "@/lib/services/equipment.client";
 
 const DEFAULT_GEAR_DASHBOARD_TITLE = "我的裝備";
 
@@ -47,11 +49,14 @@ export default function GearDashboardPage() {
   const [isEquipmentFormOpen, setIsEquipmentFormOpen] = useState(false);
   const [isRenameCategoryOpen, setIsRenameCategoryOpen] = useState(false);
   const [isDeleteCategoryOpen, setIsDeleteCategoryOpen] = useState(false);
+  const [isDeleteEquipmentOpen, setIsDeleteEquipmentOpen] = useState(false);
 
   // 表單狀態
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [categoryToEdit, setCategoryToEdit] = useState<string>("");
   const [categoryToDelete, setCategoryToDelete] = useState<string>("");
+  const [equipmentToEdit, setEquipmentToEdit] = useState<EquipmentWithId | null>(null);
+  const [equipmentToDelete, setEquipmentToDelete] = useState<EquipmentWithId | null>(null);
 
   // 批次操作載入狀態
   const [isBulkOperating, setIsBulkOperating] = useState(false);
@@ -165,57 +170,52 @@ export default function GearDashboardPage() {
   // 處理新增裝備（從類別區域觸發）
   const handleAddEquipment = (category: string) => {
     setSelectedCategory(category);
+    setEquipmentToEdit(null);
     setIsEquipmentFormOpen(true);
   };
 
-  // 處理裝備表單提交
+  // 處理裝備表單提交 (新增/編輯)
   const handleEquipmentSubmit = async (formData: EquipmentFormData) => {
     try {
-      const response = await fetch("/api/equipment", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          category: formData.category,
-          description: formData.description,
-          image_url: formData.image_url,
-          specs: {
-            brand: formData.brand,
-            weight_g: formData.weight,
-            price_twd: formData.price,
-            buy_link: formData.buy_link,
-            link_name: formData.link_name,
-          },
-          tags: formData.tags || [],
-        }),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok || result.error) {
-        throw new Error(result.error || "新增裝備失敗");
-      }
-
+      await createOrUpdateEquipment(formData, equipmentToEdit?.id);
+      
       // 成功後重新獲取裝備資料以顯示新裝備
       await refetch();
     } catch (error) {
-      console.error("Error creating equipment:", error);
+      console.error("Error saving equipment:", error);
       throw error;
     }
   };
 
-  // 處理編輯裝備（預留）
+  // 處理編輯裝備
   const handleEditEquipment = (equipment: EquipmentWithId) => {
-    // TODO: 實作編輯功能
-    console.log("Edit equipment:", equipment);
+    setEquipmentToEdit(equipment);
+    setSelectedCategory(equipment.category);
+    setIsEquipmentFormOpen(true);
   };
 
-  // 處理刪除裝備（預留）
+  // 處理刪除裝備
   const handleDeleteEquipment = async (equipment: EquipmentWithId) => {
-    // TODO: 實作刪除功能
-    console.log("Delete equipment:", equipment);
+    setEquipmentToDelete(equipment);
+    setIsDeleteEquipmentOpen(true);
+  };
+
+  // 處理刪除裝備確認
+  const handleDeleteEquipmentConfirm = async () => {
+    if (!equipmentToDelete) return;
+
+    try {
+      await deleteEquipment(equipmentToDelete.id);
+
+      // 成功後重新獲取裝備資料
+      await refetch();
+
+      setIsDeleteEquipmentOpen(false);
+      setEquipmentToDelete(null);
+    } catch (error) {
+      console.error("Error deleting equipment:", error);
+      throw error;
+    }
   };
 
   // 處理編輯類別名稱
@@ -439,8 +439,10 @@ export default function GearDashboardPage() {
         onClose={() => {
           setIsEquipmentFormOpen(false);
           setSelectedCategory("");
+          setEquipmentToEdit(null);
         }}
         defaultCategory={selectedCategory}
+        initialData={equipmentToEdit}
         onSubmit={handleEquipmentSubmit}
       />
 
@@ -464,6 +466,17 @@ export default function GearDashboardPage() {
         }}
         categoryName={categoryToDelete}
         onConfirm={handleDeleteCategoryConfirm}
+      />
+
+      {/* 刪除裝備確認對話框 */}
+      <DeleteEquipmentDialog
+        open={isDeleteEquipmentOpen}
+        onClose={() => {
+          setIsDeleteEquipmentOpen(false);
+          setEquipmentToDelete(null);
+        }}
+        equipmentName={equipmentToDelete?.name || ""}
+        onConfirm={handleDeleteEquipmentConfirm}
       />
     </div>
   );

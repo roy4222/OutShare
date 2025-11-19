@@ -14,11 +14,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { UploadIcon } from "lucide-react";
+import { EquipmentWithId } from "./equipment-columns";
 
 const EQUIPMENT_NAME_MAX_LENGTH = 50;
 const BRAND_MAX_LENGTH = 50;
 const DESCRIPTION_MAX_LENGTH = 80;
 const LINK_NAME_MAX_LENGTH = 20;
+const MAX_TAG_COUNT = 10;
+const MAX_TAG_LENGTH = 20;
 
 interface EquipmentFormDialogProps {
   /** 彈窗開啟狀態 */
@@ -27,6 +30,8 @@ interface EquipmentFormDialogProps {
   onClose: () => void;
   /** 預設類別（從「新增類別」流程傳入） */
   defaultCategory?: string;
+  /** 初始資料（用於編輯模式） */
+  initialData?: EquipmentWithId | null;
   /** 提交表單的回調函數 */
   onSubmit: (formData: EquipmentFormData) => Promise<void>;
 }
@@ -53,6 +58,7 @@ export function EquipmentFormDialog({
   open,
   onClose,
   defaultCategory = "",
+  initialData = null,
   onSubmit,
 }: EquipmentFormDialogProps) {
   const [formData, setFormData] = useState<EquipmentFormData>({
@@ -72,26 +78,44 @@ export function EquipmentFormDialog({
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // 當 dialog 開啟時，重置表單並設定預設類別
+  // 當 dialog 開啟時，重置表單或載入初始資料
   useEffect(() => {
     if (open) {
-      setFormData({
-        name: "",
-        brand: "",
-        description: "",
-        weight: undefined,
-        price: undefined,
-        tags: [],
-        buy_link: "",
-        link_name: "",
-        category: defaultCategory,
-        image_url: "",
-      });
-      setTagsInput("");
+      if (initialData) {
+        // 編輯模式：載入初始資料
+        setFormData({
+          name: initialData.name,
+          brand: initialData.brand || "",
+          description: initialData.description || "",
+          weight: initialData.weight,
+          price: initialData.price,
+          tags: initialData.tags || [],
+          buy_link: initialData.buy_link || "",
+          link_name: initialData.link_name || "",
+          category: initialData.category,
+          image_url: initialData.image || "",
+        });
+        setTagsInput(initialData.tags?.join(", ") || "");
+      } else {
+        // 新增模式：重置表單
+        setFormData({
+          name: "",
+          brand: "",
+          description: "",
+          weight: undefined,
+          price: undefined,
+          tags: [],
+          buy_link: "",
+          link_name: "",
+          category: defaultCategory,
+          image_url: "",
+        });
+        setTagsInput("");
+      }
       setError(null);
       setIsSubmitting(false);
     }
-  }, [open, defaultCategory]);
+  }, [open, defaultCategory, initialData]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -131,6 +155,15 @@ export function EquipmentFormDialog({
     if (!formData.category.trim()) {
       return "類別為必填欄位";
     }
+    
+    // 驗證數值欄位
+    if (formData.weight !== undefined && formData.weight < 0) {
+      return "重量不可為負數";
+    }
+    if (formData.price !== undefined && formData.price < 0) {
+      return "價格不可為負數";
+    }
+
     // 驗證 URL 格式（如果有填寫）
     if (formData.buy_link && formData.buy_link.trim()) {
       try {
@@ -139,6 +172,16 @@ export function EquipmentFormDialog({
         return "連結格式不正確，請輸入有效的 URL（如 https://example.com）";
       }
     }
+    
+    // 驗證標籤
+    const tags = tagsInput.split(",").map(t => t.trim()).filter(t => t.length > 0);
+    if (tags.length > MAX_TAG_COUNT) {
+      return `標籤數量不可超過 ${MAX_TAG_COUNT} 個`;
+    }
+    if (tags.some(tag => tag.length > MAX_TAG_LENGTH)) {
+      return `單一標籤長度不可超過 ${MAX_TAG_LENGTH} 字元`;
+    }
+
     return null;
   };
 
@@ -186,20 +229,6 @@ export function EquipmentFormDialog({
   };
 
   const handleCancel = () => {
-    setFormData({
-      name: "",
-      brand: "",
-      description: "",
-      weight: undefined,
-      price: undefined,
-      tags: [],
-      buy_link: "",
-      link_name: "",
-      category: defaultCategory,
-      image_url: "",
-    });
-    setTagsInput("");
-    setError(null);
     onClose();
   };
 
@@ -208,16 +237,16 @@ export function EquipmentFormDialog({
       <DialogContent className="sm:max-w-[525px] max-h-[90vh] overflow-y-auto">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>裝備資訊</DialogTitle>
+            <DialogTitle>{initialData ? "編輯裝備" : "裝備資訊"}</DialogTitle>
             <DialogDescription>
-              填寫裝備的詳細資訊，標記為 * 的欄位為必填。
+              {initialData ? "修改裝備的詳細資訊" : "填寫裝備的詳細資訊"}，標記為 * 的欄位為必填。
             </DialogDescription>
           </DialogHeader>
 
           <div className="grid gap-4 py-4">
             {/* 圖片上傳區域（暫不實作，UI 僅顯示） */}
             <div className="grid gap-2">
-              <Label>新增裝備圖片</Label>
+              <Label>裝備圖片</Label>
               <div className="flex items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-md bg-gray-50 opacity-50 cursor-not-allowed">
                 <div className="text-center">
                   <UploadIcon className="mx-auto h-8 w-8 text-gray-400" />

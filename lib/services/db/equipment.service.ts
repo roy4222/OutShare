@@ -19,6 +19,21 @@ import {
   type GearSpecs,
 } from '@/lib/mappers/equipment';
 
+// Custom Errors
+export class NotFoundError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'NotFoundError';
+  }
+}
+
+export class UnauthorizedError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'UnauthorizedError';
+  }
+}
+
 /**
  * 獲取裝備列表
  *
@@ -220,7 +235,7 @@ export async function createEquipment(
 ): Promise<{ data: Equipment | null; error: Error | null }> {
   try {
     if (!userId) {
-      throw new Error('Unauthorized: userId is required');
+      throw new UnauthorizedError('Unauthorized: userId is required');
     }
 
     const [newGear] = await db.insert(gear).values({
@@ -269,7 +284,7 @@ export async function updateEquipment(
 ): Promise<{ data: Equipment | null; error: Error | null }> {
   try {
     if (!userId) {
-      throw new Error('Unauthorized: userId is required');
+      throw new UnauthorizedError('Unauthorized: userId is required');
     }
 
     // 先檢查裝備是否存在且屬於該使用者
@@ -281,11 +296,11 @@ export async function updateEquipment(
     });
 
     if (!existingGear) {
-      throw new Error('Equipment not found');
+      throw new NotFoundError('Equipment not found');
     }
 
     if (existingGear.user_id !== userId) {
-      throw new Error('Unauthorized: You can only update your own equipment');
+      throw new UnauthorizedError('Unauthorized: You can only update your own equipment');
     }
 
     // 建立更新物件
@@ -333,7 +348,7 @@ export async function deleteEquipment(
 ): Promise<{ success: boolean; error: Error | null }> {
   try {
     if (!userId) {
-      throw new Error('Unauthorized: userId is required');
+      throw new UnauthorizedError('Unauthorized: userId is required');
     }
 
     // 先檢查裝備是否存在且屬於該使用者
@@ -345,11 +360,11 @@ export async function deleteEquipment(
     });
 
     if (!existingGear) {
-      throw new Error('Equipment not found');
+      throw new NotFoundError('Equipment not found');
     }
 
     if (existingGear.user_id !== userId) {
-      throw new Error('Unauthorized: You can only delete your own equipment');
+      throw new UnauthorizedError('Unauthorized: You can only delete your own equipment');
     }
 
     // 執行刪除
@@ -382,7 +397,7 @@ export async function addEquipmentToTrip(
 ): Promise<{ success: boolean; error: Error | null }> {
   try {
     if (!userId) {
-      throw new Error('Unauthorized: userId is required');
+      throw new UnauthorizedError('Unauthorized: userId is required');
     }
 
     // 檢查旅程是否屬於該使用者
@@ -394,11 +409,11 @@ export async function addEquipmentToTrip(
     });
 
     if (!tripData) {
-      throw new Error('Trip not found');
+      throw new NotFoundError('Trip not found');
     }
 
     if (tripData.user_id !== userId) {
-      throw new Error('Unauthorized: You can only modify your own trips');
+      throw new UnauthorizedError('Unauthorized: You can only modify your own trips');
     }
 
     // 建立關聯
@@ -434,7 +449,7 @@ export async function removeEquipmentFromTrip(
 ): Promise<{ success: boolean; error: Error | null }> {
   try {
     if (!userId) {
-      throw new Error('Unauthorized: userId is required');
+      throw new UnauthorizedError('Unauthorized: userId is required');
     }
 
     // 檢查旅程是否屬於該使用者
@@ -446,11 +461,11 @@ export async function removeEquipmentFromTrip(
     });
 
     if (!tripData) {
-      throw new Error('Trip not found');
+      throw new NotFoundError('Trip not found');
     }
 
     if (tripData.user_id !== userId) {
-      throw new Error('Unauthorized: You can only modify your own trips');
+      throw new UnauthorizedError('Unauthorized: You can only modify your own trips');
     }
 
     // 刪除關聯
