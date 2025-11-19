@@ -1,8 +1,11 @@
 "use client";
 
+import { useContext } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Equipment } from "@/lib/types/equipment";
 import { SquarePenIcon, TrashIcon } from "lucide-react";
+import { DragHandle } from "@/components/ui/sortable/DragHandle";
+import { SortableRowContext } from "@/components/ui/sortable/SortableRow";
 
 export interface EquipmentWithId extends Equipment {
   id: string;
@@ -13,12 +16,25 @@ interface EquipmentColumnsOptions {
   onDelete?: (equipment: EquipmentWithId) => void;
 }
 
+// Custom cell component to access sortable context
+const DragHandleCell = () => {
+  const context = useContext(SortableRowContext);
+  return <DragHandle listeners={context?.listeners} />;
+};
+
 export function createEquipmentColumns(
   options: EquipmentColumnsOptions = {}
 ): ColumnDef<EquipmentWithId>[] {
   const { onEdit, onDelete } = options;
 
   return [
+    {
+      id: "drag-handle",
+      header: () => <span className="sr-only">排序</span>,
+      cell: () => <DragHandleCell />,
+      size: 50,
+      enableSorting: false,
+    },
     {
       accessorKey: "name",
       header: "名稱",

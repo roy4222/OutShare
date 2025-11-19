@@ -8,6 +8,13 @@
       "when": 1731000000000,
       "tag": "0001_add_categories",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1763554442013,
+      "tag": "0002_harsh_celestials",
+      "breakpoints": true
     }
   ]
 }

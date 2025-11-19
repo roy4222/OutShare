@@ -5,7 +5,7 @@
  * 此檔案對應原本的 Prisma schema
  */
 
-import { pgTable, text, uuid, timestamp, jsonb, date } from 'drizzle-orm/pg-core';
+import { pgTable, text, uuid, timestamp, jsonb, date, integer } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
 // ============================================
@@ -51,6 +51,7 @@ export const categories = pgTable('categories', {
   id: uuid('id').defaultRandom().primaryKey(),
   user_id: uuid('user_id').notNull().references(() => profiles.user_id, { onDelete: 'cascade' }),
   name: text('name').notNull(),
+  sort_order: integer('sort_order'),
   created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
   updated_at: timestamp('updated_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
 });
@@ -68,6 +69,7 @@ export const gear = pgTable('gear', {
   image_url: text('image_url'),
   specs: jsonb('specs').$type<Record<string, unknown>>(),
   tags: text('tags').array().default([]).notNull(),
+  sort_order: integer('sort_order'),
   created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
   updated_at: timestamp('updated_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
 });

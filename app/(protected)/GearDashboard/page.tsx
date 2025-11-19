@@ -27,19 +27,29 @@ import { Button } from "@/components/ui/button";
 import { useProtectedUser } from "@/lib/hooks/useProtectedUser";
 import { useEquipment } from "@/lib/hooks/useEquipment";
 import { useCategories } from "@/lib/hooks/useCategories";
-import { createOrUpdateEquipment, deleteEquipment } from "@/lib/services/equipment.client";
+import {
+  createOrUpdateEquipment,
+  deleteEquipment,
+} from "@/lib/services/equipment.client";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+  DragOverlay,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 
 const DEFAULT_GEAR_DASHBOARD_TITLE = "我的裝備";
 
-/**
- * 受保護的 GearDashboard 頁面
- *
- * 功能:
- * 1. 顯示使用者的裝備分類管理介面
- * 2. 支援新增/編輯/刪除類別
- * 3. 支援新增/編輯/刪除裝備
- * 4. 使用 Data Table 展示裝備列表
- */
 export default function GearDashboardPage() {
   const user = useProtectedUser();
 
@@ -55,8 +65,10 @@ export default function GearDashboardPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [categoryToEdit, setCategoryToEdit] = useState<string>("");
   const [categoryToDelete, setCategoryToDelete] = useState<string>("");
-  const [equipmentToEdit, setEquipmentToEdit] = useState<EquipmentWithId | null>(null);
-  const [equipmentToDelete, setEquipmentToDelete] = useState<EquipmentWithId | null>(null);
+  const [equipmentToEdit, setEquipmentToEdit] =
+    useState<EquipmentWithId | null>(null);
+  const [equipmentToDelete, setEquipmentToDelete] =
+    useState<EquipmentWithId | null>(null);
 
   // 批次操作載入狀態
   const [isBulkOperating, setIsBulkOperating] = useState(false);
@@ -81,6 +93,153 @@ export default function GearDashboardPage() {
     userId: user.id,
     groupByCategory: true,
   });
+
+  // Optimistic UI State
+  const [orderedCategories, setOrderedCategories] = useState<typeof categories>(
+    []
+  );
+  const [orderedEquipment, setOrderedEquipment] = useState<
+    Record<string, EquipmentWithId[]>
+  >({});
+
+  // Initialize optimistic state when data loads
+  useEffect(() => {
+    if (categories) {
+      setOrderedCategories(categories);
+    }
+  }, [categories]);
+
+  useEffect(() => {
+    if (groupedEquipment) {
+      const newOrderedEquipment: Record<string, EquipmentWithId[]> = {};
+      // Ensure all categories have an entry, even if empty
+      categories.forEach((cat) => {
+        newOrderedEquipment[cat.id] = []; // Use Category ID as key
+      });
+      
+      // Map groupedEquipment (keyed by name) to ID-based structure
+      // Note: groupedEquipment is currently keyed by category NAME from useEquipment
+      // We need to map names to IDs for stable DnD keys
+      Object.entries(groupedEquipment).forEach(([catName, items]) => {
+        const cat = categories.find(c => c.name === catName);
+        if (cat) {
+            newOrderedEquipment[cat.id] = items as EquipmentWithId[];
+        }
+      });
+      
+      setOrderedEquipment(newOrderedEquipment);
+    }
+  }, [groupedEquipment, categories]);
+
+  // DnD Sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  // 處理拖曳結束
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    const activeId = active.id as string;
+    const overId = over.id as string;
+
+    // Case 1: Reordering Categories
+    // We check if activeId is a Category ID
+    const isCategoryDrag = orderedCategories.some((cat) => cat.id === activeId);
+    if (isCategoryDrag) {
+      const oldIndex = orderedCategories.findIndex((cat) => cat.id === activeId);
+      const newIndex = orderedCategories.findIndex((cat) => cat.id === overId);
+
+      if (oldIndex !== -1 && newIndex !== -1) {
+        const originalOrder = orderedCategories; // Store original for rollback
+        
+        // Optimistic update
+        const newOrder = arrayMove(orderedCategories, oldIndex, newIndex);
+        setOrderedCategories(newOrder);
+
+        // API Call
+        try {
+          const updates = newOrder.map((cat, index) => ({
+            id: cat.id,
+            sort_order: index,
+          }));
+          const response = await fetch("/api/categories/reorder", {
+            method: "PUT",
+            body: JSON.stringify({ updates }),
+          });
+
+          if (!response.ok) {
+            throw new Error('API request failed');
+          }
+        } catch (error) {
+          console.error("Failed to save category order:", error);
+          // Rollback
+          setOrderedCategories(originalOrder);
+          // Optional: Add toast notification here
+        }
+      }
+      return;
+    }
+
+    // Case 2: Reordering Equipment (within same category)
+    // Find which category the items belong to
+    let categoryId = "";
+    for (const [catId, items] of Object.entries(orderedEquipment)) {
+      if (items.some((item) => item.id === activeId)) {
+        categoryId = catId;
+        break;
+      }
+    }
+
+    if (categoryId) {
+        const items = orderedEquipment[categoryId];
+        const oldIndex = items.findIndex((item) => item.id === activeId);
+        const newIndex = items.findIndex((item) => item.id === overId);
+        
+        if (oldIndex !== -1 && newIndex !== -1) {
+            const newItems = arrayMove(items, oldIndex, newIndex);
+            const originalItems = items; // Store original for rollback
+
+            // Optimistic update
+            setOrderedEquipment({
+                ...orderedEquipment,
+                [categoryId]: newItems
+            });
+
+            // API Call
+            try {
+                const updates = newItems.map((item, index) => ({
+                    id: item.id,
+                    sort_order: index,
+                }));
+                
+                const response = await fetch("/api/equipment/reorder", {
+                    method: "PUT",
+                    body: JSON.stringify({ updates }),
+                });
+
+                if (!response.ok) {
+                  throw new Error('API request failed');
+                }
+            } catch (error) {
+                console.error("Failed to save equipment order:", error);
+                // Rollback on failure
+                setOrderedEquipment({
+                    ...orderedEquipment,
+                    [categoryId]: originalItems
+                });
+                // Optional: Add toast notification here
+            }
+        }
+    }
+  };
 
   // 載入使用者的自訂標題
   useEffect(() => {
@@ -178,7 +337,7 @@ export default function GearDashboardPage() {
   const handleEquipmentSubmit = async (formData: EquipmentFormData) => {
     try {
       await createOrUpdateEquipment(formData, equipmentToEdit?.id);
-      
+
       // 成功後重新獲取裝備資料以顯示新裝備
       await refetch();
     } catch (error) {
@@ -242,7 +401,11 @@ export default function GearDashboardPage() {
       const equipmentIds = categoryEquipment.map((eq) => eq.id);
 
       // 3. 使用 hook 的交易式方法更新類別和所有裝備
-      await renameCategoryWithEquipment(category.id, newCategoryName, equipmentIds);
+      await renameCategoryWithEquipment(
+        category.id,
+        newCategoryName,
+        equipmentIds
+      );
 
       // 4. 重新載入裝備資料
       await refetch();
@@ -319,7 +482,9 @@ export default function GearDashboardPage() {
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
           <div className="bg-white rounded-lg p-6 shadow-xl flex flex-col items-center gap-4">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-700"></div>
-            <p className="text-lg font-medium text-gray-900">處理中，請稍候...</p>
+            <p className="text-lg font-medium text-gray-900">
+              處理中，請稍候...
+            </p>
           </div>
         </div>
       )}
@@ -379,40 +544,33 @@ export default function GearDashboardPage() {
                 </Empty>
               </div>
             ) : (
-              <div className="space-y-6">
-                {/* 顯示空類別（還沒有裝備的類別） */}
-                {categories
-                  .filter((cat) => !groupedEquipment || !groupedEquipment[cat.name])
-                  .map((category) => (
-                    <GearCategorySection
-                      key={`empty-${category.id}`}
-                      category={category.name}
-                      equipment={[]}
-                      onAddEquipment={handleAddEquipment}
-                      onEditCategory={handleEditCategory}
-                      onDeleteCategory={handleDeleteCategory}
-                      onEditEquipment={handleEditEquipment}
-                      onDeleteEquipment={handleDeleteEquipment}
-                    />
-                  ))}
-
-                {/* 顯示有裝備的類別 */}
-                {groupedEquipment &&
-                  Object.entries(groupedEquipment).map(
-                    ([category, equipmentList]) => (
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <div className="space-y-6">
+                  <SortableContext
+                    items={orderedCategories.map((c) => c.id)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    {orderedCategories.map((category) => (
                       <GearCategorySection
-                        key={category}
-                        category={category}
-                        equipment={equipmentList as EquipmentWithId[]}
+                        key={category.id}
+                        id={category.id}
+                        category={category.name}
+                        equipment={orderedEquipment[category.id] || []}
                         onAddEquipment={handleAddEquipment}
                         onEditCategory={handleEditCategory}
                         onDeleteCategory={handleDeleteCategory}
                         onEditEquipment={handleEditEquipment}
                         onDeleteEquipment={handleDeleteEquipment}
                       />
-                    )
-                  )}
-              </div>
+                    ))}
+                  </SortableContext>
+                </div>
+                <DragOverlay />
+              </DndContext>
             )}
           </div>
         </main>

@@ -10,7 +10,7 @@
 
 import { db } from '@/lib/db';
 import { gear, tripGear, trip } from '@/lib/db/schema';
-import { eq, and, desc } from 'drizzle-orm';
+import { eq, and, desc, asc, inArray } from 'drizzle-orm';
 import { Equipment } from '@/lib/types/equipment';
 import {
   mapGear,
@@ -67,7 +67,7 @@ export async function getEquipmentList(
           whereCondition,
           gearIds.length > 0 ? undefined : eq(gear.id, '') // 如果沒有裝備，返回空陣列
         ),
-        orderBy: desc(gear.created_at),
+        orderBy: [asc(gear.sort_order), desc(gear.created_at)],
         with: options?.includeTrips ? {
           trip_gear: {
             with: {
@@ -98,7 +98,7 @@ export async function getEquipmentList(
 
     const gearList = await db.query.gear.findMany({
       where: whereCondition,
-      orderBy: desc(gear.created_at),
+      orderBy: [asc(gear.sort_order), desc(gear.created_at)],
       with: options?.includeTrips ? {
         trip_gear: {
           with: {
@@ -481,6 +481,66 @@ export async function removeEquipmentFromTrip(
     console.error('Error removing equipment from trip:', error);
     return {
       success: false,
+      error: error instanceof Error ? error : new Error('Unknown error')
+    };
+  }
+}
+
+/**
+ * 重新排序裝備
+ *
+ * ⚠️ 權限檢查：只有擁有者可以重新排序
+ * ⚠️ 使用交易確保原子性
+ *
+ * @param userId - 使用者 ID
+ * @param updates - 更新列表 { id: string, sort_order: number }[]
+ * @returns 成功與否
+ */
+export async function reorderEquipment(
+  userId: string,
+  updates: { id: string; sort_order: number }[]
+): Promise<{ data: boolean; error: Error | null }> {
+  try {
+    if (!userId) {
+      throw new UnauthorizedError('Unauthorized: userId is required');
+    }
+
+    if (!updates || updates.length === 0) {
+      return { data: true, error: null };
+    }
+
+    await db.transaction(async (tx) => {
+      // 驗證所有裝備都屬於該使用者
+      const ids = updates.map((u) => u.id);
+      const userGear = await tx.query.gear.findMany({
+        where: and(
+          inArray(gear.id, ids),
+          eq(gear.user_id, userId)
+        ),
+        columns: { id: true },
+      });
+
+      if (userGear.length !== ids.length) {
+        throw new UnauthorizedError('Some equipment not found or unauthorized');
+      }
+
+      // 批次更新排序
+      for (const update of updates) {
+        await tx
+          .update(gear)
+          .set({
+            sort_order: update.sort_order,
+            updated_at: new Date(),
+          })
+          .where(eq(gear.id, update.id));
+      }
+    });
+
+    return { data: true, error: null };
+  } catch (error) {
+    console.error('Error reordering equipment:', error);
+    return {
+      data: false,
       error: error instanceof Error ? error : new Error('Unknown error')
     };
   }

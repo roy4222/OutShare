@@ -24,7 +24,7 @@ export async function getCategoriesByUserId(
 
     const userCategories = await db.query.categories.findMany({
       where: eq(categories.user_id, userId),
-      orderBy: (categories, { asc }) => [asc(categories.created_at)],
+      orderBy: (categories, { asc, desc }) => [asc(categories.sort_order), desc(categories.created_at)],
     });
 
     return { data: userCategories, error: null };
@@ -373,6 +373,66 @@ export async function deleteCategoryWithEquipment(
     return { data: true, error: null };
   } catch (error) {
     console.error('Error deleting category with equipment:', error);
+    return {
+      data: false,
+      error: error instanceof Error ? error : new Error('Unknown error')
+    };
+  }
+}
+
+/**
+ * 重新排序類別
+ *
+ * ⚠️ 權限檢查：只有擁有者可以重新排序
+ * ⚠️ 使用交易確保原子性
+ *
+ * @param userId - 使用者 ID
+ * @param updates - 更新列表 { id: string, sort_order: number }[]
+ * @returns 成功與否
+ */
+export async function reorderCategories(
+  userId: string,
+  updates: { id: string; sort_order: number }[]
+): Promise<{ data: boolean; error: Error | null }> {
+  try {
+    if (!userId) {
+      throw new Error('Unauthorized: userId is required');
+    }
+
+    if (!updates || updates.length === 0) {
+      return { data: true, error: null };
+    }
+
+    await db.transaction(async (tx) => {
+      // 驗證所有類別都屬於該使用者
+      const ids = updates.map((u) => u.id);
+      const userCategories = await tx.query.categories.findMany({
+        where: and(
+          inArray(categories.id, ids),
+          eq(categories.user_id, userId)
+        ),
+        columns: { id: true },
+      });
+
+      if (userCategories.length !== ids.length) {
+        throw new Error('Some categories not found or unauthorized');
+      }
+
+      // 批次更新排序
+      for (const update of updates) {
+        await tx
+          .update(categories)
+          .set({
+            sort_order: update.sort_order,
+            updated_at: new Date(),
+          })
+          .where(eq(categories.id, update.id));
+      }
+    });
+
+    return { data: true, error: null };
+  } catch (error) {
+    console.error('Error reordering categories:', error);
     return {
       data: false,
       error: error instanceof Error ? error : new Error('Unknown error')
