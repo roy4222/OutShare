@@ -7,7 +7,7 @@ import { DraggableSyntheticListeners } from "@dnd-kit/core";
 
 // Context to pass listeners to child cells (like DragHandleCell)
 export const SortableRowContext = createContext<{
-  listeners: DraggableSyntheticListeners;
+  listeners: DraggableSyntheticListeners | undefined;
 } | null>(null);
 
 interface SortableRowProps extends React.HTMLAttributes<HTMLTableRowElement> {
@@ -26,7 +26,7 @@ export function SortableRow({ id, children, className, ...props }: SortableRowPr
 
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
-    transition: isDragging ? "none" : "all 200ms cubic-bezier(0.4, 0, 0.2, 1)",
+    transition: isDragging ? "none" : transition ?? "all 200ms cubic-bezier(0.4, 0, 0.2, 1)",
     opacity: isDragging ? 0.5 : 1,
     position: "relative",
     zIndex: isDragging ? 10 : 1,
@@ -39,6 +39,7 @@ export function SortableRow({ id, children, className, ...props }: SortableRowPr
         ref={setNodeRef}
         style={style}
         className={`${className || ""} ${isDragging ? "bg-gray-50" : ""}`}
+        {...attributes}
         {...props}
         // We expose data-sortable-id for potentially finding context if needed
         data-sortable-id={id}

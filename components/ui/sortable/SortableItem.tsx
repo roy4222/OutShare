@@ -3,14 +3,15 @@
 import React from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import type { DraggableAttributes, DraggableSyntheticListeners } from "@dnd-kit/core";
 
 interface SortableItemProps {
   id: string;
   children: (props: {
-    attributes: any;
-    listeners: any;
+    attributes: DraggableAttributes;
+    listeners: DraggableSyntheticListeners | undefined;
     isDragging: boolean;
-    dragHandleProps: any;
+    dragHandleProps: DraggableSyntheticListeners | undefined;
   }) => React.ReactNode;
   className?: string;
 }
@@ -25,23 +26,26 @@ export function SortableItem({ id, children, className }: SortableItemProps) {
     isDragging,
   } = useSortable({ id });
 
-  const style = {
+  const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
-    transition: isDragging ? "none" : "all 200ms cubic-bezier(0.4, 0, 0.2, 1)", // Smoother transition for sorting, none for dragging
+    transition: isDragging
+      ? "none"
+      : transition ?? "all 200ms cubic-bezier(0.4, 0, 0.2, 1)", // Smoother transition for sorting, none for dragging
     zIndex: isDragging ? 10 : 1,
     opacity: isDragging ? 0.5 : 1,
     willChange: isDragging ? "transform" : "auto", // GPU optimization
   };
 
+  const dragHandleProps = listeners;
+
   return (
-    <div ref={setNodeRef} style={style} className={className}>
+    <div ref={setNodeRef} style={style} className={className} {...attributes}>
       {children({
         attributes,
         listeners,
         isDragging,
-        dragHandleProps: { ...attributes, ...listeners },
+        dragHandleProps,
       })}
     </div>
   );
 }
-

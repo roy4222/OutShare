@@ -6,6 +6,7 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from '@/lib/services/db/equipment.service';
+import { GearSpecs } from '@/lib/mappers/equipment';
 import { z } from 'zod';
 
 // 驗證 Schema
@@ -23,6 +24,23 @@ const updateEquipmentSchema = z.object({
   }).optional(),
   tags: z.array(z.string().max(20, "Tag too long")).max(10, "Too many tags").optional(),
 });
+
+type UpdateEquipmentInput = z.infer<typeof updateEquipmentSchema>;
+
+function normalizeSpecs(specs?: UpdateEquipmentInput['specs']): GearSpecs | undefined {
+  if (!specs) return undefined;
+
+  const { brand, weight_g, price_twd, buy_link, link_name, ...rest } = specs;
+
+  return {
+    ...rest,
+    brand,
+    weight_g,
+    price_twd,
+    buy_link: buy_link || undefined,
+    link_name: link_name || undefined,
+  };
+}
 
 /**
  * PUT /api/equipment/[id]
@@ -69,6 +87,8 @@ export async function PUT(
 
     const { name, category, description, image_url, specs, tags } = validationResult.data;
 
+    const normalizedSpecs = normalizeSpecs(specs);
+
     // 更新裝備
     const { data, error } = await updateEquipment(
       id,
@@ -77,7 +97,7 @@ export async function PUT(
         category,
         description,
         image_url: image_url || undefined,
-        specs: specs as any, // Type assertion needed as Zod type inference might differ slightly from internal types
+        specs: normalizedSpecs,
         tags,
       },
       user.id

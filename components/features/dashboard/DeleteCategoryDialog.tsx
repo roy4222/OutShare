@@ -37,7 +37,7 @@ export function DeleteCategoryDialog({
       description={
         <>
           <span className="text-gray-600 font-medium">
-            刪除後將無法復原，此類別底下的裝備也將被刪除。
+            刪除後將無法復原，類別「{categoryName}」底下的裝備也將被刪除。
           </span>
         </>
       }
